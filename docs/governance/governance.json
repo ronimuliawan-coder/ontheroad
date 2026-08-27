@@ -60,7 +60,7 @@
       "phase": 2,
       "name": "Product discovery and PRD",
       "owner": "developer-project-owner",
-      "status": "in-progress",
+      "status": "completed",
       "startRequires": [
         "phase-1-approved",
         "prp-prd-workflow"
@@ -75,7 +75,7 @@
       "phase": 3,
       "name": "Android toolchain and architecture scaffold",
       "owner": "developer-project-owner",
-      "status": "pending",
+      "status": "in-progress",
       "startRequires": [
         "phase-2-approved",
         "approved-prp"
