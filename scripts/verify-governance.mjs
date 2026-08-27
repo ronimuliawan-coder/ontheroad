@@ -68,8 +68,9 @@ export function isSafeRelativePath(value) {
 }
 
 function isExcluded(relativePath, excludedRoots) {
+    const segments = relativePath.split("/");
     return excludedRoots.some(
-        (excluded) => relativePath === excluded || relativePath.startsWith(`${excluded}/`),
+        (excluded) => segments.includes(excluded) || relativePath === excluded || relativePath.startsWith(`${excluded}/`),
     );
 }
 

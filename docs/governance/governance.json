@@ -1660,6 +1660,14 @@
       "ownerPhase": 1,
       "authority": "project-owned",
       "reason": "Machine-readable repository governance contract"
+    },
+    {
+      "path": "gradle/libs.versions.toml",
+      "kind": "dependency-catalog",
+      "disposition": "active",
+      "ownerPhase": 3,
+      "authority": "project-owned",
+      "reason": "Pinned Gradle version catalog (BUILD-001)"
     }
   ]
 }
