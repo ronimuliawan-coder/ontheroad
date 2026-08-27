@@ -120,7 +120,7 @@ Run the governance verifier after changing instructions, documents, environment 
 phase gates, or this manifest:
 
 ```bash
-npm run governance:check
+bun run governance:check
 ```
 
 Documentation-only changes use a cheap, secret-free workflow and do not run Gradle or consume Android build runners.

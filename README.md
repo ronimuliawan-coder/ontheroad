@@ -8,7 +8,7 @@ by [`wandernest`](/home/ron/Projects/wandernest).
 
 - **JDK**: OpenJDK 21+ (recommended: `/home/ron/.jdks/jbr-21.0.11`)
 - **Android SDK**: Android API 35+ / Build Tools 35.0.0+ (`/home/ron/Android/Sdk`)
-- **Node.js**: Node 20+ (used solely for lightweight repository governance verification)
+- **Bun**: Bun 1.4+ (used for ultra-fast repository governance verification and unit tests)
 
 ## Governance & Verification
 
@@ -16,13 +16,14 @@ All repository instructions, phase gates, and delivery rules are machine-checked
 without installing dependencies or starting Gradle:
 
 ```bash
-npm run governance:check
+bun run governance:check
+bun test
 ```
 
 Or invoke the validator directly:
 
 ```bash
-node scripts/verify-governance.mjs
+./scripts/verify-governance.mjs
 ```
 
 ## Documentation & Architecture

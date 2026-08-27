@@ -4,10 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "governance:check": "node scripts/verify-governance.mjs",
-    "test": "node --test tests/unit/*.test.mjs"
-  },
-  "engines": {
-    "node": ">=20.0.0"
+    "governance:check": "bun scripts/verify-governance.mjs",
+    "test": "bun test"
   }
 }

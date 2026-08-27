@@ -66,4 +66,4 @@ Under `.agents/rules`:
 Treat ECC updates as a reviewed vendor refresh, not an automated overwrite:
 1. Compare upstream definitions against project-owned copies.
 2. Verify all files remain registered in `docs/governance/governance.json`.
-3. Run `npm run governance:check` to ensure zero drift.
+3. Run `bun run governance:check` to ensure zero drift.

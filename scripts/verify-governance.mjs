@@ -1,12 +1,12 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 /**
  * Validates the repository-owned governance contract without installing
  * dependencies or contacting external services.
  *
- * Keep this script Node-compatible with zero third-party dependencies.
+ * Keep this script Bun/Node-compatible with zero third-party dependencies.
  * Its CI job runs for documentation-only and instruction changes and must stay
- * fast (<500ms), cheap, and secret-free.
+ * fast (<200ms), cheap, and secret-free.
  */
 
 import { readFile, readdir, realpath, stat } from "node:fs/promises";
