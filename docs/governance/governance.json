@@ -45,7 +45,7 @@
       "phase": 1,
       "name": "Governance and repository foundation",
       "owner": "developer-project-owner",
-      "status": "in-progress",
+      "status": "completed",
       "startRequires": [
         "approved-plan",
         "explicit-user-confirmation"
@@ -60,7 +60,7 @@
       "phase": 2,
       "name": "Product discovery and PRD",
       "owner": "developer-project-owner",
-      "status": "pending",
+      "status": "in-progress",
       "startRequires": [
         "phase-1-approved",
         "prp-prd-workflow"
