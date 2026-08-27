@@ -1,0 +1,109 @@
+name: Sync dev to main
+
+# `main` is the default branch and receives `dev` in batches through a promotion
+# pull request. Once that promotion merges, `dev` is strictly behind `main` and
+# every later feature branch cut from `dev` starts from stale code. The fix is an
+# automatic fast-forward of `dev` up to `main` after each promotion.
+#
+# Why this is safe: neither push below is forced, so git itself refuses anything that
+# is not a fast-forward. The ancestry checks in the script tell the healthy
+# no-op cases apart from the two-sided case. Where both branches hold commits the other
+# lacks, `main` is merged into `dev` rather than fast-forwarded. Nothing can discard a commit.
+#
+# Why this needs a merge commit upstream: a clean fast-forward, leaving `dev` and
+# `main` on the same commit, is only possible because the promotion merge commit
+# carries `dev`'s tip as a parent, which keeps `main` a descendant of `dev`. Squash
+# and rebase rewrite history, making fast-forward impossible.
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-dev-to-main
+  cancel-in-progress: false
+
+jobs:
+  fast-forward-dev:
+    name: Fast-forward dev to main
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fast-forward dev to main
+        run: |
+          set -euo pipefail
+
+          max_attempts=3
+          main_sha="$(git rev-parse refs/remotes/origin/main)"
+          echo "main: $main_sha"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          for attempt in $(seq 1 "$max_attempts"); do
+            if [ "$attempt" -gt 1 ]; then
+              echo "--- attempt $attempt of $max_attempts"
+            fi
+
+            if ! git ls-remote --exit-code --heads origin dev >/dev/null 2>&1; then
+              echo "Branch \`dev\` does not exist; creating it at main ($main_sha)."
+              if git push origin "$main_sha:refs/heads/dev"; then
+                echo "Created \`dev\` at \`$main_sha\`." >> "$GITHUB_STEP_SUMMARY"
+                exit 0
+              fi
+              echo "Creation rejected; \`dev\` was created underneath us. Refetching."
+              continue
+            fi
+
+            git fetch origin dev:refs/remotes/origin/dev
+            dev_sha="$(git rev-parse refs/remotes/origin/dev)"
+            echo "dev:  $dev_sha"
+
+            if [ "$dev_sha" = "$main_sha" ]; then
+              echo "dev is already at main ($main_sha); nothing to do."
+              echo "Already at \`$main_sha\`." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+
+            if git merge-base --is-ancestor "$main_sha" "$dev_sha"; then
+              echo "dev contains main and is ahead; nothing to do."
+              echo "dev ahead; contains \`$main_sha\`." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+
+            if git merge-base --is-ancestor "$dev_sha" "$main_sha"; then
+              echo "dev is strictly behind main. Fast-forwarding."
+              if git push origin "$main_sha:refs/heads/dev"; then
+                echo "Fast-forwarded \`dev\` to \`$main_sha\`." >> "$GITHUB_STEP_SUMMARY"
+                exit 0
+              fi
+              echo "Fast-forward rejected. Refetching and retrying."
+              continue
+            fi
+
+            echo "Neither branch contains the other. Merging main into dev."
+            git checkout -B dev refs/remotes/origin/dev
+            if ! git merge --no-edit -m "Merge branch 'main' into dev [skip ci]" "$main_sha"; then
+              echo "::error::Merge conflict syncing main to dev. Manual resolution required."
+              exit 1
+            fi
+
+            merged_sha="$(git rev-parse HEAD)"
+            if git push origin "HEAD:refs/heads/dev"; then
+              echo "Merged \`$main_sha\` into \`dev\` at \`$merged_sha\`." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Push rejected. Refetching and retrying."
+          done
+
+          echo "::error::Failed to sync dev to main after $max_attempts attempts."
+          exit 1

@@ -1,0 +1,13 @@
+{
+  "name": "ontheroad",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "governance:check": "node scripts/verify-governance.mjs",
+    "test": "node --test tests/unit/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,1649 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-27T21:18:00+07:00",
+  "baseline": {
+    "commit": "HEAD",
+    "evidence": "docs/governance/BASELINE.md",
+    "canonicalRepository": "https://github.com/rons-space/ontheroad.git"
+  },
+  "allowedDispositions": [
+    "active",
+    "revise",
+    "archive-later",
+    "historical"
+  ],
+  "governedDocuments": {
+    "roots": [
+      ".",
+      ".agents",
+      ".claude/PRPs",
+      "docs"
+    ],
+    "extensions": [
+      ".md",
+      ".mdx",
+      ".txt",
+      ".toml"
+    ],
+    "exactFiles": [
+      ".agents/ecc-install-state.json",
+      ".env.example",
+      "docs/governance/governance.json"
+    ],
+    "excludedRoots": [
+      ".git",
+      ".gradle",
+      "build",
+      "node_modules",
+      "coverage",
+      "test-results",
+      ".claude/PRPs/reports"
+    ]
+  },
+  "phaseGates": [
+    {
+      "phase": 1,
+      "name": "Governance and repository foundation",
+      "owner": "developer-project-owner",
+      "status": "in-progress",
+      "startRequires": [
+        "approved-plan",
+        "explicit-user-confirmation"
+      ],
+      "completionRequires": [
+        "verifier-passing",
+        "baseline-frozen",
+        "explicit-user-confirmation"
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Product discovery and PRD",
+      "owner": "developer-project-owner",
+      "status": "pending",
+      "startRequires": [
+        "phase-1-approved",
+        "prp-prd-workflow"
+      ],
+      "completionRequires": [
+        "approved-prd",
+        "linear-evidence",
+        "explicit-user-confirmation"
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Android toolchain and architecture scaffold",
+      "owner": "developer-project-owner",
+      "status": "pending",
+      "startRequires": [
+        "phase-2-approved",
+        "approved-prp"
+      ],
+      "completionRequires": [
+        "clean-build",
+        "jvm-tests-green",
+        "libs-versions-toml",
+        "explicit-user-confirmation"
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Core domain and data models",
+      "owner": "developer-project-owner",
+      "status": "pending",
+      "startRequires": [
+        "phase-3-approved",
+        "approved-prp"
+      ],
+      "completionRequires": [
+        "pure-kotlin-domain",
+        "unit-tests-green",
+        "explicit-user-confirmation"
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Design system and UI shell",
+      "owner": "developer-project-owner",
+      "status": "pending",
+      "startRequires": [
+        "phase-4-approved",
+        "approved-prp"
+      ],
+      "completionRequires": [
+        "compose-theme-tokens",
+        "navigation-shell",
+        "explicit-user-confirmation"
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "Feature core implementation",
+      "owner": "developer-project-owner",
+      "status": "pending",
+      "startRequires": [
+        "phase-5-approved",
+        "approved-prp"
+      ],
+      "completionRequires": [
+        "e2e-feature-flows",
+        "offline-first-cache",
+        "explicit-user-confirmation"
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "Performance, motion and UX",
+      "owner": "developer-project-owner",
+      "status": "pending",
+      "startRequires": [
+        "phase-6-approved",
+        "approved-prp"
+      ],
+      "completionRequires": [
+        "compose-metrics",
+        "smooth-animations",
+        "explicit-user-confirmation"
+      ]
+    },
+    {
+      "phase": 8,
+      "name": "Security, secrets and release signing",
+      "owner": "developer-project-owner",
+      "status": "pending",
+      "startRequires": [
+        "phase-7-approved",
+        "approved-prp"
+      ],
+      "completionRequires": [
+        "ci-signing-matrix",
+        "zero-secrets-in-code",
+        "explicit-user-confirmation"
+      ]
+    },
+    {
+      "phase": 9,
+      "name": "Verification and release candidate",
+      "owner": "developer-project-owner",
+      "status": "pending",
+      "startRequires": [
+        "phase-8-approved",
+        "approved-prp"
+      ],
+      "completionRequires": [
+        "all-tests-passing",
+        "release-notes",
+        "apk-validation",
+        "explicit-user-confirmation"
+      ]
+    },
+    {
+      "phase": 10,
+      "name": "Retirement and living docs",
+      "owner": "developer-project-owner",
+      "status": "pending",
+      "startRequires": [
+        "phase-9-approved",
+        "release-tagged"
+      ],
+      "completionRequires": [
+        "exceptions-closed",
+        "governance-check-clean",
+        "explicit-user-confirmation"
+      ]
+    }
+  ],
+  "invariants": [
+    {
+      "id": "GIT-001",
+      "statement": "GitHub is the sole write and merge authority; any mirrors are review-only projections.",
+      "ownerPhase": 1,
+      "severity": "critical"
+    },
+    {
+      "id": "GIT-002",
+      "statement": "main deploys/releases and dev contains main; neither is ever force-pushed.",
+      "ownerPhase": 1,
+      "severity": "critical"
+    },
+    {
+      "id": "GIT-003",
+      "statement": "Promotions and releases use merge commits; only the sync workflow reconciles dev.",
+      "ownerPhase": 1,
+      "severity": "critical"
+    },
+    {
+      "id": "DOC-001",
+      "statement": "Current truth, approved target, and historical evidence are distinct.",
+      "ownerPhase": 1,
+      "severity": "high"
+    },
+    {
+      "id": "DOC-002",
+      "statement": "Every governed instruction/document has one disposition and owner phase.",
+      "ownerPhase": 1,
+      "severity": "high"
+    },
+    {
+      "id": "PHASE-001",
+      "statement": "No phase starts, completes, or advances without evidence and explicit user confirmation.",
+      "ownerPhase": 1,
+      "severity": "critical"
+    },
+    {
+      "id": "SEC-001",
+      "statement": "Keystores, signing passwords, and API secrets never appear in Git URLs, files, or logs.",
+      "ownerPhase": 1,
+      "severity": "critical"
+    },
+    {
+      "id": "SEC-002",
+      "statement": "Privileged workflows never execute or inspect untrusted PR content.",
+      "ownerPhase": 1,
+      "severity": "critical"
+    },
+    {
+      "id": "BUILD-001",
+      "statement": "All dependencies, plugins, and toolchains are pinned in libs.versions.toml; no dynamic + versions.",
+      "ownerPhase": 3,
+      "severity": "critical"
+    },
+    {
+      "id": "BUILD-002",
+      "statement": "Gradle wrapper uses distribution SHA-256 checksum verification.",
+      "ownerPhase": 3,
+      "severity": "high"
+    },
+    {
+      "id": "ARCH-001",
+      "statement": "domain and model layers are pure Kotlin; they must never import android.* or androidx.*.",
+      "ownerPhase": 3,
+      "severity": "critical"
+    },
+    {
+      "id": "UI-001",
+      "statement": "UI state in Jetpack Compose is unidirectional (UDF); ViewModels expose immutable StateFlow.",
+      "ownerPhase": 4,
+      "severity": "high"
+    },
+    {
+      "id": "TEST-001",
+      "statement": "Unit tests for domain and ViewModels run on JVM without requiring Android emulators.",
+      "ownerPhase": 3,
+      "severity": "high"
+    },
+    {
+      "id": "TEST-002",
+      "statement": "UI tests prioritize fast JVM screenshot tests; emulator runs are serialized and isolated.",
+      "ownerPhase": 4,
+      "severity": "high"
+    }
+  ],
+  "environmentEnforced": true,
+  "environment": [
+    {
+      "name": "ANDROID_KEYSTORE_BASE64",
+      "visibility": "ci",
+      "environments": [
+        "ci",
+        "release"
+      ],
+      "status": "planned",
+      "consumers": [
+        "github-actions-android-build"
+      ],
+      "owner": "developer-project-owner",
+      "required": "conditional",
+      "rotationTrigger": "compromise-or-yearly",
+      "retirementPhase": null
+    },
+    {
+      "name": "API_BASE_URL",
+      "visibility": "public",
+      "environments": [
+        "local",
+        "preview",
+        "production"
+      ],
+      "status": "planned",
+      "consumers": [
+        "android-network-module"
+      ],
+      "owner": "developer-project-owner",
+      "required": "optional",
+      "rotationTrigger": "backend-domain-change",
+      "retirementPhase": null
+    },
+    {
+      "name": "KEYSTORE_PASSWORD",
+      "visibility": "ci",
+      "environments": [
+        "ci",
+        "release"
+      ],
+      "status": "planned",
+      "consumers": [
+        "github-actions-android-build"
+      ],
+      "owner": "developer-project-owner",
+      "required": "conditional",
+      "rotationTrigger": "compromise-or-yearly",
+      "retirementPhase": null
+    },
+    {
+      "name": "KEY_ALIAS",
+      "visibility": "ci",
+      "environments": [
+        "ci",
+        "release"
+      ],
+      "status": "planned",
+      "consumers": [
+        "github-actions-android-build"
+      ],
+      "owner": "developer-project-owner",
+      "required": "conditional",
+      "rotationTrigger": "compromise-or-yearly",
+      "retirementPhase": null
+    },
+    {
+      "name": "KEY_PASSWORD",
+      "visibility": "ci",
+      "environments": [
+        "ci",
+        "release"
+      ],
+      "status": "planned",
+      "consumers": [
+        "github-actions-android-build"
+      ],
+      "owner": "developer-project-owner",
+      "required": "conditional",
+      "rotationTrigger": "compromise-or-yearly",
+      "retirementPhase": null
+    }
+  ],
+  "documents": [
+    {
+      "path": ".agents/agents/a11y-architect.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/agent-evaluator.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/architect.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/build-error-resolver.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/chief-of-staff.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/code-architect.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/code-explorer.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/code-reviewer.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/code-simplifier.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/comment-analyzer.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/conversation-analyzer.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/database-reviewer.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/doc-updater.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/docs-lookup.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/e2e-runner.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/harness-optimizer.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/kotlin-build-resolver.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/kotlin-reviewer.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/loop-operator.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/marketing-agent.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/performance-optimizer.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/planner.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/pr-test-analyzer.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/refactor-cleaner.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/security-reviewer.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/seo-specialist.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/silent-failure-hunter.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/spec-miner.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/tdd-guide.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/agents/type-design-analyzer.md",
+      "kind": "agent-profile",
+      "disposition": "archive-later",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC agent role reference guidance"
+    },
+    {
+      "path": ".agents/ecc-install-state.json",
+      "kind": "install-state",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "ECC installation ledger and hash record"
+    },
+    {
+      "path": ".agents/rules/common-agents.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/common-code-review.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/common-coding-style.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/common-development-workflow.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/common-git-workflow.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/common-hooks.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/common-patterns.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/common-performance.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/common-security.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/common-testing.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/kotlin-coding-style.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/kotlin-hooks.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/kotlin-patterns.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/kotlin-security.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/rules/kotlin-testing.md",
+      "kind": "rule",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Engineering and language rule"
+    },
+    {
+      "path": ".agents/skills/agent-self-evaluation/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/agent-self-evaluation/examples/high-score-example.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/agent-self-evaluation/examples/low-score-example.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/agent-self-evaluation/references/evaluation-criteria.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/agent-self-evaluation/references/hook-integration.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/agent-self-evaluation/templates/evaluation-report.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/android-clean-architecture/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/api-design/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/architecture-decision-records/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/backend-patterns/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/click-path-audit/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/codehealth-mcp/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/coding-standards/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/compose-multiplatform-patterns/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/continuous-learning-v2/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/continuous-learning-v2/agents/observer.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/delivery-gate/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/design-system/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/e2e-testing/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/error-handling/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/git-workflow/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/hexagonal-architecture/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/intent-driven-development/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/kotlin-coroutines-flows/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/kotlin-patterns/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/kotlin-testing/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/living-docs-governance/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/make-interfaces-feel-better/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/motion-foundations/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/motion-ui/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/production-audit/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/tdd-workflow/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/verification-loop/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/workflows/aside.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/auto-update.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/build-fix.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/checkpoint.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/code-review.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/cost-report.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/ecc-guide.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/epic-claim.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/epic-decompose.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/epic-publish.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/epic-review.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/epic-sync.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/epic-unblock.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/epic-validate.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/evolve.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/feature-dev.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/gradle-build.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/harness-audit.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/hookify-configure.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/hookify-help.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/hookify-list.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/hookify.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/instinct-export.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/instinct-import.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/instinct-status.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/jira.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/kotlin-build.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/kotlin-review.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/kotlin-test.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/learn-eval.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/learn.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/loop-start.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/loop-status.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/marketing-campaign.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/model-route.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/multi-backend.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/multi-execute.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/multi-frontend.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/multi-plan.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/multi-workflow.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/orch-add-feature.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/orch-build-mvp.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/orch-change-feature.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/orch-fix-defect.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/orch-refine-code.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/orch-review.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/plan-canvas.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/plan-prd.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/plan.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/pr.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/project-init.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/projects.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/promote.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/prp-commit.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/prp-implement.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/prp-plan.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/prp-pr.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/prp-prd.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/prune.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/quality-gate.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/refactor-clean.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/resume-session.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/review-pr.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/santa-loop.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/save-session.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/security-scan.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/sessions.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/setup-pm.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/skill-create.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/skill-health.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/test-coverage.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/update-codemaps.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/update-docs.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "ecc",
+      "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".env.example",
+      "kind": "environment-contract",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Environment variable schema contract"
+    },
+    {
+      "path": "AGENTS.md",
+      "kind": "project-instructions",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Root agent instructions and load-bearing invariants"
+    },
+    {
+      "path": "README.md",
+      "kind": "project-documentation",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Project overview and onboarding instructions"
+    },
+    {
+      "path": "docs/ECC_PROJECT_PROFILE.md",
+      "kind": "profile-inventory",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "ECC profile provenance and footprint ledger"
+    },
+    {
+      "path": "docs/GIT_WORKFLOW.md",
+      "kind": "delivery-process",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Branching and merge invariants contract"
+    },
+    {
+      "path": "docs/governance/BASELINE.md",
+      "kind": "baseline-evidence",
+      "disposition": "historical",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Pre-development frozen environment baseline"
+    },
+    {
+      "path": "docs/governance/GOVERNANCE.md",
+      "kind": "governance-authority",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Human-readable repository governance guide"
+    },
+    {
+      "path": "docs/governance/governance.json",
+      "kind": "governance-manifest",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Machine-readable repository governance contract"
+    }
+  ]
+}
