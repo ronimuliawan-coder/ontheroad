@@ -15,6 +15,7 @@ before product code was introduced.
 | Host | Linux `7.1.9-arch1-2`, x86_64 |
 | Initial branch | `main` |
 | Target project | `ontheroad` |
+| Baseline commit | `f8af37f3512c314a57da32d0b37e473455a45b3b` |
 | Linear project | `OnTheRoad` (Linear workspace: `rons-space`) |
 | Approved Phase 1 Plan | `.system_generated/implementation_plan.md` |
 

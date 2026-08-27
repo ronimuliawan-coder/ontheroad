@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedAt": "2026-08-27T21:18:00+07:00",
   "baseline": {
-    "commit": "HEAD",
+    "commit": "f8af37f3512c314a57da32d0b37e473455a45b3b",
     "evidence": "docs/governance/BASELINE.md",
     "canonicalRepository": "https://github.com/rons-space/ontheroad.git"
   },
