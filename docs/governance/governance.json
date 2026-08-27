@@ -1582,6 +1582,14 @@
       "reason": "Agent task and delivery workflow"
     },
     {
+      "path": ".claude/PRPs/plans/03-toolchain-and-scaffold.plan.md",
+      "kind": "implementation-plan",
+      "disposition": "active",
+      "ownerPhase": 3,
+      "authority": "project-owned",
+      "reason": "PRP implementation plan for Phase 3 toolchain and scaffold"
+    },
+    {
       "path": ".claude/PRPs/prds/ontheroad-trip-tracker.prd.md",
       "kind": "product-requirements-document",
       "disposition": "active",
