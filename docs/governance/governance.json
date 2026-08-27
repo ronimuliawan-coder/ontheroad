@@ -1582,6 +1582,14 @@
       "reason": "Agent task and delivery workflow"
     },
     {
+      "path": ".claude/PRPs/prds/ontheroad-trip-tracker.prd.md",
+      "kind": "product-requirements-document",
+      "disposition": "active",
+      "ownerPhase": 2,
+      "authority": "project-owned",
+      "reason": "Product PRD for OnTheRoad Trip Tracker MVP"
+    },
+    {
       "path": ".env.example",
       "kind": "environment-contract",
       "disposition": "active",
