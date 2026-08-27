@@ -55,6 +55,7 @@ Avoid pushing many tiny commits to an open PR to conserve runner minutes.
   choice was made, especially in build configuration and architecture boundaries.
 - Jetpack Compose state is unidirectional (UDF). ViewModels expose immutable `StateFlow`.
 - User-facing strings belong in `strings.xml`, not hardcoded string literals.
+- For repository governance and script execution, **Bun** is the pinned runtime and package manager (`bun run governance:check`, `bun test`). Never use `npm`.
 
 ## Phase gates
 
