@@ -97,8 +97,8 @@ IDs are stable. Change an invariant only through an approved governance change; 
 | 4 | Core domain & data models | Phase 3 complete, approved PRP | pure Kotlin domain models, repository interfaces, JVM unit tests | completed |
 | 5 | Design system & UI shell | Phase 4 complete, approved PRP | Material 3 tokens, Compose navigation shell, preview tests | completed |
 | 6 | Feature core implementation | Phase 5 complete, approved PRP | end-to-end user flows, offline caching, repository integration | completed |
-| 7 | Performance, motion & UX | Phase 6 complete, approved PRP | 60fps/120fps rendering, Compose metrics, haptics, transition polish | in-progress |
-| 8 | Security, secrets & release signing | Phase 7 complete, approved PRP | signed debug/release APK/AAB via CI secrets, zero secrets in code | pending |
+| 7 | Performance, motion & UX | Phase 6 complete, approved PRP | 60fps/120fps rendering, Compose metrics, haptics, transition polish | completed |
+| 8 | Security, secrets & release signing | Phase 7 complete, approved PRP | signed debug/release APK/AAB via CI secrets, zero secrets in code | in-progress |
 | 9 | Verification & release candidate | Phase 8 complete, approved PRP | full test suite green, release notes, APK artifact validation | pending |
 | 10 | Retirement & living docs | Phase 9 complete, release tagged | all temporary exceptions closed, living docs validated, 0 findings | pending |
 
