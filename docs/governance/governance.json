@@ -121,7 +121,7 @@
       "phase": 6,
       "name": "Feature core implementation",
       "owner": "developer-project-owner",
-      "status": "in-progress",
+      "status": "completed",
       "startRequires": [
         "phase-5-approved",
         "approved-prp"
@@ -136,7 +136,7 @@
       "phase": 7,
       "name": "Performance, motion and UX",
       "owner": "developer-project-owner",
-      "status": "pending",
+      "status": "in-progress",
       "startRequires": [
         "phase-6-approved",
         "approved-prp"
@@ -1612,6 +1612,14 @@
       "ownerPhase": 6,
       "authority": "project-owned",
       "reason": "PRP implementation plan for Phase 6 feature core implementation"
+    },
+    {
+      "path": ".claude/PRPs/plans/07-performance-motion-and-ux.plan.md",
+      "kind": "implementation-plan",
+      "disposition": "active",
+      "ownerPhase": 7,
+      "authority": "project-owned",
+      "reason": "PRP implementation plan for Phase 7 performance, motion and UX with 120Hz support"
     },
     {
       "path": ".claude/PRPs/prds/ontheroad-trip-tracker.prd.md",
