@@ -151,7 +151,7 @@
       "phase": 8,
       "name": "Security, secrets and release signing",
       "owner": "developer-project-owner",
-      "status": "in-progress",
+      "status": "completed",
       "startRequires": [
         "phase-7-approved",
         "approved-prp"
@@ -166,7 +166,7 @@
       "phase": 9,
       "name": "Verification and release candidate",
       "owner": "developer-project-owner",
-      "status": "pending",
+      "status": "in-progress",
       "startRequires": [
         "phase-8-approved",
         "approved-prp"
@@ -1645,6 +1645,14 @@
       "ownerPhase": 8,
       "authority": "project-owned",
       "reason": "PRP implementation plan for Phase 8 security, secrets and release signing"
+    },
+    {
+      "path": ".claude/PRPs/plans/09-verification-and-release-candidate.plan.md",
+      "kind": "implementation-plan",
+      "disposition": "active",
+      "ownerPhase": 9,
+      "authority": "project-owned",
+      "reason": "PRP implementation plan for Phase 9 verification and release candidate"
     },
     {
       "path": ".claude/PRPs/prds/ontheroad-trip-tracker.prd.md",
