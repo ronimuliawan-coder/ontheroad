@@ -1687,6 +1687,14 @@
       "reason": "Project overview and onboarding instructions"
     },
     {
+      "path": "RELEASE_NOTES.md",
+      "kind": "release-notes",
+      "disposition": "active",
+      "ownerPhase": 9,
+      "authority": "project-owned",
+      "reason": "Release notes for OnTheRoad v0.1.0 release candidate"
+    },
+    {
       "path": "docs/ECC_PROJECT_PROFILE.md",
       "kind": "profile-inventory",
       "disposition": "active",
