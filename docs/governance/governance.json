@@ -182,7 +182,7 @@
       "phase": 10,
       "name": "Retirement and living docs",
       "owner": "developer-project-owner",
-      "status": "in-progress",
+      "status": "completed",
       "startRequires": [
         "phase-9-approved",
         "release-tagged"
