@@ -13,21 +13,68 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ontheroad.core.ui.component.DiscrepancyBadge
 import com.ontheroad.core.ui.component.MetricCard
-import com.ontheroad.core.ui.theme.BrandEmerald
 import com.ontheroad.core.ui.theme.CockpitDimens
 import com.ontheroad.core.ui.theme.GreenProfit
-import com.ontheroad.core.ui.theme.OnTheRoadTheme
+import com.ontheroad.viewmodel.ShiftUiState
+import com.ontheroad.viewmodel.ShiftViewModel
 
 @Composable
 fun ShiftScreen(
+    viewModel: ShiftViewModel,
     modifier: Modifier = Modifier
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    ShiftScreenContent(
+        uiState = uiState,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun ShiftScreenContent(
+    uiState: ShiftUiState,
+    modifier: Modifier = Modifier
+) {
+    val summary = uiState.summary
+
+    val totalGrossFormatted = summary?.let {
+        String.format("$%.2f", it.totalGrossEarningsCents / 100.0)
+    } ?: "$0.00"
+
+    val digitalFormatted = summary?.let {
+        String.format("$%.2f", it.digitalBalanceCents / 100.0)
+    } ?: "$0.00"
+
+    val cashFormatted = summary?.let {
+        String.format("$%.2f", it.cashInHandCents / 100.0)
+    } ?: "$0.00"
+
+    val actualKmFormatted = summary?.let {
+        String.format("%.1f", it.totalActualDistanceKm)
+    } ?: "0.0"
+
+    val quotedKmFormatted = summary?.let {
+        String.format("%.1f", it.totalQuotedDistanceKm)
+    } ?: "0.0"
+
+    val rateKmFormatted = summary?.let {
+        String.format("$%.2f", it.averageEarningsPerKmCents / 100.0)
+    } ?: "$0.00"
+
+    val rateHourFormatted = summary?.let {
+        String.format("$%.2f", it.averageEarningsPerHourCents / 100.0)
+    } ?: "$0.00"
+
+    val tripsCount = summary?.totalTrips ?: 0
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -47,8 +94,8 @@ fun ShiftScreen(
         // 1. Gross Earnings Hero
         MetricCard(
             title = "Total Gross Revenue",
-            value = "$142.50",
-            subtitle = "7 completed trips across 2 platforms",
+            value = totalGrossFormatted,
+            subtitle = "$tripsCount completed trip(s)",
             valueColor = GreenProfit
         )
 
@@ -59,13 +106,13 @@ fun ShiftScreen(
         ) {
             MetricCard(
                 title = "App Balance",
-                value = "$110.00",
-                subtitle = "Digital transfer",
+                value = digitalFormatted,
+                subtitle = "Digital payout",
                 modifier = Modifier.weight(1f)
             )
             MetricCard(
                 title = "Cash in Pocket",
-                value = "$32.50",
+                value = cashFormatted,
                 subtitle = "Physical cash collected",
                 modifier = Modifier.weight(1f)
             )
@@ -74,10 +121,12 @@ fun ShiftScreen(
         // 3. Odometer Reality Card
         MetricCard(
             title = "Odometer vs. Platform",
-            value = "64.2",
+            value = actualKmFormatted,
             unit = "km",
-            subtitle = "Platform quoted: 58.0 km",
-            badge = { DiscrepancyBadge(differenceMeters = 6200.0) }
+            subtitle = "Platform quoted: $quotedKmFormatted km",
+            badge = if (summary != null) {
+                { DiscrepancyBadge(differenceMeters = summary.totalUncompensatedMeters) }
+            } else null
         )
 
         // 4. Efficiency Rates
@@ -87,26 +136,18 @@ fun ShiftScreen(
         ) {
             MetricCard(
                 title = "Rate / km",
-                value = "$2.22",
+                value = rateKmFormatted,
                 unit = "/km",
                 modifier = Modifier.weight(1f)
             )
             MetricCard(
                 title = "Rate / hour",
-                value = "$28.50",
+                value = rateHourFormatted,
                 unit = "/hr",
                 modifier = Modifier.weight(1f)
             )
         }
 
         Spacer(modifier = Modifier.height(CockpitDimens.SpacingLarge))
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF0F172A)
-@Composable
-private fun ShiftScreenPreview() {
-    OnTheRoadTheme(darkTheme = true) {
-        ShiftScreen()
     }
 }

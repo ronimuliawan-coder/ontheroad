@@ -1,5 +1,6 @@
 package com.ontheroad.ui.tracker
 
+import android.content.Context
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -20,14 +20,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ontheroad.core.ui.component.CockpitButton
 import com.ontheroad.core.ui.component.DiscrepancyBadge
 import com.ontheroad.core.ui.component.MetricCard
@@ -36,19 +34,64 @@ import com.ontheroad.core.ui.component.RapidCompleteModal
 import com.ontheroad.core.ui.theme.BrandEmerald
 import com.ontheroad.core.ui.theme.CockpitDimens
 import com.ontheroad.core.ui.theme.OnSurfaceSecondary
-import com.ontheroad.core.ui.theme.OnTheRoadTheme
 import com.ontheroad.core.ui.theme.RedDiscrepancy
+import com.ontheroad.service.LocationTrackingService
+import com.ontheroad.viewmodel.TrackerUiState
+import com.ontheroad.viewmodel.TrackerViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackerScreen(
+    viewModel: TrackerViewModel,
     modifier: Modifier = Modifier
 ) {
-    var isTracking by remember { mutableStateOf(false) }
-    var selectedPlatform by remember { mutableStateOf("grab") }
-    var actualDistanceMeters by remember { mutableDoubleStateOf(0.0) }
-    var showCompleteModal by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
+    TrackerScreenContent(
+        uiState = uiState,
+        onSelectPlatform = viewModel::selectPlatform,
+        onStartTrip = {
+            viewModel.startTrip(
+                startAddress = "Current GPS Location",
+                startLatitude = -6.175392,
+                startLongitude = 106.827153,
+                onSuccess = { trip ->
+                    LocationTrackingService.startTracking(context, trip.id)
+                }
+            )
+        },
+        onOpenCompleteModal = viewModel::openCompleteModal,
+        onDismissCompleteModal = viewModel::dismissCompleteModal,
+        onCompleteTrip = { endAddress, platformFee, cash, quotedDist, notes ->
+            viewModel.completeTrip(
+                endAddress = endAddress,
+                endLatitude = -6.195000,
+                endLongitude = 106.823056,
+                platformFeeAmountCents = platformFee,
+                cashCollectedAmountCents = cash,
+                quotedDistanceMeters = quotedDist,
+                notes = notes,
+                onCompleted = {
+                    LocationTrackingService.stopTracking(context)
+                }
+            )
+        },
+        modifier = modifier
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TrackerScreenContent(
+    uiState: TrackerUiState,
+    onSelectPlatform: (String) -> Unit,
+    onStartTrip: () -> Unit,
+    onOpenCompleteModal: () -> Unit,
+    onDismissCompleteModal: () -> Unit,
+    onCompleteTrip: (String, Long, Long, Double?, String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val platforms = remember {
         listOf(
             Triple("grab", "Grab", "#00B14F"),
@@ -58,6 +101,15 @@ fun TrackerScreen(
             Triple("shopeefood", "ShopeeFood", "#EE4D2D"),
             Triple("direct", "Direct", "#3B82F6")
         )
+    }
+
+    val hours = uiState.durationSeconds / 3600
+    val minutes = (uiState.durationSeconds % 3600) / 60
+    val seconds = uiState.durationSeconds % 60
+    val formattedDuration = if (hours > 0) {
+        String.format("%02d:%02d:%02d", hours, minutes, seconds)
+    } else {
+        String.format("%02d:%02d", minutes, seconds)
     }
 
     Column(
@@ -88,8 +140,8 @@ fun TrackerScreen(
                     PlatformChip(
                         name = name,
                         colorHex = color,
-                        isSelected = selectedPlatform == id,
-                        onClick = { if (!isTracking) selectedPlatform = id }
+                        isSelected = uiState.selectedPlatformId == id,
+                        onClick = { onSelectPlatform(id) }
                     )
                 }
             }
@@ -99,10 +151,10 @@ fun TrackerScreen(
             // Hero Metric: Actual Odometer Distance
             MetricCard(
                 title = "Actual Distance",
-                value = String.format("%.2f", actualDistanceMeters / 1000.0),
+                value = String.format("%.2f", uiState.actualDistanceKm),
                 unit = "km",
-                subtitle = if (isTracking) "GPS Breadcrumbs active" else "Ready to track run",
-                badge = if (isTracking) {
+                subtitle = if (uiState.isTracking) "GPS Breadcrumbs active" else "Ready to track run",
+                badge = if (uiState.isTracking) {
                     { DiscrepancyBadge(differenceMeters = 0.0) }
                 } else null
             )
@@ -116,12 +168,12 @@ fun TrackerScreen(
             ) {
                 MetricCard(
                     title = "Duration",
-                    value = if (isTracking) "00:14:32" else "--:--",
+                    value = if (uiState.isTracking) formattedDuration else "--:--",
                     modifier = Modifier.weight(1f)
                 )
                 MetricCard(
                     title = "Speed",
-                    value = if (isTracking) "38" else "0",
+                    value = if (uiState.isTracking) "${uiState.speedKmh.toInt()}" else "0",
                     unit = "km/h",
                     modifier = Modifier.weight(1f)
                 )
@@ -134,20 +186,17 @@ fun TrackerScreen(
                 .fillMaxWidth()
                 .padding(vertical = CockpitDimens.SpacingLarge)
         ) {
-            if (!isTracking) {
+            if (!uiState.isTracking) {
                 CockpitButton(
                     text = "Start Trip",
-                    onClick = {
-                        isTracking = true
-                        actualDistanceMeters = 3450.0 // Simulated active run distance
-                    },
+                    onClick = onStartTrip,
                     icon = Icons.Default.PlayArrow,
                     containerColor = BrandEmerald
                 )
             } else {
                 CockpitButton(
                     text = "Complete Trip",
-                    onClick = { showCompleteModal = true },
+                    onClick = onOpenCompleteModal,
                     icon = Icons.Default.Check,
                     containerColor = RedDiscrepancy
                 )
@@ -155,24 +204,12 @@ fun TrackerScreen(
         }
     }
 
-    if (showCompleteModal) {
+    if (uiState.showCompleteModal) {
         RapidCompleteModal(
-            actualDistanceMeters = actualDistanceMeters,
-            initialEndAddress = "Bundaran HI, Jakarta",
-            onDismissRequest = { showCompleteModal = false },
-            onCompleteTrip = { _, _, _, _, _ ->
-                showCompleteModal = false
-                isTracking = false
-                actualDistanceMeters = 0.0
-            }
+            actualDistanceMeters = uiState.actualDistanceKm * 1000.0,
+            initialEndAddress = "Current Destination",
+            onDismissRequest = onDismissCompleteModal,
+            onCompleteTrip = onCompleteTrip
         )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF0F172A)
-@Composable
-private fun TrackerScreenPreview() {
-    OnTheRoadTheme(darkTheme = true) {
-        TrackerScreen()
     }
 }
