@@ -99,8 +99,8 @@ IDs are stable. Change an invariant only through an approved governance change; 
 | 6 | Feature core implementation | Phase 5 complete, approved PRP | end-to-end user flows, offline caching, repository integration | completed |
 | 7 | Performance, motion & UX | Phase 6 complete, approved PRP | 60fps/120fps rendering, Compose metrics, haptics, transition polish | completed |
 | 8 | Security, secrets & release signing | Phase 7 complete, approved PRP | signed debug/release APK/AAB via CI secrets, zero secrets in code | completed |
-| 9 | Verification & release candidate | Phase 8 complete, approved PRP | full test suite green, release notes, APK artifact validation | in-progress |
-| 10 | Retirement & living docs | Phase 9 complete, release tagged | all temporary exceptions closed, living docs validated, 0 findings | pending |
+| 9 | Verification & release candidate | Phase 8 complete, approved PRP | full test suite green, release notes, APK artifact validation | completed |
+| 10 | Retirement & living docs | Phase 9 complete, release tagged | all temporary exceptions closed, living docs validated, 0 findings | in-progress |
 
 ---
 

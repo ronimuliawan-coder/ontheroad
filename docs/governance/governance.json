@@ -166,7 +166,7 @@
       "phase": 9,
       "name": "Verification and release candidate",
       "owner": "developer-project-owner",
-      "status": "in-progress",
+      "status": "completed",
       "startRequires": [
         "phase-8-approved",
         "approved-prp"
@@ -182,7 +182,7 @@
       "phase": 10,
       "name": "Retirement and living docs",
       "owner": "developer-project-owner",
-      "status": "pending",
+      "status": "in-progress",
       "startRequires": [
         "phase-9-approved",
         "release-tagged"
@@ -1653,6 +1653,14 @@
       "ownerPhase": 9,
       "authority": "project-owned",
       "reason": "PRP implementation plan for Phase 9 verification and release candidate"
+    },
+    {
+      "path": ".claude/PRPs/plans/10-retirement-and-living-docs.plan.md",
+      "kind": "implementation-plan",
+      "disposition": "active",
+      "ownerPhase": 10,
+      "authority": "project-owned",
+      "reason": "PRP implementation plan for Phase 10 retirement and living docs"
     },
     {
       "path": ".claude/PRPs/prds/ontheroad-trip-tracker.prd.md",
