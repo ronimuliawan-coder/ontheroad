@@ -1606,6 +1606,14 @@
       "reason": "PRP implementation plan for Phase 5 design system and UI shell"
     },
     {
+      "path": ".claude/PRPs/plans/06-feature-core-implementation.plan.md",
+      "kind": "implementation-plan",
+      "disposition": "active",
+      "ownerPhase": 6,
+      "authority": "project-owned",
+      "reason": "PRP implementation plan for Phase 6 feature core implementation"
+    },
+    {
       "path": ".claude/PRPs/prds/ontheroad-trip-tracker.prd.md",
       "kind": "product-requirements-document",
       "disposition": "active",
