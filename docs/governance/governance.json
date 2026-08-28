@@ -106,7 +106,7 @@
       "phase": 5,
       "name": "Design system and UI shell",
       "owner": "developer-project-owner",
-      "status": "in-progress",
+      "status": "completed",
       "startRequires": [
         "phase-4-approved",
         "approved-prp"
@@ -121,7 +121,7 @@
       "phase": 6,
       "name": "Feature core implementation",
       "owner": "developer-project-owner",
-      "status": "pending",
+      "status": "in-progress",
       "startRequires": [
         "phase-5-approved",
         "approved-prp"
