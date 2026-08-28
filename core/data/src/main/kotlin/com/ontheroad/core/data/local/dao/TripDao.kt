@@ -27,6 +27,15 @@ interface TripDao {
     @Query("SELECT * FROM trips ORDER BY startTimeMillis DESC")
     fun getAllTrips(): Flow<List<TripEntity>>
 
+    @Query("""
+        SELECT * FROM trips 
+        WHERE status = 'COMPLETED' 
+        ORDER BY CASE WHEN actualDistanceMeters > 0 
+            THEN ((platformFeeAmountCents + cashCollectedAmountCents + tipAmountCents) * 1.0) / actualDistanceMeters 
+            ELSE 0.0 END DESC
+    """)
+    fun getAllTripsSortedByProfitability(): Flow<List<TripEntity>>
+
     @Query("SELECT * FROM trips WHERE shiftId = :shiftId ORDER BY startTimeMillis ASC")
     fun getTripsByShiftId(shiftId: String): Flow<List<TripEntity>>
 
