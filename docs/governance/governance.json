@@ -1598,6 +1598,14 @@
       "reason": "PRP implementation plan for Phase 4 core domain and data models"
     },
     {
+      "path": ".claude/PRPs/plans/05-design-system-and-ui-shell.plan.md",
+      "kind": "implementation-plan",
+      "disposition": "active",
+      "ownerPhase": 5,
+      "authority": "project-owned",
+      "reason": "PRP implementation plan for Phase 5 design system and UI shell"
+    },
+    {
       "path": ".claude/PRPs/prds/ontheroad-trip-tracker.prd.md",
       "kind": "product-requirements-document",
       "disposition": "active",
