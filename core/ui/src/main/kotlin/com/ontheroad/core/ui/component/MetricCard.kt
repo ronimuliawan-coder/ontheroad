@@ -25,6 +25,9 @@ import com.ontheroad.core.ui.theme.CockpitDimens
 import com.ontheroad.core.ui.theme.OnSurfaceSecondary
 import com.ontheroad.core.ui.theme.OnSurfaceWhite
 
+import androidx.compose.animation.AnimatedContent
+import com.ontheroad.core.ui.animation.CockpitMotion
+
 @Composable
 fun MetricCard(
     title: String,
@@ -73,12 +76,18 @@ fun MetricCard(
             Row(
                 verticalAlignment = Alignment.Bottom
             ) {
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = valueColor,
-                    fontWeight = FontWeight.ExtraBold
-                )
+                AnimatedContent(
+                    targetState = value,
+                    transitionSpec = { CockpitMotion.NumericCounterRoll },
+                    label = "metric_counter_roll"
+                ) { targetValue ->
+                    Text(
+                        text = targetValue,
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = valueColor,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                }
                 if (unit != null) {
                     Text(
                         text = " $unit",

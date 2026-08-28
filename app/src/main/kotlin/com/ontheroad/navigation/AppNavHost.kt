@@ -17,6 +17,8 @@ import com.ontheroad.viewmodel.ShiftViewModel
 import com.ontheroad.viewmodel.TrackerViewModel
 import com.ontheroad.viewmodel.ViewModelFactory
 
+import com.ontheroad.core.ui.animation.CockpitMotion
+
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -29,6 +31,10 @@ fun AppNavHost(
     NavHost(
         navController = navController,
         startDestination = Screen.Tracker.route,
+        enterTransition = { CockpitMotion.ScreenSlideInRight },
+        exitTransition = { CockpitMotion.ScreenSlideOutLeft },
+        popEnterTransition = { CockpitMotion.ScreenSlideInLeft },
+        popExitTransition = { CockpitMotion.ScreenSlideOutRight },
         modifier = modifier
     ) {
         composable(Screen.Tracker.route) {

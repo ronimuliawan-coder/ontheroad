@@ -27,12 +27,16 @@ import com.ontheroad.core.ui.theme.GreenProfitContainer
 import com.ontheroad.core.ui.theme.RedDiscrepancy
 import com.ontheroad.core.ui.theme.RedDiscrepancyContainer
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.runtime.getValue
+import com.ontheroad.core.ui.animation.CockpitMotion
+
 @Composable
 fun DiscrepancyBadge(
     differenceMeters: Double,
     modifier: Modifier = Modifier
 ) {
-    val (backgroundColor, textColor, label) = when {
+    val (targetBgColor, targetTextColor, label) = when {
         differenceMeters > 500.0 -> {
             val km = String.format("%.1f", differenceMeters / 1000.0)
             Triple(RedDiscrepancyContainer, RedDiscrepancy, "+$km km uncompensated")
@@ -50,10 +54,22 @@ fun DiscrepancyBadge(
         }
     }
 
+    val animatedBgColor by animateColorAsState(
+        targetValue = targetBgColor,
+        animationSpec = CockpitMotion.springSmooth(),
+        label = "badge_bg_color"
+    )
+
+    val animatedTextColor by animateColorAsState(
+        targetValue = targetTextColor,
+        animationSpec = CockpitMotion.springSmooth(),
+        label = "badge_text_color"
+    )
+
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(CockpitDimens.PillCornerRadius))
-            .background(backgroundColor)
+            .background(animatedBgColor)
             .padding(horizontal = 10.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -61,12 +77,12 @@ fun DiscrepancyBadge(
             modifier = Modifier
                 .size(8.dp)
                 .clip(CircleShape)
-                .background(textColor)
+                .background(animatedTextColor)
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = label,
-            color = textColor,
+            color = animatedTextColor,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold
         )

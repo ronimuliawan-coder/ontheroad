@@ -23,12 +23,32 @@ import com.ontheroad.core.ui.theme.OnTheRoadTheme
 import com.ontheroad.navigation.AppNavHost
 import com.ontheroad.navigation.Screen
 
+import android.os.Build
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupHighRefreshRateDisplay()
         setContent {
             OnTheRoadTheme {
                 OnTheRoadAppShell()
+            }
+        }
+    }
+
+    /**
+     * Queries display capabilities and requests the maximum supported refresh rate (e.g. 120Hz or 90Hz)
+     * on supported Android 11+ (API 30+) devices for fluid cockpit rendering.
+     */
+    private fun setupHighRefreshRateDisplay() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val display = display
+            val supportedModes = display?.supportedModes
+            val maxMode = supportedModes?.maxByOrNull { it.refreshRate }
+            if (maxMode != null && maxMode.refreshRate > 60f) {
+                val params = window.attributes
+                params.preferredDisplayModeId = maxMode.modeId
+                window.attributes = params
             }
         }
     }
