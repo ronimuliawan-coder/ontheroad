@@ -1590,6 +1590,14 @@
       "reason": "PRP implementation plan for Phase 3 toolchain and scaffold"
     },
     {
+      "path": ".claude/PRPs/plans/04-core-domain-and-data.plan.md",
+      "kind": "implementation-plan",
+      "disposition": "active",
+      "ownerPhase": 4,
+      "authority": "project-owned",
+      "reason": "PRP implementation plan for Phase 4 core domain and data models"
+    },
+    {
       "path": ".claude/PRPs/prds/ontheroad-trip-tracker.prd.md",
       "kind": "product-requirements-document",
       "disposition": "active",
