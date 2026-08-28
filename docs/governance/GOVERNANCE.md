@@ -93,8 +93,8 @@ IDs are stable. Change an invariant only through an approved governance change; 
 |---:|---|---|---|---|
 | 1 | Governance and safety foundation | approved plan, user approval | verifier passing, baseline frozen, dev/main sync, explicit confirmation | completed |
 | 2 | Product discovery and PRD | Phase 1 complete, approved PRP | approved PRD in `.claude/PRPs/prds/`, explicit confirmation | completed |
-| 3 | Toolchain & architecture scaffold | Phase 2 complete, approved PRP | clean Gradle build, libs.versions.toml, architecture modules, CI passing | in-progress |
-| 4 | Core domain & data models | Phase 3 complete, approved PRP | pure Kotlin domain models, repository interfaces, JVM unit tests | pending |
+| 3 | Toolchain & architecture scaffold | Phase 2 complete, approved PRP | clean Gradle build, libs.versions.toml, architecture modules, CI passing | completed |
+| 4 | Core domain & data models | Phase 3 complete, approved PRP | pure Kotlin domain models, repository interfaces, JVM unit tests | in-progress |
 | 5 | Design system & UI shell | Phase 4 complete, approved PRP | Material 3 tokens, Compose navigation shell, preview tests | pending |
 | 6 | Feature core implementation | Phase 5 complete, approved PRP | end-to-end user flows, offline caching, repository integration | pending |
 | 7 | Performance, motion & UX | Phase 6 complete, approved PRP | 60fps rendering, Compose metrics, haptics, transition polish | pending |

@@ -75,7 +75,7 @@
       "phase": 3,
       "name": "Android toolchain and architecture scaffold",
       "owner": "developer-project-owner",
-      "status": "in-progress",
+      "status": "completed",
       "startRequires": [
         "phase-2-approved",
         "approved-prp"
@@ -91,7 +91,7 @@
       "phase": 4,
       "name": "Core domain and data models",
       "owner": "developer-project-owner",
-      "status": "pending",
+      "status": "in-progress",
       "startRequires": [
         "phase-3-approved",
         "approved-prp"
