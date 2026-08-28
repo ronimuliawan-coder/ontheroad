@@ -283,22 +283,6 @@
   "environmentEnforced": true,
   "environment": [
     {
-      "name": "ANDROID_KEYSTORE_BASE64",
-      "visibility": "ci",
-      "environments": [
-        "ci",
-        "release"
-      ],
-      "status": "planned",
-      "consumers": [
-        "github-actions-android-build"
-      ],
-      "owner": "developer-project-owner",
-      "required": "conditional",
-      "rotationTrigger": "compromise-or-yearly",
-      "retirementPhase": null
-    },
-    {
       "name": "API_BASE_URL",
       "visibility": "public",
       "environments": [
@@ -313,6 +297,39 @@
       "owner": "developer-project-owner",
       "required": "optional",
       "rotationTrigger": "backend-domain-change",
+      "retirementPhase": null
+    },
+    {
+      "name": "KEYSTORE_BASE64",
+      "visibility": "ci",
+      "environments": [
+        "ci",
+        "release"
+      ],
+      "status": "planned",
+      "consumers": [
+        "github-actions-android-release"
+      ],
+      "owner": "developer-project-owner",
+      "required": "conditional",
+      "rotationTrigger": "compromise-or-yearly",
+      "retirementPhase": null
+    },
+    {
+      "name": "KEYSTORE_FILE",
+      "visibility": "ci",
+      "environments": [
+        "ci",
+        "local",
+        "release"
+      ],
+      "status": "planned",
+      "consumers": [
+        "android-gradle-build"
+      ],
+      "owner": "developer-project-owner",
+      "required": "conditional",
+      "rotationTrigger": "compromise-or-yearly",
       "retirementPhase": null
     },
     {
