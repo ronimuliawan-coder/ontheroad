@@ -17,6 +17,7 @@ object CockpitDimens {
     val CardCornerRadius: Dp = 16.dp
     val PillCornerRadius: Dp = 24.dp
     val BadgeCornerRadius: Dp = 8.dp
+    val ChipCornerRadius: Dp = 12.dp
 
     // Spacing Grid
     val SpacingXSmall: Dp = 4.dp

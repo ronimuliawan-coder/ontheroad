@@ -1,10 +1,12 @@
 package com.ontheroad.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ontheroad.OnTheRoadApplication
 import com.ontheroad.core.data.repository.ShiftRepositoryImpl
 import com.ontheroad.core.data.repository.TripRepositoryImpl
+import com.ontheroad.core.data.repository.UserPreferencesRepositoryImpl
 import com.ontheroad.core.domain.usecase.CompleteTripUseCase
 import com.ontheroad.core.domain.usecase.GetShiftSummaryUseCase
 import com.ontheroad.core.domain.usecase.GetTripHistoryUseCase
@@ -19,6 +21,11 @@ class ViewModelFactory(
         val database = application.database
         val tripRepository = TripRepositoryImpl(database.tripDao())
         val shiftRepository = ShiftRepositoryImpl(database.shiftDao())
+        val sharedPreferences = application.getSharedPreferences(
+            UserPreferencesRepositoryImpl.PREFS_NAME,
+            Context.MODE_PRIVATE
+        )
+        val userPreferencesRepository = UserPreferencesRepositoryImpl(sharedPreferences)
 
         return when {
             modelClass.isAssignableFrom(TrackerViewModel::class.java) -> {
@@ -33,6 +40,9 @@ class ViewModelFactory(
             modelClass.isAssignableFrom(HistoryViewModel::class.java) -> {
                 val getTripHistoryUseCase = GetTripHistoryUseCase(tripRepository)
                 HistoryViewModel(getTripHistoryUseCase, tripRepository) as T
+            }
+            modelClass.isAssignableFrom(SettingsViewModel::class.java) -> {
+                SettingsViewModel(userPreferencesRepository) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }

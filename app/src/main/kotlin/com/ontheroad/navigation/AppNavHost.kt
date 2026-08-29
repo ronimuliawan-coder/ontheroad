@@ -8,16 +8,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ontheroad.OnTheRoadApplication
+import com.ontheroad.core.ui.animation.CockpitMotion
 import com.ontheroad.ui.history.HistoryScreen
 import com.ontheroad.ui.settings.SettingsScreen
 import com.ontheroad.ui.shift.ShiftScreen
 import com.ontheroad.ui.tracker.TrackerScreen
 import com.ontheroad.viewmodel.HistoryViewModel
+import com.ontheroad.viewmodel.SettingsViewModel
 import com.ontheroad.viewmodel.ShiftViewModel
 import com.ontheroad.viewmodel.TrackerViewModel
 import com.ontheroad.viewmodel.ViewModelFactory
-
-import com.ontheroad.core.ui.animation.CockpitMotion
 
 @Composable
 fun AppNavHost(
@@ -50,7 +50,8 @@ fun AppNavHost(
             HistoryScreen(viewModel = historyViewModel)
         }
         composable(Screen.Settings.route) {
-            SettingsScreen()
+            val settingsViewModel: SettingsViewModel = viewModel(factory = factory)
+            SettingsScreen(viewModel = settingsViewModel)
         }
     }
 }

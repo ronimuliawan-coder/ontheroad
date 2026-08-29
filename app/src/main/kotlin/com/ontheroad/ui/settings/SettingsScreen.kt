@@ -1,6 +1,10 @@
 package com.ontheroad.ui.settings
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,18 +20,41 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.ontheroad.core.model.ThemeMode
 import com.ontheroad.core.ui.theme.CockpitDimens
 import com.ontheroad.core.ui.theme.GreenProfit
 import com.ontheroad.core.ui.theme.OnSurfaceSecondary
 import com.ontheroad.core.ui.theme.OnTheRoadTheme
+import com.ontheroad.viewmodel.SettingsViewModel
 
 @Composable
 fun SettingsScreen(
+    viewModel: SettingsViewModel,
+    modifier: Modifier = Modifier
+) {
+    val themeMode by viewModel.themeMode.collectAsState()
+
+    SettingsScreenContent(
+        themeMode = themeMode,
+        onThemeModeSelected = { viewModel.setThemeMode(it) },
+        modifier = modifier
+    )
+}
+
+@Composable
+fun SettingsScreenContent(
+    themeMode: ThemeMode,
+    onThemeModeSelected: (ThemeMode) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -37,6 +64,20 @@ fun SettingsScreen(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(CockpitDimens.SpacingMedium)
     ) {
+        Spacer(modifier = Modifier.height(CockpitDimens.SpacingSmall))
+
+        Text(
+            text = "COCKPIT & DISPLAY",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Bold
+        )
+
+        ThemeSelectionCard(
+            selectedMode = themeMode,
+            onModeSelected = onThemeModeSelected
+        )
+
         Spacer(modifier = Modifier.height(CockpitDimens.SpacingSmall))
 
         Text(
@@ -66,8 +107,98 @@ fun SettingsScreen(
 
         SettingItemCard(
             title = "Version",
-            value = "OnTheRoad 0.1.0-alpha",
-            description = "Open source driver tool built for gig workers"
+            value = "OnTheRoad 0.1.0",
+            description = "Open source cockpit tool built for gig workers"
+        )
+    }
+}
+
+@Composable
+private fun ThemeSelectionCard(
+    selectedMode: ThemeMode,
+    onModeSelected: (ThemeMode) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(CockpitDimens.CardCornerRadius),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(CockpitDimens.SpacingMedium)
+        ) {
+            Text(
+                text = "App Theme",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Choose Cockpit OLED Dark for night driving or Light for direct sunlight",
+                style = MaterialTheme.typography.bodySmall,
+                color = OnSurfaceSecondary
+            )
+            Spacer(modifier = Modifier.height(CockpitDimens.SpacingMedium))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ThemeOptionChip(
+                    label = "System",
+                    isSelected = selectedMode == ThemeMode.SYSTEM,
+                    onClick = { onModeSelected(ThemeMode.SYSTEM) },
+                    modifier = Modifier.weight(1f)
+                )
+                ThemeOptionChip(
+                    label = "Dark OLED",
+                    isSelected = selectedMode == ThemeMode.DARK,
+                    onClick = { onModeSelected(ThemeMode.DARK) },
+                    modifier = Modifier.weight(1f)
+                )
+                ThemeOptionChip(
+                    label = "Light",
+                    isSelected = selectedMode == ThemeMode.LIGHT,
+                    onClick = { onModeSelected(ThemeMode.LIGHT) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ThemeOptionChip(
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+        label = "themeChipBg"
+    )
+    val textColor by animateColorAsState(
+        targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+        label = "themeChipText"
+    )
+
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(CockpitDimens.ChipCornerRadius))
+            .background(backgroundColor)
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = label,
+            color = textColor,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+            fontSize = 13.sp
         )
     }
 }
@@ -120,7 +251,10 @@ private fun SettingItemCard(
 @Preview(showBackground = true, backgroundColor = 0xFF0F172A)
 @Composable
 private fun SettingsScreenPreview() {
-    OnTheRoadTheme(darkTheme = true) {
-        SettingsScreen()
+    OnTheRoadTheme(themeMode = ThemeMode.DARK) {
+        SettingsScreenContent(
+            themeMode = ThemeMode.DARK,
+            onThemeModeSelected = {}
+        )
     }
 }

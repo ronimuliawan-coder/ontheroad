@@ -1,5 +1,6 @@
 package com.ontheroad
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,24 +14,33 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ontheroad.core.ui.theme.OnTheRoadTheme
 import com.ontheroad.navigation.AppNavHost
 import com.ontheroad.navigation.Screen
-
-import android.os.Build
+import com.ontheroad.viewmodel.SettingsViewModel
+import com.ontheroad.viewmodel.ViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupHighRefreshRateDisplay()
         setContent {
-            OnTheRoadTheme {
+            val context = LocalContext.current
+            val app = context.applicationContext as OnTheRoadApplication
+            val factory = ViewModelFactory(app)
+            val settingsViewModel: SettingsViewModel = viewModel(factory = factory)
+            val themeMode by settingsViewModel.themeMode.collectAsState()
+
+            OnTheRoadTheme(themeMode = themeMode) {
                 OnTheRoadAppShell()
             }
         }
@@ -60,13 +70,21 @@ fun OnTheRoadAppShell() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    val navigationItems = listOf(
+        Screen.Tracker,
+        Screen.Shift,
+        Screen.History,
+        Screen.Settings
+    )
+
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                Screen.bottomNavItems.forEach { screen ->
-                    val selected = currentRoute == screen.route
+            NavigationBar(
+                containerColor = MaterialTheme.colorScheme.surface
+            ) {
+                navigationItems.forEach { screen ->
                     NavigationBarItem(
-                        selected = selected,
+                        selected = currentRoute == screen.route,
                         onClick = {
                             if (currentRoute != screen.route) {
                                 navController.navigate(screen.route) {
@@ -78,8 +96,15 @@ fun OnTheRoadAppShell() {
                                 }
                             }
                         },
-                        icon = { Icon(screen.icon, contentDescription = null) },
-                        label = { Text(stringResource(screen.titleRes)) }
+                        icon = {
+                            Icon(
+                                imageVector = screen.icon,
+                                contentDescription = stringResource(screen.titleRes)
+                            )
+                        },
+                        label = {
+                            Text(text = stringResource(screen.titleRes))
+                        }
                     )
                 }
             }
@@ -91,9 +116,7 @@ fun OnTheRoadAppShell() {
                 .padding(innerPadding),
             color = MaterialTheme.colorScheme.background
         ) {
-            AppNavHost(
-                navController = navController
-            )
+            AppNavHost(navController = navController)
         }
     }
 }
