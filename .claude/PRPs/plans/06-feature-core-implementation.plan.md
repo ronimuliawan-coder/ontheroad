@@ -2,7 +2,7 @@
 
 > **PRP Plan**: `.claude/PRPs/plans/06-feature-core-implementation.plan.md`  
 > **Lifecycle Phase**: Phase 6 (Feature core implementation)  
-> **Status**: Approved Plan / Ready for Execution  
+> **Status**: Historical evidence / Executed
 > **Target Platform**: Android (Kotlin + Jetpack Compose + FusedLocation + Room)  
 > **Parent PRD**: [`.claude/PRPs/prds/ontheroad-trip-tracker.prd.md`](../prds/ontheroad-trip-tracker.prd.md)  
 

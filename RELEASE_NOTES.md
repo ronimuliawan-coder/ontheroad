@@ -5,6 +5,11 @@
 **License**: Apache-2.0 / Open Source  
 **Target Platform**: Android 8.0+ (API 26 to API 35)  
 
+> Historical release record: this file is bound to the `v0.1.0` tag. Its artifact
+> identities and test count describe that tagged release and are intentionally not
+> replaced by post-release working-tree builds. Current post-release measurements are
+> maintained in [`README.md`](README.md) and [`docs/governance/STATUS.md`](docs/governance/STATUS.md).
+
 ---
 
 ## 🚦 Welcome to OnTheRoad

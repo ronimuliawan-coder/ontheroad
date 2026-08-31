@@ -2,7 +2,7 @@
 
 > **PRP Plan**: `.claude/PRPs/plans/05-design-system-and-ui-shell.plan.md`  
 > **Lifecycle Phase**: Phase 5 (Design system and UI shell)  
-> **Status**: Approved Plan / Ready for Execution  
+> **Status**: Historical evidence / Executed
 > **Target Platform**: Android (Kotlin + Jetpack Compose Material 3)  
 > **Parent PRD**: [`.claude/PRPs/prds/ontheroad-trip-tracker.prd.md`](../prds/ontheroad-trip-tracker.prd.md)  
 
