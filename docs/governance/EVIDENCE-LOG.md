@@ -217,6 +217,15 @@ never contain credentials, tokens, or private payloads.
 - Rollback/recovery impact: Revoke the named GitHub secrets and matching GitLab credentials, then remove only exact synthetic review refs if any are created. GitHub authority and product state remain unchanged.
 - Next gate: Local atomic commit complete; separate user approval is required before pushing the branch or opening the GitHub PR.
 
+### 2026-08-31 — GitLab review replica delivery PR opened
+
+- External action approval: User approved pushing the implementation branch and opening the GitHub PR after the local atomic commit.
+- GitHub branch: `codex/gitlab-review-replica` pushed at `7354a9a8e52b0b0644a7649e2d75c45be3fb6a0d`.
+- GitHub PR: [#5](https://github.com/ronimuliawan/ontheroad/pull/5), base `dev`, state open.
+- Automated state at recording time: Governance and JVM checks pending; CodeRabbit reports pass because reviews are disabled for the `dev` base branch.
+- GitLab acceptance state: The project remains empty until PR #5 is merged and the trusted default-branch workflow seeds canonical refs; no GitLab refs were manually pushed.
+- Next gate: Complete PR review and merge through GitHub only; then run the disposable same-repository GitHub-to-GitLab parity and close-cleanup proof.
+
 ## Accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |
