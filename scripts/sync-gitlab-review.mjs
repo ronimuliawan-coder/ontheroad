@@ -24,7 +24,8 @@ const ACTIVE_PULL_REQUEST_ACTIONS = new Set([
     "converted_to_draft",
 ]);
 const SHA_PATTERN = /^[0-9a-f]{40}$/i;
-const REPOSITORY_PATTERN = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
+const REPOSITORY_SEGMENT = "(?!(?:\\.{1,2})(?:/|$))[A-Za-z0-9_.-]+";
+const REPOSITORY_PATTERN = new RegExp(`^${REPOSITORY_SEGMENT}/${REPOSITORY_SEGMENT}$`);
 const GITLAB_SSH_PATTERN = /^git@gitlab\.com:[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\.git$/;
 const GITLAB_API_URL = "https://gitlab.com/api/v4";
 const GITLAB_PROJECT = "ronimuliawan/ontheroad";

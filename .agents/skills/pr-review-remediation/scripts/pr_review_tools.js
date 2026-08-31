@@ -207,7 +207,9 @@ function checkSuitesStatus(commitSha) {
   ];
   return {
     repo: `${REPO_OWNER}/${REPO_NAME}`,
-    allCompleted: completed.length > 0 && pending.length === 0,
+    // An empty monitored set is settled: there is no reviewer or CI work left
+    // to await, and treating it as pending would make the settle loop endless.
+    allCompleted: pending.length === 0,
     total: completed.length + pending.length,
     pending,
     completed
@@ -377,7 +379,7 @@ function fetchPRReviewData(prNumber) {
     ]);
     issueComments = flattenPaginatedResults(data);
   } catch (err) {
-    console.warn(`[WARN] Failed to fetch issue comments for PR #${prNumber} (transient GitHub API error):`, err?.message);
+    throw new Error(`Failed to fetch issue comments for PR #${prNumber}`, { cause: err });
   }
 
   const allThreads = allReviewThreads.map((t, idx) => {
