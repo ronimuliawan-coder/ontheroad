@@ -189,6 +189,43 @@ never contain credentials, tokens, or private payloads.
 - Rollback/recovery impact: Revert the single cycle-2 remediation commit to restore the PR #2 source tree; application data, runtime behavior, and release tags remain unaffected.
 - Next gate: Final diff review and one local atomic commit, then request separate approval before push, attributed replies, or any other external write.
 
+### 2026-08-31 — GitLab review replica implementation start
+
+- Actor: \`developer-project-owner\` approval / agent implementation
+- Exact baseline revision: \`a415af5c36acce53cd86853a2081baa8bbef3e8f\` (\`origin/dev\`)
+- Isolated worktree: \`/tmp/ontheroad-gitlab-review\`, branch \`codex/gitlab-review-replica\`
+- Objective: Add a GitHub-owned, GitLab review-only projection so CodeRabbit can review GitLab MRs when GitHub review capacity is rate-limited.
+- Authority: GitHub remains the sole write and merge authority; GitLab receives only projected refs and advisory MRs.
+- Approved scope: User approved Option 2 and the Wandernest-derived implementation on 2026-08-31, including scoped credential setup.
+- External baseline: Public GitLab project \`ronimuliawan/ontheroad\` exists; the earlier pull-mirror attempt is inactive and the project remains empty.
+- Credential contract: Dedicated GitLab deploy key with 180-day expiry, verified GitLab host keys, and a separate project API credential with 90-day expiry. Only credential names, metadata, fingerprints, and status may be recorded.
+- Acceptance evidence: Repository governance and focused sync-helper tests pass; GitHub workflow reaches only \`dev\`, \`main\`, approved tags, and deterministic same-repository PR review refs; GitLab protected refs cannot be merged by humans or review providers; disposable PR/MR parity and close cleanup are proven before launch.
+- Security/privacy note: Secret values are not recorded, printed, committed, embedded in URLs, or placed in tracker text.
+- Rollback/recovery impact: Revert the repository projection files; disable the workflow; revoke the three GitHub secrets and matching GitLab credentials; remove only exact synthetic review refs. GitHub branches, tags, product data, and release state are unchanged.
+- Next gate: Focused local validation, then secure GitLab/GitHub credential and branch-protection setup.
+
+### 2026-08-31 — GitLab review replica security setup complete
+
+- External project: Public GitLab project `ronimuliawan/ontheroad`, project ID `85928609`; it remains empty until the trusted GitHub workflow is delivered.
+- Deploy key: Project key ID `21497072`, title `ontheroad-github-review-replica`, push enabled, fingerprint `SHA256:WS4Fq2DbIpHKIc3t5frI7pFAP5FYrZ46Wdhl5pZiphM`, expiry `2027-02-27`.
+- API credential: Project token ID `27056976`, name `ontheroad-review-ref-cleanup`, active, Maintainer access level, `api` scope, expiry `2026-11-29`.
+- GitHub secret names configured: `GITLAB_REPLICA_SSH_KEY`, `GITLAB_REPLICA_KNOWN_HOSTS`, and `GITLAB_REPLICA_API_TOKEN`. Secret values were never recorded or exposed.
+- Host verification: GitLab.com ED25519 host key was checked against the published fingerprint; SSH authentication with the dedicated deploy key succeeded.
+- Protected refs: GitLab `*`, `dev`, and `main` are protected; force push is disabled; merge access is disabled; only the dedicated deploy key may push.
+- Security boundary: No GitLab product ref was manually pushed; no GitLab merge or write authority was granted to humans or review providers.
+- Acceptance status: Credential and protection setup pass; repository workflow delivery and disposable GitHub-to-GitLab parity proof remain pending because the implementation branch has not been pushed.
+- Rollback/recovery impact: Revoke the named GitHub secrets and matching GitLab credentials, then remove only exact synthetic review refs if any are created. GitHub authority and product state remain unchanged.
+- Next gate: Local atomic commit complete; separate user approval is required before pushing the branch or opening the GitHub PR.
+
+### 2026-08-31 — GitLab review replica delivery PR opened
+
+- External action approval: User approved pushing the implementation branch and opening the GitHub PR after the local atomic commit.
+- GitHub branch: `codex/gitlab-review-replica` pushed at `7354a9a8e52b0b0644a7649e2d75c45be3fb6a0d`.
+- GitHub PR: [#5](https://github.com/ronimuliawan/ontheroad/pull/5), base `dev`, state open.
+- Automated state at recording time: Governance and JVM checks pending; CodeRabbit reports pass because reviews are disabled for the `dev` base branch.
+- GitLab acceptance state: The project remains empty until PR #5 is merged and the trusted default-branch workflow seeds canonical refs; no GitLab refs were manually pushed.
+- Next gate: Complete PR review and merge through GitHub only; then run the disposable same-repository GitHub-to-GitLab parity and close-cleanup proof.
+
 ## Accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |
