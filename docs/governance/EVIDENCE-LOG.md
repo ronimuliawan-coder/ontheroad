@@ -10,7 +10,7 @@ never contain credentials, tokens, or private payloads.
 - Objective: Raise OnTheRoad's governance, evidence, and delivery assurance while preserving verified product behavior, data, interfaces, and operational invariants.
 - Task mode: `EXISTING_UPLIFT`
 - Local workspace: `/home/ron/Projects/ontheroad`
-- Canonical repository: `https://github.com/rons-space/ontheroad.git`; project governance declares GitHub as the write and merge authority.
+- Canonical repository: `https://github.com/ronimuliawan/ontheroad.git`; project governance declares GitHub as the write and merge authority.
 - Tracker: Local fallback; Linear workspace search found no `OnTheRoad` project or issue.
 - Approval owner: `developer-project-owner` (user approval in this task)
 - Risk profile: `STANDARD` for documentation, governance, build-contract, and release-contract changes; no production or data changes authorized.
@@ -131,7 +131,7 @@ never contain credentials, tokens, or private payloads.
 - Method: `./gradlew test assembleRelease bundleRelease assembleDebug --no-daemon`; `sha256sum` and `stat` over the three APK/AAB outputs; `jq empty docs/governance/governance.json`; `bun run governance:check`; `bun test`; artifact identity assertions; `git diff --check`; scoped credential-pattern scan; review of the tracked diff and registered inventory.
 - Measurements: Current working-tree artifacts are `app-release.apk` 2,239,791 bytes with SHA-256 `1072752b0f6104a643311149f31caec909bac0b40a585c3f49bab662561f2426`, `app-release.aab` 4,051,181 bytes with SHA-256 `93a3454c29ff2aac9fd1477611026d6315477fd02567d037a953f64e57ff38f6`, and `app-debug.apk` 17,743,073 bytes with SHA-256 `4c178ab4e796b22a45883f6835e2dcf51533b7701efbb5ed1ffe229361f9f6c2`.
 - Result: `PASS` / `COMPLETE`.
-- Durable evidence: Governance reports `governance: pass`; Bun reports 4 pass / 0 fail; artifact documentation identity assertions pass; Gradle runs all JVM tests, lint, release APK/AAB, and debug APK tasks successfully; whitespace and scoped credential scans are clean. README badges now use the canonical `rons-space/ontheroad` repository. `RELEASE_NOTES.md` retains its v0.1.0 artifact identities and is explicitly historical rather than conflating them with post-release builds.
+- Durable evidence: Governance reports `governance: pass`; Bun reports 4 pass / 0 fail; artifact documentation identity assertions pass; Gradle runs all JVM tests, lint, release APK/AAB, and debug APK tasks successfully; whitespace and scoped credential scans are clean. The Unit 3 snapshot recorded the then-declared `rons-space/ontheroad` badge target; cycle-2 remediation reconciles the active badges and canonical repository metadata to `ronimuliawan/ontheroad`. `RELEASE_NOTES.md` retains its v0.1.0 artifact identities and is explicitly historical rather than conflating them with post-release builds.
 - Deviation/retry: No validation retry was required. The debug artifact was rebuilt before measurement to avoid documenting a stale generated output.
 - Security/privacy note: No secret values, tokens, or credential-bearing URLs were read or recorded; no release tag, deployment, or external state changed.
 - Rollback/recovery impact: Revert the Unit 3 documentation and manifest disposition changes to restore the prior document classifications and current-doc values; generated artifacts are ignored and application data/runtime behavior are unaffected.
@@ -174,6 +174,20 @@ never contain credentials, tokens, or private payloads.
 - Security/privacy note: No secret values were read or recorded; no review thread was resolved; no external reply or push was performed.
 - Rollback/recovery impact: Revert the single remediation commit to restore the PR #2 source state; application data, runtime behavior, and release tags remain unaffected.
 - Next gate: Create one local atomic commit, then request separate approval before push, attributed replies, or any other external write.
+
+### 2026-08-31T17:40:26+07:00 — PR #2 review remediation cycle 2 validation
+
+- Actor: Agent
+- Exact base revision: PR #2 source revision `595489b69040fc20cf3dd807397d9e8c61a90a09`; cycle-2 fixes were validated in an isolated worktree based on this immutable revision.
+- Environment/profile: Bun `1.4.0`; JDK 21; Android SDK `/home/ron/Android/Sdk`; Gradle `8.11.1`.
+- Claim evaluated: The six new CodeRabbit findings and the related review-workflow check-state discrepancy are addressed without changing product behavior, persisted data, or release signing secrets.
+- Method: Verify all six new CodeRabbit findings against the current PR head; run `node --check .agents/skills/pr-review-remediation/scripts/pr_review_tools.js`, `bun run governance:check`, `bun test`, `git diff --check`, the helper's suite check, live PR extraction, and `./gradlew testDebugUnitTest lintDebug --no-daemon`.
+- Result: `PASS` pending single-commit and external-delivery approval.
+- Durable evidence: Governance reports `governance: pass`; Bun reports 4 pass / 0 fail; Android JVM tests and lint pass; helper syntax, live extraction, and suite checks pass; the live PR has 4 completed checks (3 GitHub Actions and CodeRabbit), 18 total review threads, and 6 unresolved actionable findings before this cycle's fix is delivered.
+- Deviation/retry: The initial suite hardening used the repository's `coderabbitai` app name but the live status context is `CodeRabbit`; the alias was added and the helper then reported all 4 active checks as completed. Zero-run stale integration placeholders remain excluded from the active suite result.
+- Security/privacy note: No secret values were read or recorded; no review thread was resolved; no external reply or push was performed in this cycle.
+- Rollback/recovery impact: Revert the single cycle-2 remediation commit to restore the PR #2 source tree; application data, runtime behavior, and release tags remain unaffected.
+- Next gate: Final diff review and one local atomic commit, then request separate approval before push, attributed replies, or any other external write.
 
 ## Accepted exceptions
 

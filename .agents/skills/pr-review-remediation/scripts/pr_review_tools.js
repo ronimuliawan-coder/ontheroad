@@ -17,6 +17,7 @@ const ATTRIBUTION_SIGN_OFF = '\n\n- AG-Ron';
 
 const RELEVANT_APPS = [
   'coderabbitai',
+  'CodeRabbit',
   'MacroscopeApp',
   'Greptile Apps',
   'GitHub Actions',
@@ -158,7 +159,7 @@ function runGraphql(query, variables) {
   const args = ['api', 'graphql', '-f', `query=${query.replace(/\s+/g, ' ').trim()}`];
   for (const [name, value] of Object.entries(variables)) {
     if (value === null || value === undefined) continue;
-    args.push(typeof value === 'number' ? '-F' : '-f', `${name}=${value}`);
+    args.push(typeof value === 'string' ? '-f' : '-F', `${name}=${value}`);
   }
   const response = runGhJson(args);
   if (response.errors?.length) {
@@ -177,24 +178,46 @@ function checkSuitesStatus(commitSha) {
     '--paginate',
     '--slurp'
   ]);
-  const suites = flattenPaginatedResults(data, 'check_suites');
+  const suites = flattenPaginatedResults(data, 'check_suites')
+    // GitHub retains integration-created placeholders that never receive a run.
+    // They are not actionable checks for this commit and must not block review quiescence.
+    .filter(s => s.latest_check_runs_count > 0);
+  const statuses = runGhJson([
+    'api',
+    `repos/${REPO_OWNER}/${REPO_NAME}/commits/${commitSha}/status`
+  ]).statuses || [];
+  const monitoredSuites = suites.filter(s => s.app);
+  const monitoredStatuses = statuses.filter(s =>
+    RELEVANT_APPS.some(app => s.context?.toLowerCase().includes(app.toLowerCase()))
+  );
 
-  const monitored = suites.filter(s => s.app && RELEVANT_APPS.some(app => s.app.name?.toLowerCase().includes(app.toLowerCase())));
-
-  const pending = monitored.filter(s => s.status !== 'completed');
+  const pendingSuites = monitoredSuites.filter(s => s.status !== 'completed');
+  const pendingStatuses = monitoredStatuses.filter(s => s.state !== 'success' && s.state !== 'failure' && s.state !== 'error');
+  const completed = [
+    ...monitoredSuites
+      .filter(s => s.status === 'completed')
+      .map(s => ({ app: s.app?.name, conclusion: s.conclusion })),
+    ...monitoredStatuses
+      .filter(s => s.state === 'success' || s.state === 'failure' || s.state === 'error')
+      .map(s => ({ app: s.context, conclusion: s.state }))
+  ];
+  const pending = [
+    ...pendingSuites.map(s => ({ app: s.app?.name, status: s.status, conclusion: s.conclusion })),
+    ...pendingStatuses.map(s => ({ app: s.context, status: s.state, conclusion: null }))
+  ];
   return {
     repo: `${REPO_OWNER}/${REPO_NAME}`,
-    allCompleted: monitored.length > 0 && pending.length === 0,
-    total: monitored.length,
-    pending: pending.map(s => ({ app: s.app?.name, status: s.status, conclusion: s.conclusion })),
-    completed: monitored.filter(s => s.status === 'completed').map(s => ({ app: s.app?.name, conclusion: s.conclusion }))
+    allCompleted: completed.length > 0 && pending.length === 0,
+    total: completed.length + pending.length,
+    pending,
+    completed
   };
 }
 
-/** Fetch one paginated pull-request page for reviews and review threads. */
-function fetchPullRequestPage(prNumber, reviewsCursor, threadsCursor) {
+/** Fetch one paginated pull-request page for active review connections. */
+function fetchPullRequestPage(prNumber, reviewsCursor, threadsCursor, includeReviews, includeThreads) {
   const query = `
-    query($owner: String!, $repo: String!, $pull_number: Int!, $reviewsCursor: String, $threadsCursor: String) {
+    query($owner: String!, $repo: String!, $pull_number: Int!, $reviewsCursor: String, $threadsCursor: String, $includeReviews: Boolean!, $includeThreads: Boolean!) {
       repository(owner: $owner, name: $repo) {
         pullRequest(number: $pull_number) {
           id
@@ -204,7 +227,7 @@ function fetchPullRequestPage(prNumber, reviewsCursor, threadsCursor) {
           headRefName
           baseRefName
           state
-          reviews(first: 100, after: $reviewsCursor) {
+          reviews(first: 100, after: $reviewsCursor) @include(if: $includeReviews) {
             nodes {
               id
               databaseId
@@ -216,7 +239,7 @@ function fetchPullRequestPage(prNumber, reviewsCursor, threadsCursor) {
             }
             pageInfo { hasNextPage endCursor }
           }
-          reviewThreads(first: 100, after: $threadsCursor) {
+          reviewThreads(first: 100, after: $threadsCursor) @include(if: $includeThreads) {
             nodes {
               id
               isResolved
@@ -246,7 +269,9 @@ function fetchPullRequestPage(prNumber, reviewsCursor, threadsCursor) {
     repo: REPO_NAME,
     pull_number: prNumber,
     reviewsCursor,
-    threadsCursor
+    threadsCursor,
+    includeReviews,
+    includeThreads
   });
   const pr = response.data?.repository?.pullRequest;
   if (!pr) throw new Error(`Could not find PR #${prNumber} in ${REPO_OWNER}/${REPO_NAME}`);
@@ -309,23 +334,35 @@ function fetchPRReviewData(prNumber) {
   const reviewThreads = [];
   let reviewsCursor = null;
   let threadsCursor = null;
+  let reviewsComplete = false;
+  let threadsComplete = false;
   let prMetadata;
 
-  do {
-    const page = fetchPullRequestPage(prNumber, reviewsCursor, threadsCursor);
+  while (!reviewsComplete || !threadsComplete) {
+    const page = fetchPullRequestPage(
+      prNumber,
+      reviewsComplete ? null : reviewsCursor,
+      threadsComplete ? null : threadsCursor,
+      !reviewsComplete,
+      !threadsComplete
+    );
     prMetadata ||= page;
-    reviews.push(...(page.reviews.nodes || []));
-    reviewThreads.push(...(page.reviewThreads.nodes || []));
+    const reviewPage = page.reviews || { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } };
+    const threadPage = page.reviewThreads || { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } };
+    reviews.push(...(reviewPage.nodes || []));
+    reviewThreads.push(...(threadPage.nodes || []));
 
-    if (page.reviews.pageInfo?.hasNextPage && !page.reviews.pageInfo.endCursor) {
+    if (reviewPage.pageInfo?.hasNextPage && !reviewPage.pageInfo.endCursor) {
       throw new Error('Pull-request reviews reported another page without a cursor');
     }
-    if (page.reviewThreads.pageInfo?.hasNextPage && !page.reviewThreads.pageInfo.endCursor) {
+    if (threadPage.pageInfo?.hasNextPage && !threadPage.pageInfo.endCursor) {
       throw new Error('Review threads reported another page without a cursor');
     }
-    reviewsCursor = page.reviews.pageInfo?.hasNextPage ? page.reviews.pageInfo.endCursor : null;
-    threadsCursor = page.reviewThreads.pageInfo?.hasNextPage ? page.reviewThreads.pageInfo.endCursor : null;
-  } while (reviewsCursor || threadsCursor);
+    reviewsComplete = !reviewPage.pageInfo?.hasNextPage;
+    threadsComplete = !threadPage.pageInfo?.hasNextPage;
+    reviewsCursor = reviewsComplete ? null : reviewPage.pageInfo.endCursor;
+    threadsCursor = threadsComplete ? null : threadPage.pageInfo.endCursor;
+  }
 
   const allReviewThreads = reviewThreads.map(fetchAllReviewThreadComments);
 
@@ -417,9 +454,16 @@ function replyToComment(prNumber, sourceType, sourceId, message) {
   }
   const commentId = parsePositiveInteger(sourceId, 'comment ID');
   const trimmed = message.trim();
-  const fullBody = trimmed.endsWith('- AG-Ron')
-    ? trimmed
-    : `${trimmed}${ATTRIBUTION_SIGN_OFF}`;
+  const unsignedBody = trimmed.endsWith('- AG-Ron')
+    ? trimmed.slice(0, -'- AG-Ron'.length).trimEnd()
+    : trimmed;
+  const sourceAnchor = sourceType === 'review-comment'
+    ? `discussion_r${commentId}`
+    : sourceType === 'issue-comment'
+      ? `issuecomment-${commentId}`
+      : `pullrequestreview-${commentId}`;
+  const sourceUrl = `https://github.com/${REPO_OWNER}/${REPO_NAME}/pull/${prNumber}#${sourceAnchor}`;
+  const fullBody = `${unsignedBody}\n\nSource: ${sourceType} ${commentId} (${sourceUrl})${ATTRIBUTION_SIGN_OFF}`;
 
   if (sourceType === 'review-comment') {
     runGh(

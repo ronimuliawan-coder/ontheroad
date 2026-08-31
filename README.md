@@ -3,8 +3,8 @@
 > **Independent Cockpit Trip Tracker & Financial Reconciliation Tool for Gig Drivers**  
 > *Rideshare • Courier • Food Delivery*
 
-[![Android CI](https://github.com/rons-space/ontheroad/actions/workflows/android.yml/badge.svg)](https://github.com/rons-space/ontheroad/actions/workflows/android.yml)
-[![Governance](https://github.com/rons-space/ontheroad/actions/workflows/governance.yml/badge.svg)](https://github.com/rons-space/ontheroad/actions/workflows/governance.yml)
+[![Android CI](https://github.com/ronimuliawan/ontheroad/actions/workflows/android.yml/badge.svg)](https://github.com/ronimuliawan/ontheroad/actions/workflows/android.yml)
+[![Governance](https://github.com/ronimuliawan/ontheroad/actions/workflows/governance.yml/badge.svg)](https://github.com/ronimuliawan/ontheroad/actions/workflows/governance.yml)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-purple.svg)](https://kotlinlang.org)
 [![Compose](https://img.shields.io/badge/Jetpack%20Compose-2024.12.01-green.svg)](https://developer.android.com/jetpack/compose)
 [![120Hz](https://img.shields.io/badge/Display-120Hz%20ProMotion-blue.svg)](#cockpit-ergonomics)
