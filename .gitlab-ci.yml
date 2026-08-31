@@ -1,0 +1,7 @@
+# GitLab is a review-only replica. It must not reconcile or mutate branches.
+# .github/workflows/gitlab-review-replica.yml is the sole projection authority.
+# Keep this file so GitLab project-level CI behavior is explicit and inert.
+
+workflow:
+  rules:
+    - when: never

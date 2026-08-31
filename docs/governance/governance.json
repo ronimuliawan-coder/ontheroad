@@ -302,6 +302,66 @@
       "retirementPhase": null
     },
     {
+      "name": "GITHUB_TOKEN",
+      "visibility": "ci",
+      "environments": [
+        "ci"
+      ],
+      "status": "current",
+      "consumers": [
+        ".github/workflows/gitlab-review-replica.yml"
+      ],
+      "owner": "GitHub Actions",
+      "required": "generated",
+      "rotationTrigger": "per-job runner-provided token",
+      "retirementPhase": null
+    },
+    {
+      "name": "GITLAB_REPLICA_API_TOKEN",
+      "visibility": "ci",
+      "environments": [
+        "ci"
+      ],
+      "status": "planned",
+      "consumers": [
+        ".github/workflows/gitlab-review-replica.yml"
+      ],
+      "owner": "developer-project-owner",
+      "required": "phase-owned",
+      "rotationTrigger": "exposure, expiry, owner change, scope change, or replica retirement",
+      "retirementPhase": 10
+    },
+    {
+      "name": "GITLAB_REPLICA_KNOWN_HOSTS",
+      "visibility": "ci",
+      "environments": [
+        "ci"
+      ],
+      "status": "planned",
+      "consumers": [
+        ".github/workflows/gitlab-review-replica.yml"
+      ],
+      "owner": "developer-project-owner",
+      "required": "phase-owned",
+      "rotationTrigger": "GitLab-published host-key rotation",
+      "retirementPhase": 10
+    },
+    {
+      "name": "GITLAB_REPLICA_SSH_KEY",
+      "visibility": "ci",
+      "environments": [
+        "ci"
+      ],
+      "status": "planned",
+      "consumers": [
+        ".github/workflows/gitlab-review-replica.yml"
+      ],
+      "owner": "developer-project-owner",
+      "required": "phase-owned",
+      "rotationTrigger": "exposure, expiry, owner change, or replica retirement",
+      "retirementPhase": 10
+    },
+    {
       "name": "KEYSTORE_BASE64",
       "visibility": "ci",
       "environments": [
@@ -1903,6 +1963,14 @@
       "ownerPhase": 1,
       "authority": "project-owned",
       "reason": "Machine-readable repository governance contract"
+    },
+    {
+      "path": "docs/runbooks/GITLAB_REVIEW_REPLICA.md",
+      "kind": "delivery-runbook",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "GitHub-owned GitLab review replica setup, proof, operation, and rollback"
     },
     {
       "path": "gradle/libs.versions.toml",
