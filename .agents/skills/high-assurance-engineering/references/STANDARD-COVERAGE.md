@@ -105,7 +105,7 @@ control and update this matrix in the same change.
 | D5 | Follow-ups tracked separately from completed scope | Master Phase 6/7 | Guide §§13, 22 | Covered |
 | D6 | Constitution/map/status/history single-owner documentation roles | Master Phase 1/6 | Guide §12, project templates | Covered |
 | D7 | Intentional-removal delete-zone prevents accidental recreation | Master Phase 1/code review | Guide §12, status template | Covered |
-| D8 | Resume packet preserves approvals, evidence, state, next unstarted work | Master Phase 7 | Guide §20, evidence/status templates | Covered |
+| D8 | Resume packet preserves approvals, evidence, state, next unstarted work | Master Section 20 and Phase 7 | Guide §20, evidence/status templates | Covered |
 
 ## Maintaining full declared coverage
 

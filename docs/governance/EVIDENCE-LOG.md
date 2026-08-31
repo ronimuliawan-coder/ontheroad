@@ -226,6 +226,18 @@ never contain credentials, tokens, or private payloads.
 - GitLab acceptance state: The project remains empty until PR #5 is merged and the trusted default-branch workflow seeds canonical refs; no GitLab refs were manually pushed.
 - Next gate: Complete PR review and merge through GitHub only; then run the disposable same-repository GitHub-to-GitLab parity and close-cleanup proof.
 
+### 2026-08-31 — PR #2 review remediation cycle 3
+
+- Actor: Agent implementing the user's explicit approval for the nine valid CodeRabbit findings; the docstring-coverage note was accepted as informational and ignored without rebuttal.
+- Exact base revision: PR #2 head `c89bd7de545193e837ec06e6f91af5e879d2b9df` in isolated worktree `/tmp/ontheroad-pr2-review-cycle3`, branch `codex/pr2-review-cycle3`.
+- Accepted findings: review comments `3894829488`, `3894829516`, `3894829519`, `3894829524`, `3894829529`, `3894829535`, `3894829540`, `3894829557`, and `3894829569`.
+- Scope: Clarify Phase 0 tracker/evidence authority; correct D8 contract ownership; make zero-monitored-check suites settled; fail closed on issue-comment retrieval errors; register the GitLab workflow; mark active replica credentials current; repair runbook Markdown; harden repository-segment validation; and make the workflow assertion whitespace-tolerant.
+- Quiescence exception: GitHub retains zero-run integration placeholder suites for Vercel and CodeRabbit; raw check-suite evidence showed `latest_check_runs_count: 0`. Actual active checks completed, and the modified helper reports `allCompleted: true` with seven completed monitored results.
+- Validation: `bun run governance:check` passed; `bun test` passed with 12 tests; both modified JavaScript files passed syntax checks; live helper extraction returned 27 threads and 9 unresolved findings; `git diff --check` passed.
+- Security/privacy note: No secrets were read or recorded; no review thread was resolved; no external reply has been posted in this cycle.
+- Rollback/recovery impact: Revert the single remediation commit to restore the PR #2 source tree; application data, GitHub/GitLab authority, release state, and credentials remain unaffected.
+- Next gate: Create one atomic remediation commit, push the fix branch, open a PR into `dev`, then post attributed replies without resolving threads.
+
 ## Accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |

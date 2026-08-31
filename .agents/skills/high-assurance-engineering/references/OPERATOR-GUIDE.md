@@ -295,8 +295,9 @@ target architecture exists, authorize implementation, or satisfy a later phase g
 ## 9. Adopting it in an existing project
 
 Do not begin by copying templates. Perform this sequence:
-All discovery in steps 1–8 is read-only: do not mutate project files, run formatters, generators,
-migrations, or external writes until the applicable phase gate explicitly authorizes that mutation.
+All discovery in steps 1–8 is read-only for project files: do not run formatters, generators, or
+migrations. Authorized tracker and evidence updates required by Phase 0 remain permitted; other
+external writes require the applicable phase gate.
 
 1. **Read active instructions.** Find the harness-specific instruction surface and all scoped
    instruction files that apply to the target area.

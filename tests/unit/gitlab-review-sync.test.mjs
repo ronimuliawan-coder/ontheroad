@@ -49,7 +49,7 @@ test("review projection constants are pinned to the OnTheRoad boundary", async (
     assert.equal(reviewRef(42), "review/github-pr-42");
 
     const workflow = await readFile(".github/workflows/gitlab-review-replica.yml", "utf8");
-    assert.match(workflow, /branches: \[ dev, main \]/);
+    assert.match(workflow, /branches:\s*\[\s*dev\s*,\s*main\s*\]/);
     assert.match(workflow, /--gitlab-project ronimuliawan\/ontheroad/);
     assert.match(workflow, /GITLAB_REPLICA_SSH_KEY/);
     assert.match(workflow, /GITLAB_REPLICA_KNOWN_HOSTS/);
@@ -245,6 +245,9 @@ test("input validators reject malformed boundaries", () => {
     assert.throws(() => validateSha("abc"), /full 40-hex commit SHA/);
     assert.throws(() => validateBranch("master"), /dev or main/);
     assert.throws(() => validateRepository("../owner/repository"), /owner\/name/);
+    assert.throws(() => validateRepository("../owner"), /owner\/name/);
+    assert.throws(() => validateRepository("owner/.."), /owner\/name/);
+    assert.throws(() => validateRepository("../..."), /owner\/name/);
     assert.throws(() => validateGitLabUrl("https://gitlab.com/ronimuliawan/ontheroad.git"), /credential-free/);
     assert.throws(() => validateGitLabApiUrl("https://example.test/api/v4"), /https:\/\/gitlab.com\/api\/v4/);
     assert.throws(() => validateGitLabProject("someone/else"), /ronimuliawan\/ontheroad/);

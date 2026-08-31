@@ -29,6 +29,7 @@
       ".agents/ecc-install-state.json",
       ".agents/skills/pr-review-remediation/scripts/pr_review_tools.js",
       ".github/workflows/release.yml",
+      ".github/workflows/gitlab-review-replica.yml",
       ".env.example",
       "docs/governance/governance.json"
     ],
@@ -322,14 +323,14 @@
       "environments": [
         "ci"
       ],
-      "status": "planned",
+      "status": "current",
       "consumers": [
         ".github/workflows/gitlab-review-replica.yml"
       ],
       "owner": "developer-project-owner",
       "required": "phase-owned",
       "rotationTrigger": "exposure, expiry, owner change, scope change, or replica retirement",
-      "retirementPhase": 10
+      "retirementPhase": null
     },
     {
       "name": "GITLAB_REPLICA_KNOWN_HOSTS",
@@ -337,14 +338,14 @@
       "environments": [
         "ci"
       ],
-      "status": "planned",
+      "status": "current",
       "consumers": [
         ".github/workflows/gitlab-review-replica.yml"
       ],
       "owner": "developer-project-owner",
       "required": "phase-owned",
       "rotationTrigger": "GitLab-published host-key rotation",
-      "retirementPhase": 10
+      "retirementPhase": null
     },
     {
       "name": "GITLAB_REPLICA_SSH_KEY",
@@ -352,14 +353,14 @@
       "environments": [
         "ci"
       ],
-      "status": "planned",
+      "status": "current",
       "consumers": [
         ".github/workflows/gitlab-review-replica.yml"
       ],
       "owner": "developer-project-owner",
       "required": "phase-owned",
       "rotationTrigger": "exposure, expiry, owner change, or replica retirement",
-      "retirementPhase": 10
+      "retirementPhase": null
     },
     {
       "name": "KEYSTORE_BASE64",
@@ -1875,6 +1876,14 @@
       "ownerPhase": 1,
       "authority": "project-owned",
       "reason": "Environment variable schema contract"
+    },
+    {
+      "path": ".github/workflows/gitlab-review-replica.yml",
+      "kind": "review-replica-workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "GitHub-owned, review-only GitLab projection workflow"
     },
     {
       "path": ".github/workflows/release.yml",
