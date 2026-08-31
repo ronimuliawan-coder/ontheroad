@@ -9,7 +9,8 @@ never contain credentials, tokens, or private payloads.
 
 - Objective: Raise OnTheRoad's governance, evidence, and delivery assurance while preserving verified product behavior, data, interfaces, and operational invariants.
 - Task mode: `EXISTING_UPLIFT`
-- Canonical repository: `/home/ron/Projects/ontheroad`; project governance declares GitHub as the write and merge authority.
+- Local workspace: `/home/ron/Projects/ontheroad`
+- Canonical repository: `https://github.com/rons-space/ontheroad.git`; project governance declares GitHub as the write and merge authority.
 - Tracker: Local fallback; Linear workspace search found no `OnTheRoad` project or issue.
 - Approval owner: `developer-project-owner` (user approval in this task)
 - Risk profile: `STANDARD` for documentation, governance, build-contract, and release-contract changes; no production or data changes authorized.
@@ -158,6 +159,21 @@ never contain credentials, tokens, or private payloads.
 - Result: `ACCEPTED FOR LOCAL HANDOFF`.
 - Durable evidence: Human review acceptance is recorded without creating a commit or changing any external system.
 - Next gate: Explicit authorization is still required for local commit creation, push, pull request, merge, deployment, or new implementation scope.
+
+### 2026-08-31 — PR #2 review remediation validation
+
+- Actor: Agent
+- Exact revision: PR #2 source revision `e561286ac4133906c46fc33d2bfe95f3ad87b6b0`; remediation changes are documentation, governance, workflow, and review-tool changes only.
+- Environment/profile: Isolated fix worktree; Bun `1.4.0`; JDK 21; Android SDK `/home/ron/Android/Sdk`; Gradle `8.11.1`.
+- Claim evaluated: Reviewer findings are addressed without changing product behavior, persisted data, or release signing secrets.
+- Method: Verify all 12 CodeRabbit findings against the PR head; run `bun run governance:check`, `bun test`, `./gradlew testDebugUnitTest lintDebug --no-daemon`, and `./gradlew assembleRelease bundleRelease assembleDebug --no-daemon`; rebuild release outputs twice and compare identities; validate helper URL parsing, paginated extraction, and invalid-source rejection.
+- Measurements: `app-release.apk` 2,239,791 bytes with SHA-256 `e6dff65bfbc16ef699e6b0aa82f878205373402bec06f569932475485dbae078`; `app-release.aab` 4,051,114 bytes with SHA-256 `179661495156847ce500d39c45b0b47dc8317f149bfd7a87455abf7b5293e402`; `app-debug.apk` 17,743,073 bytes with SHA-256 `4c178ab4e796b22a45883f6835e2dcf51533b7701efbb5ed1ffe229361f9f6c2`.
+- Result: `PASS` pending single-commit and external-delivery approval.
+- Durable evidence: Governance reports `governance: pass`; Bun reports 4 pass / 0 fail; Android JVM tests and lint pass; release/debug artifacts build successfully; consecutive artifact builds produced identical identities; helper extraction returned 12 threads and rejected an unsupported reply source without a GitHub write.
+- Deviation/retry: The first isolated Android invocation lacked the untracked SDK configuration; rerunning with the installed SDK paths passed. The first manifest adjustment exposed the required governed-document registration for `.github/workflows/release.yml`; the manifest was completed and revalidated.
+- Security/privacy note: No secret values were read or recorded; no review thread was resolved; no external reply or push was performed.
+- Rollback/recovery impact: Revert the single remediation commit to restore the PR #2 source state; application data, runtime behavior, and release tags remain unaffected.
+- Next gate: Create one local atomic commit, then request separate approval before push, attributed replies, or any other external write.
 
 ## Accepted exceptions
 

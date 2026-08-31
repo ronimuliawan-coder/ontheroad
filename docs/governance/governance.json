@@ -28,6 +28,7 @@
     "exactFiles": [
       ".agents/ecc-install-state.json",
       ".agents/skills/pr-review-remediation/scripts/pr_review_tools.js",
+      ".github/workflows/release.yml",
       ".env.example",
       "docs/governance/governance.json"
     ],
@@ -1814,6 +1815,14 @@
       "ownerPhase": 1,
       "authority": "project-owned",
       "reason": "Environment variable schema contract"
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "kind": "release-workflow",
+      "disposition": "active",
+      "ownerPhase": 8,
+      "authority": "project-owned",
+      "reason": "CI release signing and artifact verification workflow"
     },
     {
       "path": "AGENTS.md",

@@ -27,7 +27,7 @@ Sync documentation with the codebase, generating from source-of-truth files.
 |---------|-------------|
 | `bun run dev` | Start development server with hot reload |
 | `bun run build` | Production build with type checking |
-| `bun test` | Run test suite with coverage |
+| `bun test` | Run test suite |
 ```
 
 ## Step 3: Generate Environment Documentation

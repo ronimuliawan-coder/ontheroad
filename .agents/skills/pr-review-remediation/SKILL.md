@@ -93,8 +93,11 @@ Pushing to GitHub, posting replies, resolving threads, merging, or deploying is 
    - For fixes: `"Verified and fixed: <explanation of change>"`
    - For technical rebuttals: `"Technical rebuttal: <evidence-backed explanation>"`
    ```bash
-   bun .agents/skills/pr-review-remediation/scripts/pr_review_tools.js reply <pr_number> <comment_id> "<message>"
+   bun .agents/skills/pr-review-remediation/scripts/pr_review_tools.js reply <pr_number|pr_url> <source_type> <comment_id> "<message>"
    ```
+   Use `review-comment` for inline review comments, `issue-comment` for issue-timeline comments, and
+   `review-summary` for top-level review summaries. The source type is required so replies cannot be
+   sent to the wrong GitHub endpoint.
 2. **DO NOT resolve review threads**: Leave review threads open so that the original reviewer (e.g. CodeRabbit bot or human reviewer) or Ron can inspect the changes, post follow-ups, and resolve the thread.
 
 ### Phase 7: Verification Loop & Final Handoff

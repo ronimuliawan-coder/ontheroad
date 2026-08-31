@@ -58,7 +58,7 @@ This is the most universal option.
 Copy the complete directory, not only `SKILL.md`:
 
 ```text
-<this-repository>/skills/high-assurance-engineering/
+<this-repository>/.agents/skills/high-assurance-engineering/
     -> <target-repository>/.agents/skills/high-assurance-engineering/
 ```
 

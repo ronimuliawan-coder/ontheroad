@@ -19,7 +19,7 @@
 
 | Claim | Evidence/source | Status | Validation needed |
 |---|---|---|---|
-| `[CLAIM]` | `[PRIMARY/REPOSITORY EVIDENCE]` | `[VALIDATED | ASSUMPTION | UNKNOWN]` | `[METHOD]` |
+| `[CLAIM]` | `[PRIMARY/REPOSITORY EVIDENCE]` | `[VALIDATED / ASSUMPTION / UNKNOWN]` | `[METHOD]` |
 
 ### Current alternatives
 
