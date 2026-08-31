@@ -2,7 +2,7 @@
 
 > **PRP Plan**: `.claude/PRPs/plans/07-performance-motion-and-ux.plan.md`  
 > **Lifecycle Phase**: Phase 7 (Performance, motion and UX)  
-> **Status**: Approved Plan / Ready for Execution  
+> **Status**: Historical evidence / Executed
 > **Target Platform**: Android (Jetpack Compose + 120Hz High Refresh Rate + Haptics)  
 > **Parent PRD**: [`.claude/PRPs/prds/ontheroad-trip-tracker.prd.md`](../prds/ontheroad-trip-tracker.prd.md)  
 

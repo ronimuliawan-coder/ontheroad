@@ -1,0 +1,156 @@
+name: GitLab review replica
+
+# GitHub is the only merge and branch authority. This workflow projects trusted
+# canonical refs and opaque same-repository PR commits into GitLab solely so the
+# configured review bots can inspect them. It never checks out or executes PR code.
+on:
+  push:
+    branches: [ dev, main ]
+  pull_request_target:
+    types: [ opened, synchronize, reopened, ready_for_review, converted_to_draft, closed ]
+  schedule:
+    - cron: '27 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # Reconciliation re-reads current PR state so stale queued events cannot win.
+  pull-requests: read
+
+# Ref projection is race-aware and idempotent. Serialize each PR's lifecycle,
+# while canonical push/reconcile work retains its own group. Queue order follows
+# wait-start time rather than event dispatch time, so the script also re-reads
+# the current PR state immediately before any projection or cleanup. GitHub
+# otherwise keeps only one pending run per group and replaces it with the next
+# event; the bounded maximum queue and PR-specific key prevent unrelated
+# repository events from displacing close cleanup.
+concurrency:
+  group: >-
+    gitlab-review-replica-${{
+      github.event_name == 'pull_request_target'
+      && format('pr-{0}', github.event.pull_request.number)
+      || 'canonical'
+    }}
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  project-review-refs:
+    name: Project trusted refs for GitLab review
+    # Forks never receive this secret-bearing job. Manual reconciliation is
+    # accepted only from the default branch so arbitrary workflow revisions
+    # cannot be dispatched with the deploy credential. Close remains eligible
+    # after a base retarget; every other PR action stays limited to dev/main.
+    if: >-
+      (github.event_name != 'pull_request_target' ||
+       (github.event.pull_request.head.repo.full_name == github.repository &&
+        (github.event.action == 'closed' ||
+         github.event.pull_request.base.ref == 'dev' ||
+         github.event.pull_request.base.ref == 'main'))) &&
+      (github.event_name != 'workflow_dispatch' ||
+       github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out trusted workflow code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # For pull_request_target, github.sha is the trusted base branch tip,
+          # never the PR head. Push/schedule/dispatch likewise supply a trusted ref.
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Project refs without checking out their content
+        if: github.event_name != 'pull_request_target' || github.event.action != 'closed'
+        env:
+          # The repository is public. Git uses this read-only job token through
+          # an ephemeral askpass helper, never through a remote URL or log line.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLAB_REPLICA_SSH_KEY: ${{ secrets.GITLAB_REPLICA_SSH_KEY }}
+          GITLAB_REPLICA_KNOWN_HOSTS: ${{ secrets.GITLAB_REPLICA_KNOWN_HOSTS }}
+          # Only trusted maintenance events may recover a missed close cleanup.
+          GITLAB_REPLICA_API_TOKEN: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && secrets.GITLAB_REPLICA_API_TOKEN || '' }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${GITLAB_REPLICA_SSH_KEY:-}" ]; then
+            echo '::error::GITLAB_REPLICA_SSH_KEY is not configured.'
+            exit 1
+          fi
+          if [ -z "${GITLAB_REPLICA_KNOWN_HOSTS:-}" ]; then
+            echo '::error::GITLAB_REPLICA_KNOWN_HOSTS is not configured.'
+            exit 1
+          fi
+          if [ -z "${GITHUB_TOKEN:-}" ]; then
+            echo '::error::The read-only GitHub job token is unavailable.'
+            exit 1
+          fi
+
+          replica_ssh_dir="$(mktemp -d "${RUNNER_TEMP}/ontheroad-gitlab-replica.XXXXXX")"
+          cleanup_replica_ssh() {
+            rm -f \
+              "${replica_ssh_dir}/git-askpass" \
+              "${replica_ssh_dir}/id_ed25519" \
+              "${replica_ssh_dir}/known_hosts"
+            rmdir "${replica_ssh_dir}"
+          }
+          trap cleanup_replica_ssh EXIT
+
+          printf '%s\n' "${GITLAB_REPLICA_SSH_KEY}" > "${replica_ssh_dir}/id_ed25519"
+          printf '%s\n' "${GITLAB_REPLICA_KNOWN_HOSTS}" > "${replica_ssh_dir}/known_hosts"
+          chmod 600 "${replica_ssh_dir}/id_ed25519" "${replica_ssh_dir}/known_hosts"
+
+          # The helper contains no credential; it reads the already-scoped token
+          # from the job environment only when Git asks for private-repo HTTPS auth.
+          cat > "${replica_ssh_dir}/git-askpass" <<'ASKPASS'
+          #!/bin/sh
+          case "$1" in
+            *Username*) printf '%s\n' 'x-access-token' ;;
+            *Password*) printf '%s\n' "${GITHUB_TOKEN}" ;;
+            *) exit 1 ;;
+          esac
+          ASKPASS
+          chmod 700 "${replica_ssh_dir}/git-askpass"
+
+          if ! ssh-keygen -F gitlab.com -f "${replica_ssh_dir}/known_hosts" >/dev/null; then
+            echo '::error::GITLAB_REPLICA_KNOWN_HOSTS has no gitlab.com entry.'
+            exit 1
+          fi
+
+          export GIT_SSH_COMMAND="ssh -i ${replica_ssh_dir}/id_ed25519 -o IdentitiesOnly=yes -o UserKnownHostsFile=${replica_ssh_dir}/known_hosts -o StrictHostKeyChecking=yes"
+          export GIT_ASKPASS="${replica_ssh_dir}/git-askpass"
+
+          node scripts/sync-gitlab-review.mjs \
+            --event-file "${GITHUB_EVENT_PATH}" \
+            --event-name "${GITHUB_EVENT_NAME}" \
+            --repository "${GITHUB_REPOSITORY}" \
+            --gitlab-url git@gitlab.com:ronimuliawan/ontheroad.git \
+            --gitlab-api-url https://gitlab.com/api/v4 \
+            --gitlab-project ronimuliawan/ontheroad
+      - name: Delete the closed PR's protected review ref
+        if: github.event_name == 'pull_request_target' && github.event.action == 'closed'
+        env:
+          # The same read-only job token gates cleanup on current GitHub PR
+          # state, so a stale close event cannot delete a reopened review ref.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GitLab's `api` token scope is broad. Its runtime exposure is narrowed
+          # to this close step and the script's fixed host/project/ref operations.
+          # Never put the credential in a CLI argument or URL.
+          GITLAB_REPLICA_API_TOKEN: ${{ secrets.GITLAB_REPLICA_API_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${GITLAB_REPLICA_API_TOKEN:-}" ]; then
+            echo '::error::GITLAB_REPLICA_API_TOKEN is not configured.'
+            exit 1
+          fi
+
+          node scripts/sync-gitlab-review.mjs \
+            --event-file "${GITHUB_EVENT_PATH}" \
+            --event-name "${GITHUB_EVENT_NAME}" \
+            --repository "${GITHUB_REPOSITORY}" \
+            --gitlab-url git@gitlab.com:ronimuliawan/ontheroad.git \
+            --gitlab-api-url https://gitlab.com/api/v4 \
+            --gitlab-project ronimuliawan/ontheroad

@@ -3,8 +3,8 @@
 > **Independent Cockpit Trip Tracker & Financial Reconciliation Tool for Gig Drivers**  
 > *Rideshare • Courier • Food Delivery*
 
-[![Android CI](https://github.com/ontheroad/ontheroad/actions/workflows/android.yml/badge.svg)](https://github.com/ontheroad/ontheroad/actions/workflows/android.yml)
-[![Governance](https://github.com/ontheroad/ontheroad/actions/workflows/governance.yml/badge.svg)](https://github.com/ontheroad/ontheroad/actions/workflows/governance.yml)
+[![Android CI](https://github.com/ronimuliawan/ontheroad/actions/workflows/android.yml/badge.svg)](https://github.com/ronimuliawan/ontheroad/actions/workflows/android.yml)
+[![Governance](https://github.com/ronimuliawan/ontheroad/actions/workflows/governance.yml/badge.svg)](https://github.com/ronimuliawan/ontheroad/actions/workflows/governance.yml)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-purple.svg)](https://kotlinlang.org)
 [![Compose](https://img.shields.io/badge/Jetpack%20Compose-2024.12.01-green.svg)](https://developer.android.com/jetpack/compose)
 [![120Hz](https://img.shields.io/badge/Display-120Hz%20ProMotion-blue.svg)](#cockpit-ergonomics)
@@ -97,7 +97,7 @@ OnTheRoad follows strict **Clean Architecture & Unidirectional Data Flow (UDF)**
 - **Location Engine**: Google Play Services Location (`FusedLocationProviderClient`)
 - **Local Storage**: Android Room SQLite 2.6.1 with KSP
 - **Async Concurrency**: Kotlin Coroutines 1.9.0, StateFlow, Turbine
-- **Code Minification**: ProGuard & R8 (shrunk to **2.2MB**)
+- **Code Minification**: ProGuard & R8 (current release APK is **2.24 MB**)
 - **Governance**: Bun 1.4 for repository manifest validation and invariant enforcement
 
 ---
@@ -112,13 +112,15 @@ OnTheRoad follows strict **Clean Architecture & Unidirectional Data Flow (UDF)**
 ```bash
 ./gradlew test
 ```
-*Executes all 38 unit tests across `:core:model`, `:core:domain`, `:core:data`, `:core:ui`, and `:app` in <3s.*
+*Executes all 43 JVM unit tests across `:core:model`, `:core:domain`, `:core:data`, `:core:ui`, and `:app` without an emulator.*
 
 ### Build Production Release APK & App Bundle
+
 ```bash
 ./gradlew assembleRelease bundleRelease
 ```
-*Generates optimized release APK at `app/build/outputs/apk/release/app-release.apk` (2.2MB).*
+
+*Generates optimized release APK at `app/build/outputs/apk/release/app-release.apk` (2.24 MB).*
 
 ### Verify Repository Governance
 ```bash
@@ -127,13 +129,17 @@ bun run governance:check && bun test
 
 ---
 
-## 📦 Release Artifacts (v0.1.0)
+## 📦 Verified Immutable-Revision Artifacts (post-v0.1.0)
+
+The identities below were measured from the clean immutable revision
+`e561286ac4133906c46fc33d2bfe95f3ad87b6b0`. They are not replacements for the
+version-specific artifacts recorded in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 
 | Artifact | File Size | SHA-256 Checksum |
 |---|---|---|
-| `app-release.apk` | **2.2 MB** | `2002e4ab30bed7375a716c21d5596e230ae8425302ef4b14180beee1766b5ab1` |
-| `app-release.aab` | **3.9 MB** | `49916ecf50494b8136184be181ca4b169d2163da42620c2db9d7367aac49d989` |
-| `app-debug.apk` | **28 MB** | `9c8a47f118f22feab7abdd29fa8ca061e39dfda7e26bf1620f07526ed7e5bbb5` |
+| `app-release.apk` | **2,239,791 bytes (2.24 MB)** | `e6dff65bfbc16ef699e6b0aa82f878205373402bec06f569932475485dbae078` |
+| `app-release.aab` | **4,051,114 bytes (4.05 MB)** | `179661495156847ce500d39c45b0b47dc8317f149bfd7a87455abf7b5293e402` |
+| `app-debug.apk` | **17,743,073 bytes (17.74 MB)** | `4c178ab4e796b22a45883f6835e2dcf51533b7701efbb5ed1ffe229361f9f6c2` |
 
 ---
 

@@ -2,7 +2,7 @@
 
 > **PRP Plan**: `.claude/PRPs/plans/04-core-domain-and-data.plan.md`  
 > **Lifecycle Phase**: Phase 4 (Core domain and data models)  
-> **Status**: Approved Plan / Ready for Execution  
+> **Status**: Historical evidence / Executed
 > **Target Platform**: Android (Kotlin + Jetpack Compose)  
 > **Parent PRD**: [`.claude/PRPs/prds/ontheroad-trip-tracker.prd.md`](../prds/ontheroad-trip-tracker.prd.md)  
 

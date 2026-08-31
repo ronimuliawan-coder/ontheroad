@@ -97,3 +97,30 @@ Properties:
 2. Merge using **"Create a merge commit"**.
 3. `.github/workflows/sync-dev-to-main.yml` runs and fast-forwards `dev` to `main`.
 4. Both branches sit at the exact same commit.
+
+---
+
+## GitLab Review Replica
+
+GitLab project `ronimuliawan/ontheroad` is a public, review-only projection of
+this GitHub repository. GitHub remains the sole place where branches are
+authored, pull requests are merged, releases are created, and deployments begin.
+
+The trusted `.github/workflows/gitlab-review-replica.yml` workflow projects
+`dev`, `main`, approved release tags, and same-repository pull requests to
+GitLab. A GitHub PR `N` appears as the deterministic
+`review/github-pr-N` branch and a GitLab MR for advisory CodeRabbit review.
+Review findings must be applied to the GitHub PR branch; GitLab MRs are never
+merged and no human or provider may push authoritative changes there.
+
+Canonical branches are never force-pushed by the projection. The synthetic
+review ref may be updated with a lease when the GitHub PR head is rewritten.
+GitLab CI is intentionally inert, and the workflow passes `ci.skip` on
+projection pushes so GitLab cannot become a second product CI or deployment path.
+Fork pull requests are not projected while the secret-bearing workflow remains
+limited to same-repository content.
+
+The projection uses a dedicated GitLab deploy key and separate API cleanup
+credential held only in GitHub Actions secrets. See
+[`docs/runbooks/GITLAB_REVIEW_REPLICA.md`](runbooks/GITLAB_REVIEW_REPLICA.md)
+for setup, parity proof, rotation, and rollback.

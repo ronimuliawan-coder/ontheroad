@@ -2,7 +2,7 @@
 
 > **PRP Plan**: `.claude/PRPs/plans/09-verification-and-release-candidate.plan.md`  
 > **Lifecycle Phase**: Phase 9 (Verification and release candidate)  
-> **Status**: Approved Plan / Ready for Execution  
+> **Status**: Historical evidence / Executed
 > **Target Platform**: Android (Kotlin, Jetpack Compose, Room, R8, 120Hz)  
 > **Parent PRD**: [`.claude/PRPs/prds/ontheroad-trip-tracker.prd.md`](../prds/ontheroad-trip-tracker.prd.md)  
 
@@ -12,7 +12,7 @@
 
 Phase 9 executes end-to-end regression validation, release notes authoring, and release candidate (RC) packaging for **OnTheRoad v0.1.0**:
 1. **Full Test & Lint Validation**: Executes 100% of JVM unit tests across all 5 modules and verifies Android Lint cleanliness.
-2. **Release Candidate Packaging & Artifact Verification**: Assembles release APK (2.2MB) and AAB bundle (3.9MB) with full R8 minification, calculating cryptographic SHA-256 checksums.
+2. **Release Candidate Packaging & Artifact Verification**: Assembles the release APK and AAB bundle with full R8 minification, calculating cryptographic SHA-256 checksums.
 3. **Comprehensive Release Notes**: Authors `RELEASE_NOTES.md` capturing all driver capabilities, privacy invariants, and architecture specifications.
 
 ---
