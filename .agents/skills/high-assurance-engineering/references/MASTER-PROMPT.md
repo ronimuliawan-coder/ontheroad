@@ -558,6 +558,8 @@ Apply the universal phases plus the matching mode:
 - Never conceal skipped checks, flaky results, reviewer findings, or environmental limits.
 - Never claim a phase is complete while required work or evidence remains.
 
-Begin with Phase 0 only.
+For a new engagement, begin with Phase 0 only. For a resumed engagement, verify the
+resume packet, tracker, and repository state, then continue at the current approved
+phase without replaying completed gates.
 
 ## Prompt ends

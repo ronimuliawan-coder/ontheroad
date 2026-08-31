@@ -131,13 +131,14 @@ For every review thread:
 1. **Post Attributed Reply**:
    - For valid issues that were fixed:
      ```bash
-     bun .agents/skills/pr-review-remediation/scripts/pr_review_tools.js reply <pr_number> <comment_id> "Verified and fixed: <explanation of fix applied>"
+     bun .agents/skills/pr-review-remediation/scripts/pr_review_tools.js reply <pr_number|pr_url> review-comment <comment_id> "Verified and fixed: <explanation of fix applied>"
      ```
    - For false positives or out-of-scope feedback:
      ```bash
-     bun .agents/skills/pr-review-remediation/scripts/pr_review_tools.js reply <pr_number> <comment_id> "Technical rebuttal: <code-backed architectural explanation>"
+     bun .agents/skills/pr-review-remediation/scripts/pr_review_tools.js reply <pr_number|pr_url> review-comment <comment_id> "Technical rebuttal: <code-backed architectural explanation>"
      ```
-   *(The script automatically appends the `- AG-Ron` sign-off signature at the bottom).*
+   - Use `issue-comment` for a new issue-timeline comment and `review-summary` for a new top-level review summary; both require the source comment ID for traceability.
+   *(The script automatically appends the `- AG-Ron` sign-off signature at the bottom and rejects unsupported or ambiguous source types).*
 
 2. **DO NOT resolve review threads**:
    Leave review threads open so that the original reviewer (e.g. CodeRabbit bot or human reviewer) or Ron can inspect the changes, post follow-ups, and resolve the thread.

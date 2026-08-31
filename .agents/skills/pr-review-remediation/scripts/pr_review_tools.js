@@ -37,7 +37,11 @@ const ALLOWED_BOT_LOGINS = new Set([
 ]);
 
 const REPO_IDENTIFIER_REGEX = /^[a-zA-Z0-9_.-]+$/;
+const COMMENT_SOURCES = new Set(['review-comment', 'issue-comment', 'review-summary']);
 
+/**
+ * Validate a repository owner or name before using it in a GitHub API path.
+ */
 function validateRepoIdentifier(val, label) {
   if (!val || typeof val !== 'string' || !REPO_IDENTIFIER_REGEX.test(val.trim())) {
     throw new Error(`Invalid repository ${label}: "${val}"`);
@@ -45,9 +49,7 @@ function validateRepoIdentifier(val, label) {
   return val.trim();
 }
 
-/**
- * Dynamically resolve the GitHub repository owner and name without shell interpolation.
- */
+/** Dynamically resolve the GitHub repository owner and name without shell interpolation. */
 function getRepoInfo() {
   try {
     const raw = execFileSync('gh', ['repo', 'view', '--json', 'owner,name'], {
@@ -92,6 +94,7 @@ const { owner: REPO_OWNER, name: REPO_NAME } = repositoryCommands.has(command)
   ? getRepoInfo()
   : { owner: null, name: null };
 
+/** Execute a GitHub CLI command without shell interpolation. */
 function runGh(args, input) {
   const options = { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 };
   if (input !== undefined) {
@@ -100,17 +103,81 @@ function runGh(args, input) {
   return execFileSync('gh', args, options);
 }
 
+/** Execute a GitHub CLI request and parse its JSON response. */
 function runGhJson(args, input) {
   const res = runGh(args, input);
   return JSON.parse(res || '{}');
+}
+
+/** Flatten the array of page payloads produced by `gh api --paginate --slurp`. */
+function flattenPaginatedResults(payload, property) {
+  const pages = Array.isArray(payload) ? payload : [payload];
+  return pages.flatMap((page) => {
+    if (property) return Array.isArray(page?.[property]) ? page[property] : [];
+    return Array.isArray(page) ? page : [];
+  });
+}
+
+/** Parse a required positive integer CLI argument. */
+function parsePositiveInteger(value, label) {
+  if (!/^\d+$/.test(value || '')) {
+    throw new Error(`Invalid ${label}: expected a positive integer`);
+  }
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed < 1) {
+    throw new Error(`Invalid ${label}: expected a positive integer`);
+  }
+  return parsed;
+}
+
+/** Accept either a numeric pull-request number or a canonical GitHub PR URL. */
+function parsePullRequestNumber(value) {
+  if (!value) throw new Error('Missing pull-request number or URL');
+  if (/^\d+$/.test(value)) return parsePositiveInteger(value, 'pull-request number');
+
+  let url;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error('Invalid pull-request URL');
+  }
+
+  if (url.protocol !== 'https:' || url.hostname !== 'github.com') {
+    throw new Error('Pull-request URL must use https://github.com');
+  }
+  const match = url.pathname.match(/^\/([^/]+)\/([^/]+)\/pull\/(\d+)(?:\/|$)/);
+  if (!match) throw new Error('Pull-request URL is missing a valid /pull/<number> path');
+  if (match[1] !== REPO_OWNER || match[2] !== REPO_NAME) {
+    throw new Error(`Pull-request URL must target ${REPO_OWNER}/${REPO_NAME}`);
+  }
+  return parsePositiveInteger(match[3], 'pull-request number');
+}
+
+/** Execute a GraphQL request with typed variables and normalized whitespace. */
+function runGraphql(query, variables) {
+  const args = ['api', 'graphql', '-f', `query=${query.replace(/\s+/g, ' ').trim()}`];
+  for (const [name, value] of Object.entries(variables)) {
+    if (value === null || value === undefined) continue;
+    args.push(typeof value === 'number' ? '-F' : '-f', `${name}=${value}`);
+  }
+  const response = runGhJson(args);
+  if (response.errors?.length) {
+    throw new Error(`GitHub GraphQL request failed: ${response.errors.map((error) => error.message).join('; ')}`);
+  }
+  return response;
 }
 
 /**
  * Check if all automated review check-suites and CI have finished running for a given commit.
  */
 function checkSuitesStatus(commitSha) {
-  const data = runGhJson(['api', `repos/${REPO_OWNER}/${REPO_NAME}/commits/${commitSha}/check-suites`, '--paginate']);
-  const suites = Array.isArray(data) ? data.flatMap(d => d.check_suites || []) : (data.check_suites || []);
+  const data = runGhJson([
+    'api',
+    `repos/${REPO_OWNER}/${REPO_NAME}/commits/${commitSha}/check-suites`,
+    '--paginate',
+    '--slurp'
+  ]);
+  const suites = flattenPaginatedResults(data, 'check_suites');
 
   const monitored = suites.filter(s => s.app && RELEVANT_APPS.some(app => s.app.name?.toLowerCase().includes(app.toLowerCase())));
 
@@ -124,16 +191,10 @@ function checkSuitesStatus(commitSha) {
   };
 }
 
-/**
- * Fetch all review data for a pull request across all entry points:
- * 1. Inline review threads (open and resolved with follow-ups)
- * 2. Top-level Pull Request Reviews (pullrequestreview-*)
- * 3. Issue comments / bot summaries (issuecomment-*)
- * 4. Discussion replies and follow-ups
- */
-function fetchPRReviewData(prNumber) {
+/** Fetch one paginated pull-request page for reviews and review threads. */
+function fetchPullRequestPage(prNumber, reviewsCursor, threadsCursor) {
   const query = `
-    query($owner: String!, $repo: String!, $pull_number: Int!) {
+    query($owner: String!, $repo: String!, $pull_number: Int!, $reviewsCursor: String, $threadsCursor: String) {
       repository(owner: $owner, name: $repo) {
         pullRequest(number: $pull_number) {
           id
@@ -143,7 +204,7 @@ function fetchPRReviewData(prNumber) {
           headRefName
           baseRefName
           state
-          reviews(first: 100) {
+          reviews(first: 100, after: $reviewsCursor) {
             nodes {
               id
               databaseId
@@ -153,8 +214,9 @@ function fetchPRReviewData(prNumber) {
               author { login }
               body
             }
+            pageInfo { hasNextPage endCursor }
           }
-          reviewThreads(first: 100) {
+          reviewThreads(first: 100, after: $threadsCursor) {
             nodes {
               id
               isResolved
@@ -170,42 +232,118 @@ function fetchPRReviewData(prNumber) {
                   line
                   createdAt
                 }
+                pageInfo { hasNextPage endCursor }
               }
             }
+            pageInfo { hasNextPage endCursor }
           }
         }
       }
     }
   `;
+  const response = runGraphql(query, {
+    owner: REPO_OWNER,
+    repo: REPO_NAME,
+    pull_number: prNumber,
+    reviewsCursor,
+    threadsCursor
+  });
+  const pr = response.data?.repository?.pullRequest;
+  if (!pr) throw new Error(`Could not find PR #${prNumber} in ${REPO_OWNER}/${REPO_NAME}`);
+  return pr;
+}
 
-  const formattedQuery = query.replace(/\s+/g, ' ').trim();
-  const res = runGhJson([
-    'api',
-    'graphql',
-    '-f',
-    `query=${formattedQuery}`,
-    '-F',
-    `owner=${REPO_OWNER}`,
-    '-F',
-    `repo=${REPO_NAME}`,
-    '-F',
-    `pull_number=${prNumber}`
-  ]);
-  const pr = res.data?.repository?.pullRequest;
+/** Fetch one additional page of comments for a review thread. */
+function fetchReviewThreadCommentPage(threadId, commentsCursor) {
+  const query = `
+    query($threadId: ID!, $commentsCursor: String) {
+      node(id: $threadId) {
+        ... on PullRequestReviewThread {
+          comments(first: 50, after: $commentsCursor) {
+            nodes {
+              id
+              databaseId
+              url
+              author { login }
+              body
+              path
+              line
+              createdAt
+            }
+            pageInfo { hasNextPage endCursor }
+          }
+        }
+      }
+    }
+  `;
+  const response = runGraphql(query, { threadId, commentsCursor });
+  const comments = response.data?.node?.comments;
+  if (!comments) throw new Error(`Could not fetch comments for review thread ${threadId}`);
+  return comments;
+}
 
-  if (!pr) {
-    throw new Error(`Could not find PR #${prNumber} in ${REPO_OWNER}/${REPO_NAME}`);
+/** Accumulate every comment page before the thread is processed. */
+function fetchAllReviewThreadComments(thread) {
+  const comments = [...(thread.comments.nodes || [])];
+  let cursor = thread.comments.pageInfo?.hasNextPage ? thread.comments.pageInfo.endCursor : null;
+  while (cursor) {
+    const page = fetchReviewThreadCommentPage(thread.id, cursor);
+    comments.push(...(page.nodes || []));
+    if (page.pageInfo?.hasNextPage && !page.pageInfo.endCursor) {
+      throw new Error(`Review thread ${thread.id} reported another page without a cursor`);
+    }
+    cursor = page.pageInfo?.hasNextPage ? page.pageInfo.endCursor : null;
   }
+  return { ...thread, comments: { nodes: comments, pageInfo: { hasNextPage: false, endCursor: null } } };
+}
+
+/**
+ * Fetch all review data for a pull request across all entry points:
+ * 1. Inline review threads (open and resolved with follow-ups)
+ * 2. Top-level Pull Request Reviews (pullrequestreview-*)
+ * 3. Issue comments / bot summaries (issuecomment-*)
+ * 4. Discussion replies and follow-ups
+ */
+function fetchPRReviewData(prNumber) {
+  const reviews = [];
+  const reviewThreads = [];
+  let reviewsCursor = null;
+  let threadsCursor = null;
+  let prMetadata;
+
+  do {
+    const page = fetchPullRequestPage(prNumber, reviewsCursor, threadsCursor);
+    prMetadata ||= page;
+    reviews.push(...(page.reviews.nodes || []));
+    reviewThreads.push(...(page.reviewThreads.nodes || []));
+
+    if (page.reviews.pageInfo?.hasNextPage && !page.reviews.pageInfo.endCursor) {
+      throw new Error('Pull-request reviews reported another page without a cursor');
+    }
+    if (page.reviewThreads.pageInfo?.hasNextPage && !page.reviewThreads.pageInfo.endCursor) {
+      throw new Error('Review threads reported another page without a cursor');
+    }
+    reviewsCursor = page.reviews.pageInfo?.hasNextPage ? page.reviews.pageInfo.endCursor : null;
+    threadsCursor = page.reviewThreads.pageInfo?.hasNextPage ? page.reviewThreads.pageInfo.endCursor : null;
+  } while (reviewsCursor || threadsCursor);
+
+  const allReviewThreads = reviewThreads.map(fetchAllReviewThreadComments);
 
   // Also fetch issue comments for CodeRabbit / top-level bot summaries
   let issueComments = [];
   try {
-    issueComments = runGhJson(['api', `repos/${REPO_OWNER}/${REPO_NAME}/issues/${prNumber}/comments`, '--paginate']);
+    const data = runGhJson([
+      'api',
+      `repos/${REPO_OWNER}/${REPO_NAME}/issues/${prNumber}/comments`,
+      '--paginate',
+      '--slurp'
+    ]);
+    issueComments = flattenPaginatedResults(data);
   } catch (err) {
     console.warn(`[WARN] Failed to fetch issue comments for PR #${prNumber} (transient GitHub API error):`, err?.message);
   }
 
-  const allThreads = (pr.reviewThreads.nodes || []).map((t, idx) => {
+  const allThreads = allReviewThreads.map((t, idx) => {
     const comments = t.comments.nodes || [];
     const firstComment = comments[0] || {};
     const latestComment = comments[comments.length - 1] || {};
@@ -239,18 +377,18 @@ function fetchPRReviewData(prNumber) {
 
   return {
     repo: `${REPO_OWNER}/${REPO_NAME}`,
-    prNumber: pr.number,
-    headSha: pr.headRefOid,
-    headBranch: pr.headRefName,
-    baseBranch: pr.baseRefName,
-    state: pr.state,
+    prNumber: prMetadata.number,
+    headSha: prMetadata.headRefOid,
+    headBranch: prMetadata.headRefName,
+    baseBranch: prMetadata.baseRefName,
+    state: prMetadata.state,
     totalThreads: allThreads.length,
     unresolvedCount: unresolvedThreads.length,
     pendingActionCount: pendingActionThreads.length,
     unresolvedThreads,
     pendingActionThreads,
     allThreads,
-    reviews: (pr.reviews.nodes || []).map(r => ({
+    reviews: reviews.map(r => ({
       id: r.id,
       databaseId: r.databaseId,
       author: r.author?.login,
@@ -272,20 +410,34 @@ function fetchPRReviewData(prNumber) {
   };
 }
 
-/**
- * Reply to a PR comment with informal attribution sign-off at the bottom.
- */
-function replyToComment(prNumber, commentId, message) {
+/** Reply to a review source using the endpoint that matches its source type. */
+function replyToComment(prNumber, sourceType, sourceId, message) {
+  if (!COMMENT_SOURCES.has(sourceType)) {
+    throw new Error(`Unsupported or ambiguous comment source: ${sourceType}`);
+  }
+  const commentId = parsePositiveInteger(sourceId, 'comment ID');
   const trimmed = message.trim();
   const fullBody = trimmed.endsWith('- AG-Ron')
     ? trimmed
     : `${trimmed}${ATTRIBUTION_SIGN_OFF}`;
 
-  runGh(
-    ['api', `repos/${REPO_OWNER}/${REPO_NAME}/pulls/${prNumber}/comments/${commentId}/replies`, '--input', '-'],
-    { body: fullBody }
-  );
-  console.log(`[OK] Replied to comment ${commentId} in ${REPO_OWNER}/${REPO_NAME}`);
+  if (sourceType === 'review-comment') {
+    runGh(
+      ['api', `repos/${REPO_OWNER}/${REPO_NAME}/pulls/${prNumber}/comments/${commentId}/replies`, '--input', '-'],
+      { body: fullBody }
+    );
+  } else if (sourceType === 'issue-comment') {
+    runGh(
+      ['api', `repos/${REPO_OWNER}/${REPO_NAME}/issues/${prNumber}/comments`, '--input', '-'],
+      { body: fullBody }
+    );
+  } else {
+    runGh(
+      ['api', `repos/${REPO_OWNER}/${REPO_NAME}/pulls/${prNumber}/reviews`, '--input', '-'],
+      { body: fullBody, event: 'COMMENT' }
+    );
+  }
+  console.log(`[OK] Replied to ${sourceType} ${commentId} in ${REPO_OWNER}/${REPO_NAME}`);
 }
 
 // CLI Command Router
@@ -301,9 +453,11 @@ switch (command) {
     break;
   }
   case 'fetch': {
-    const prNumber = parseInt(args[0], 10);
-    if (!prNumber) {
-      console.error('Usage: pr_review_tools.js fetch <pr_number>');
+    let prNumber;
+    try {
+      prNumber = parsePullRequestNumber(args[0]);
+    } catch (error) {
+      console.error(`Usage: pr_review_tools.js fetch <pr_number|pr_url> (${error.message})`);
       process.exit(1);
     }
     const data = fetchPRReviewData(prNumber);
@@ -311,16 +465,23 @@ switch (command) {
     break;
   }
   case 'reply': {
-    const prNumber = parseInt(args[0], 10);
-    const commentId = parseInt(args[1], 10);
-    const message = args.slice(2).join(' ');
-    if (!prNumber || !commentId || !message) {
-      console.error('Usage: pr_review_tools.js reply <pr_number> <comment_id> <message>');
+    let prNumber;
+    try {
+      prNumber = parsePullRequestNumber(args[0]);
+    } catch (error) {
+      console.error(`Usage: pr_review_tools.js reply <pr_number|pr_url> <source_type> <comment_id> <message> (${error.message})`);
       process.exit(1);
     }
-    replyToComment(prNumber, commentId, message);
+    const sourceType = args[1];
+    const commentId = args[2];
+    const message = args.slice(3).join(' ');
+    if (!sourceType || !commentId || !message) {
+      console.error('Usage: pr_review_tools.js reply <pr_number|pr_url> <source_type> <comment_id> <message>');
+      process.exit(1);
+    }
+    replyToComment(prNumber, sourceType, commentId, message);
     break;
   }
   default:
-    console.log('Usage: pr_review_tools.js [repo | suites <commit_sha> | fetch <pr_number> | reply <pr_number> <comment_id> <msg>]');
+    console.log('Usage: pr_review_tools.js [repo | suites <commit_sha> | fetch <pr_number|pr_url> | reply <pr_number|pr_url> <source_type> <comment_id> <msg>]');
 }

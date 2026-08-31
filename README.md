@@ -115,9 +115,11 @@ OnTheRoad follows strict **Clean Architecture & Unidirectional Data Flow (UDF)**
 *Executes all 43 JVM unit tests across `:core:model`, `:core:domain`, `:core:data`, `:core:ui`, and `:app` without an emulator.*
 
 ### Build Production Release APK & App Bundle
+
 ```bash
 ./gradlew assembleRelease bundleRelease
 ```
+
 *Generates optimized release APK at `app/build/outputs/apk/release/app-release.apk` (2.24 MB).*
 
 ### Verify Repository Governance
@@ -127,16 +129,16 @@ bun run governance:check && bun test
 
 ---
 
-## 📦 Verified Working-Tree Artifacts (post-v0.1.0)
+## 📦 Verified Immutable-Revision Artifacts (post-v0.1.0)
 
-The identities below were measured from the verified working tree at
-`ab782714dcad3ab0bd8cb77bf6abec705bb3fd07`. They are not replacements for the
+The identities below were measured from the clean immutable revision
+`e561286ac4133906c46fc33d2bfe95f3ad87b6b0`. They are not replacements for the
 version-specific artifacts recorded in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 
 | Artifact | File Size | SHA-256 Checksum |
 |---|---|---|
-| `app-release.apk` | **2,239,791 bytes (2.24 MB)** | `1072752b0f6104a643311149f31caec909bac0b40a585c3f49bab662561f2426` |
-| `app-release.aab` | **4,051,181 bytes (4.05 MB)** | `93a3454c29ff2aac9fd1477611026d6315477fd02567d037a953f64e57ff38f6` |
+| `app-release.apk` | **2,239,791 bytes (2.24 MB)** | `e6dff65bfbc16ef699e6b0aa82f878205373402bec06f569932475485dbae078` |
+| `app-release.aab` | **4,051,114 bytes (4.05 MB)** | `179661495156847ce500d39c45b0b47dc8317f149bfd7a87455abf7b5293e402` |
 | `app-debug.apk` | **17,743,073 bytes (17.74 MB)** | `4c178ab4e796b22a45883f6835e2dcf51533b7701efbb5ed1ffe229361f9f6c2` |
 
 ---
