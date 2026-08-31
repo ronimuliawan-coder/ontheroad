@@ -4,7 +4,7 @@
   "baseline": {
     "commit": "f8af37f3512c314a57da32d0b37e473455a45b3b",
     "evidence": "docs/governance/BASELINE.md",
-    "canonicalRepository": "https://github.com/rons-space/ontheroad.git"
+    "canonicalRepository": "https://github.com/ronimuliawan/ontheroad.git"
   },
   "allowedDispositions": [
     "active",

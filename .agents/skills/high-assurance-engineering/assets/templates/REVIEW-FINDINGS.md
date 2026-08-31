@@ -70,7 +70,7 @@
 | Valid — already fixed | `[N]` | `[IDS]` |
 | Valid — defer with tracked issue | `[N]` | `[IDS]` |
 | Not applicable — verified invariant | `[N]` | `[IDS]` |
-| Invalid — false positive/stale premise | `[N]` | `[IDS]` |
+| Invalid — false positive or stale factual premise | `[N]` | `[IDS]` |
 | Accepted exception | `[N]` | `[IDS]` |
 | Out of scope — separate decision required | `[N]` | `[IDS]` |
 

@@ -6,7 +6,7 @@ uplift. Durable evidence and approvals are recorded in
 [`GOVERNANCE.md`](GOVERNANCE.md).
 
 - Last verified: `2026-08-31T14:11:48+07:00` (Asia/Jakarta)
-- Exact revision/environment: clean immutable revision `e561286ac4133906c46fc33d2bfe95f3ad87b6b0`; Bun `1.4.0`; JDK 21; Gradle `8.11.1`
+- Exact revision/environment: `ab782714dcad3ab0bd8cb77bf6abec705bb3fd07` plus approved Unit 1–3 working-tree changes; Bun `1.4.0`; JDK 21; Gradle `8.11.1`
 - Current phase/gate: Existing-project high-assurance uplift — Phase 4 / Unit 3, stale-document and release-artifact refresh — `COMPLETE`
 - Overall health: `AT RISK`
 - Tracker/project: Local evidence fallback; no matching `OnTheRoad` Linear project or issue was resolved
@@ -47,7 +47,7 @@ the tagged v0.1.0 release record.
 
 | Environment | Revision/artifact | Status | Last acceptance evidence | Owner |
 |---|---|---|---|---|
-| PR #2 source revision | `e561286ac4133906c46fc33d2bfe95f3ad87b6b0` | `VERIFIED` | Android baseline and review-remediation validation are recorded in `EVIDENCE-LOG.md` | `developer-project-owner` |
+| PR #2 source revision | `595489b69040fc20cf3dd807397d9e8c61a90a09` | `VERIFIED` | Android baseline and review-remediation validation are recorded in `EVIDENCE-LOG.md` | `developer-project-owner` |
 | Release candidate `v0.1.0` | Existing tagged product release | Historical/current release reference; no deployment requested | Release measurements and hashes in `EVIDENCE-LOG.md` | `developer-project-owner` |
 
 ## Next gate
