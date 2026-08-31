@@ -38,6 +38,7 @@ const ALLOWED_BOT_LOGINS = new Set([
 ]);
 
 const REPO_IDENTIFIER_REGEX = /^[a-zA-Z0-9_.-]+$/;
+const COMMIT_REF_REGEX = /^[A-Za-z0-9][A-Za-z0-9_.-]*$/;
 const COMMENT_SOURCES = new Set(['review-comment', 'issue-comment', 'review-summary']);
 
 /**
@@ -154,6 +155,15 @@ function parsePullRequestNumber(value) {
   return parsePositiveInteger(match[3], 'pull-request number');
 }
 
+/** Validate a commit SHA or path-safe Git ref before using it in a GitHub API path. */
+function parseCommitRef(value) {
+  const ref = value || 'HEAD';
+  if (!COMMIT_REF_REGEX.test(ref) || ref.includes('..')) {
+    throw new Error('Invalid commit ref: expected a SHA or path-safe ref without separators or traversal');
+  }
+  return ref;
+}
+
 /** Execute a GraphQL request with typed variables and normalized whitespace. */
 function runGraphql(query, variables) {
   const args = ['api', 'graphql', '-f', `query=${query.replace(/\s+/g, ' ').trim()}`];
@@ -182,10 +192,15 @@ function checkSuitesStatus(commitSha) {
     // GitHub retains integration-created placeholders that never receive a run.
     // They are not actionable checks for this commit and must not block review quiescence.
     .filter(s => s.latest_check_runs_count > 0);
-  const statuses = runGhJson([
-    'api',
-    `repos/${REPO_OWNER}/${REPO_NAME}/commits/${commitSha}/status`
-  ]).statuses || [];
+  const statuses = flattenPaginatedResults(
+    runGhJson([
+      'api',
+      `repos/${REPO_OWNER}/${REPO_NAME}/commits/${commitSha}/status`,
+      '--paginate',
+      '--slurp'
+    ]),
+    'statuses'
+  );
   const monitoredSuites = suites.filter(s => s.app);
   const monitoredStatuses = statuses.filter(s =>
     RELEVANT_APPS.some(app => s.context?.toLowerCase().includes(app.toLowerCase()))
@@ -493,8 +508,14 @@ switch (command) {
     break;
   }
   case 'suites': {
-    const sha = args[0] || 'HEAD';
-    const status = checkSuitesStatus(sha);
+    let commitRef;
+    try {
+      commitRef = parseCommitRef(args[0]);
+    } catch (error) {
+      console.error(`Usage: pr_review_tools.js suites <commit_sha|ref> (${error.message})`);
+      process.exit(1);
+    }
+    const status = checkSuitesStatus(commitRef);
     console.log(JSON.stringify(status, null, 2));
     break;
   }
