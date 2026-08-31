@@ -19,6 +19,20 @@ The project retains stack-relevant guidance and active safety mechanisms, ensuri
 
 `.agents/ecc-install-state.json` records the exact installation operations and content SHA-256 hashes.
 
+## Project-Owned Engineering Extensions
+
+The repository also adopts two project-owned extensions that are intentionally separate from
+the ECC vendor footprint:
+
+- `high-assurance-engineering`: complete phase-gated, evidence-driven engagement standard,
+  including its master prompt, operator guide, audit reference, and reusable templates;
+- `pr-review-remediation`: evidence-based review feedback audit and remediation guidance.
+
+Their entry workflows are `.agents/workflows/high-assurance-engineering.md` and
+`.agents/workflows/resolve-pr-reviews.md`. All package documentation is registered in
+[`docs/governance/governance.json`](governance/governance.json); package templates remain
+reusable resources and are not project-specific canonical documents.
+
 Reproduce the inventory:
 
 ```bash

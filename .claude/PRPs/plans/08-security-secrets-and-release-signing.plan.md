@@ -2,7 +2,7 @@
 
 > **PRP Plan**: `.claude/PRPs/plans/08-security-secrets-and-release-signing.plan.md`  
 > **Lifecycle Phase**: Phase 8 (Security, secrets and release signing)  
-> **Status**: Approved Plan / Ready for Execution  
+> **Status**: Historical evidence / Executed
 > **Target Platform**: Android (Gradle Signing + ProGuard/R8 + CI Secrets)  
 > **Parent PRD**: [`.claude/PRPs/prds/ontheroad-trip-tracker.prd.md`](../prds/ontheroad-trip-tracker.prd.md)  
 

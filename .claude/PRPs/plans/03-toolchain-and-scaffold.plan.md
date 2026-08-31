@@ -2,7 +2,7 @@
 
 > **PRP Plan**: `.claude/PRPs/plans/03-toolchain-and-scaffold.plan.md`  
 > **Lifecycle Phase**: Phase 3 (Android toolchain and architecture scaffold)  
-> **Status**: Approved Plan / Ready for Execution  
+> **Status**: Historical evidence / Executed
 > **Target Platform**: Android (Kotlin + Jetpack Compose)  
 > **Parent PRD**: [`.claude/PRPs/prds/ontheroad-trip-tracker.prd.md`](../prds/ontheroad-trip-tracker.prd.md)  
 

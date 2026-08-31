@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-27T21:18:00+07:00",
+  "generatedAt": "2026-08-31T14:03:33+07:00",
   "baseline": {
     "commit": "f8af37f3512c314a57da32d0b37e473455a45b3b",
     "evidence": "docs/governance/BASELINE.md",
@@ -27,6 +27,7 @@
     ],
     "exactFiles": [
       ".agents/ecc-install-state.json",
+      ".agents/skills/pr-review-remediation/scripts/pr_review_tools.js",
       ".env.example",
       "docs/governance/governance.json"
     ],
@@ -306,7 +307,7 @@
         "ci",
         "release"
       ],
-      "status": "planned",
+      "status": "current",
       "consumers": [
         "github-actions-android-release"
       ],
@@ -323,7 +324,7 @@
         "local",
         "release"
       ],
-      "status": "planned",
+      "status": "current",
       "consumers": [
         "android-gradle-build"
       ],
@@ -339,7 +340,7 @@
         "ci",
         "release"
       ],
-      "status": "planned",
+      "status": "current",
       "consumers": [
         "github-actions-android-build"
       ],
@@ -355,7 +356,7 @@
         "ci",
         "release"
       ],
-      "status": "planned",
+      "status": "current",
       "consumers": [
         "github-actions-android-build"
       ],
@@ -371,7 +372,7 @@
         "ci",
         "release"
       ],
-      "status": "planned",
+      "status": "current",
       "consumers": [
         "github-actions-android-build"
       ],
@@ -927,6 +928,110 @@
       "reason": "Agent capability and pattern guide"
     },
     {
+      "path": ".agents/skills/high-assurance-engineering/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Adopted high-assurance engineering execution standard"
+    },
+    {
+      "path": ".agents/skills/high-assurance-engineering/assets/templates/DECISION-RECORD.md",
+      "kind": "template",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Adopted high-assurance decision record template"
+    },
+    {
+      "path": ".agents/skills/high-assurance-engineering/assets/templates/ENGAGEMENT-CHARTER.md",
+      "kind": "template",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Adopted high-assurance engagement charter template"
+    },
+    {
+      "path": ".agents/skills/high-assurance-engineering/assets/templates/EVIDENCE-LOG.md",
+      "kind": "template",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Adopted high-assurance evidence log template"
+    },
+    {
+      "path": ".agents/skills/high-assurance-engineering/assets/templates/PHASE-PLAN.md",
+      "kind": "template",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Adopted high-assurance phase plan template"
+    },
+    {
+      "path": ".agents/skills/high-assurance-engineering/assets/templates/PRODUCT-REQUIREMENTS.md",
+      "kind": "template",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Adopted high-assurance product requirements template"
+    },
+    {
+      "path": ".agents/skills/high-assurance-engineering/assets/templates/PROJECT-INSTRUCTIONS.md",
+      "kind": "template",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Adopted high-assurance project instructions template"
+    },
+    {
+      "path": ".agents/skills/high-assurance-engineering/assets/templates/PROJECT-MAP.md",
+      "kind": "template",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Adopted high-assurance project map template"
+    },
+    {
+      "path": ".agents/skills/high-assurance-engineering/assets/templates/PROJECT-STATUS.md",
+      "kind": "template",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Adopted high-assurance project status template"
+    },
+    {
+      "path": ".agents/skills/high-assurance-engineering/assets/templates/REVIEW-FINDINGS.md",
+      "kind": "template",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Adopted high-assurance review findings template"
+    },
+    {
+      "path": ".agents/skills/high-assurance-engineering/references/MASTER-PROMPT.md",
+      "kind": "reference",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Canonical high-assurance execution contract"
+    },
+    {
+      "path": ".agents/skills/high-assurance-engineering/references/OPERATOR-GUIDE.md",
+      "kind": "reference",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Canonical high-assurance operator and adoption guide"
+    },
+    {
+      "path": ".agents/skills/high-assurance-engineering/references/STANDARD-COVERAGE.md",
+      "kind": "reference",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Canonical high-assurance standard audit coverage map"
+    },
+    {
       "path": ".agents/skills/intent-driven-development/SKILL.md",
       "kind": "skill",
       "disposition": "active",
@@ -989,6 +1094,22 @@
       "ownerPhase": 1,
       "authority": "ecc",
       "reason": "Agent capability and pattern guide"
+    },
+    {
+      "path": ".agents/skills/pr-review-remediation/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Adopted evidence-based pull-request review remediation standard"
+    },
+    {
+      "path": ".agents/skills/pr-review-remediation/scripts/pr_review_tools.js",
+      "kind": "support-script",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Read-only review extraction and explicitly gated reply helper"
     },
     {
       "path": ".agents/skills/production-audit/SKILL.md",
@@ -1157,6 +1278,14 @@
       "ownerPhase": 1,
       "authority": "ecc",
       "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/high-assurance-engineering.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Project entry point for high-assurance engineering engagements"
     },
     {
       "path": ".agents/workflows/hookify-configure.md",
@@ -1503,6 +1632,14 @@
       "reason": "Agent task and delivery workflow"
     },
     {
+      "path": ".agents/workflows/resolve-pr-reviews.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Project review feedback audit and remediation workflow"
+    },
+    {
       "path": ".agents/workflows/resume-session.md",
       "kind": "workflow",
       "disposition": "active",
@@ -1601,7 +1738,7 @@
     {
       "path": ".claude/PRPs/plans/03-toolchain-and-scaffold.plan.md",
       "kind": "implementation-plan",
-      "disposition": "active",
+      "disposition": "historical",
       "ownerPhase": 3,
       "authority": "project-owned",
       "reason": "PRP implementation plan for Phase 3 toolchain and scaffold"
@@ -1609,7 +1746,7 @@
     {
       "path": ".claude/PRPs/plans/04-core-domain-and-data.plan.md",
       "kind": "implementation-plan",
-      "disposition": "active",
+      "disposition": "historical",
       "ownerPhase": 4,
       "authority": "project-owned",
       "reason": "PRP implementation plan for Phase 4 core domain and data models"
@@ -1617,7 +1754,7 @@
     {
       "path": ".claude/PRPs/plans/05-design-system-and-ui-shell.plan.md",
       "kind": "implementation-plan",
-      "disposition": "active",
+      "disposition": "historical",
       "ownerPhase": 5,
       "authority": "project-owned",
       "reason": "PRP implementation plan for Phase 5 design system and UI shell"
@@ -1625,7 +1762,7 @@
     {
       "path": ".claude/PRPs/plans/06-feature-core-implementation.plan.md",
       "kind": "implementation-plan",
-      "disposition": "active",
+      "disposition": "historical",
       "ownerPhase": 6,
       "authority": "project-owned",
       "reason": "PRP implementation plan for Phase 6 feature core implementation"
@@ -1633,7 +1770,7 @@
     {
       "path": ".claude/PRPs/plans/07-performance-motion-and-ux.plan.md",
       "kind": "implementation-plan",
-      "disposition": "active",
+      "disposition": "historical",
       "ownerPhase": 7,
       "authority": "project-owned",
       "reason": "PRP implementation plan for Phase 7 performance, motion and UX with 120Hz support"
@@ -1641,7 +1778,7 @@
     {
       "path": ".claude/PRPs/plans/08-security-secrets-and-release-signing.plan.md",
       "kind": "implementation-plan",
-      "disposition": "active",
+      "disposition": "historical",
       "ownerPhase": 8,
       "authority": "project-owned",
       "reason": "PRP implementation plan for Phase 8 security, secrets and release signing"
@@ -1649,7 +1786,7 @@
     {
       "path": ".claude/PRPs/plans/09-verification-and-release-candidate.plan.md",
       "kind": "implementation-plan",
-      "disposition": "active",
+      "disposition": "historical",
       "ownerPhase": 9,
       "authority": "project-owned",
       "reason": "PRP implementation plan for Phase 9 verification and release candidate"
@@ -1657,7 +1794,7 @@
     {
       "path": ".claude/PRPs/plans/10-retirement-and-living-docs.plan.md",
       "kind": "implementation-plan",
-      "disposition": "active",
+      "disposition": "historical",
       "ownerPhase": 10,
       "authority": "project-owned",
       "reason": "PRP implementation plan for Phase 10 retirement and living docs"
@@ -1697,7 +1834,7 @@
     {
       "path": "RELEASE_NOTES.md",
       "kind": "release-notes",
-      "disposition": "active",
+      "disposition": "historical",
       "ownerPhase": 9,
       "authority": "project-owned",
       "reason": "Release notes for OnTheRoad v0.1.0 release candidate"
@@ -1727,12 +1864,28 @@
       "reason": "Pre-development frozen environment baseline"
     },
     {
+      "path": "docs/governance/EVIDENCE-LOG.md",
+      "kind": "evidence-log",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Local tracking fallback and sanitized high-assurance evidence record"
+    },
+    {
       "path": "docs/governance/GOVERNANCE.md",
       "kind": "governance-authority",
       "disposition": "active",
       "ownerPhase": 1,
       "authority": "project-owned",
       "reason": "Human-readable repository governance guide"
+    },
+    {
+      "path": "docs/governance/STATUS.md",
+      "kind": "project-status",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Current high-assurance health and next-gate status"
     },
     {
       "path": "docs/governance/governance.json",
