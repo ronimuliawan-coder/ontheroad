@@ -238,6 +238,18 @@ never contain credentials, tokens, or private payloads.
 - Rollback/recovery impact: Revert the single remediation commit to restore the PR #2 source tree; application data, GitHub/GitLab authority, release state, and credentials remain unaffected.
 - Next gate: Create one atomic remediation commit, push the fix branch, open a PR into `dev`, then post attributed replies without resolving threads.
 
+### 2026-08-31 — PR #2 review remediation cycle 4
+
+- Actor: Agent implementing the user's explicit approval for the five valid CodeRabbit findings; the docstring-coverage note remains accepted as informational and ignored without rebuttal.
+- Exact base revision: PR #2 head `8fe47e904babf27aa6b6cbf4167c9452c3e56bef` in isolated worktree `/tmp/ontheroad-pr2-review-cycle3`, branch `codex/pr2-review-cycle4`.
+- Accepted findings: review comments `3895701299`, `3895701309`, `3895701316`, `3895701346`, and `3895701372`.
+- Scope: Require named and populated evidence surfaces for `Covered`; correct G1's operator-guide mapping; paginate combined commit statuses; validate suite commit/ref arguments; and distinguish new-engagement Phase 0 entry from verified resumed-engagement continuation.
+- Quiescence evidence: The visible PR checks for the exact head completed successfully. GitHub also retains zero-run queued integration placeholders for Vercel and CodeRabbit; raw check-suite data showed `latest_check_runs_count: 0`, so they were excluded from active monitoring.
+- Validation: `bun run governance:check` passed; `bun test` passed with 12 tests; the helper suite probe for the exact PR head reported six completed successful monitored results; invalid commit-ref probing rejected traversal input; JavaScript syntax, manifest JSON, and whitespace checks passed.
+- Security/privacy note: No secrets were read or recorded; no review thread was resolved; no external reply or push has been performed in this cycle.
+- Rollback/recovery impact: Revert the single cycle-4 remediation commit to restore the PR #2 source tree; application data, GitHub/GitLab authority, release state, and credentials remain unaffected.
+- Next gate: Complete final local validation and create one atomic remediation commit, then request approval before pushing the fix branch, opening a PR, or posting attributed replies.
+
 ## Accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |

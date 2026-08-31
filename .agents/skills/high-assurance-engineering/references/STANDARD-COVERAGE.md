@@ -13,13 +13,16 @@ control and update this matrix in the same change.
 - **Contract:** Binding behavior exists in `MASTER-PROMPT.md` or `SKILL.md`.
 - **Guide:** Human/agent interpretation exists in `OPERATOR-GUIDE.md`.
 - **Artifact:** An optional template makes the evidence reproducible.
-- **Covered:** Contract exists and any necessary guide/artifact is linked.
+- **Covered:** Contract exists, any necessary guide/artifact is linked, and that linked guidance
+  identifies a specific, auditable evidence surface for demonstrating the control. A row is not
+  covered until the evidence surface is named and populated in the applicable tracker, evidence
+  log, test/review record, or release record.
 
 ## Governance, authority, and scope
 
 | ID | Required control | Contract owner | Guide/artifact | State |
 |---|---|---|---|---|
-| G1 | Instruction precedence and untrusted-context boundary | Master operating contract 1 | Guide §§8–9, project-instructions template | Covered |
+| G1 | Instruction precedence and untrusted-context boundary | Master operating contract 1 | Guide §§15, 17, project-instructions template | Covered |
 | G2 | Read-only discovery before project mutation | Master contracts 2 and 15 | Guide §9 | Covered |
 | G3 | Preserve user work and prohibit unapproved destructive/history actions | Master contract 3 | Guide §§9, 14 | Covered |
 | G4 | Explicit phase approval; no approval inheritance | Master contract 5 and every phase gate | Guide §5, charter gate record | Covered |

@@ -18,9 +18,12 @@ adapting, teaching, auditing, or resuming the standard, or when the skill's rout
 additional detail.
 
 Treat `$ARGUMENTS` as the engagement configuration and concrete request. Mark missing facts
-as `DISCOVER`; do not guess. Begin with Phase 0 only. Always run its product-foundation
-readiness router; automatically reuse a complete approved PRD, run nested full discovery, run
-compact problem framing, or document a human-approved exemption as the master prompt directs.
+as `DISCOVER`; do not guess. For a new engagement, begin with Phase 0 only and run its
+product-foundation readiness router; automatically reuse a complete approved PRD, run nested
+full discovery, run compact problem framing, or document a human-approved exemption as the
+master prompt directs. For a verified resumed engagement, verify the resume packet, tracker,
+and repository state, then continue at the current approved phase without replaying completed
+gates.
 Establish tracking before repository changes when authorized, and obey strict phase gates
 unless the approval owner explicitly sets a different policy.
 

@@ -148,6 +148,13 @@ A confirmation is valid when the agent has clearly named the completed gate and 
 next one. “Continue” can approve that named next phase; it must not be stretched into approval
 for all remaining phases. A new requirement returns work to the earliest affected gate.
 
+### New and resumed engagements
+
+For a new engagement, begin with Phase 0, run the product-foundation readiness router, and do
+not advance until its gate is explicitly confirmed. For a resumed engagement, verify the resume
+packet, tracker, and repository state described in §20, confirm the previously approved phase,
+and continue there without replaying completed gates or repeating completed external actions.
+
 The human may explicitly combine gates for low-risk work, but the combined output must still
 contain the same decisions and evidence. The agent must never weaken a legal, security,
 production, data-loss, credential, or destructive-action boundary for convenience.
