@@ -1,6 +1,5 @@
 package com.ontheroad.ui.history
 
-import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -8,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ontheroad.core.domain.usecase.TripSortOrder
 import com.ontheroad.core.model.Trip
 import com.ontheroad.core.model.TripStatus
+import com.ontheroad.core.model.ThemeMode
 import com.ontheroad.core.ui.theme.OnTheRoadTheme
 import com.ontheroad.viewmodel.HistoryUiState
 import org.junit.Assert.assertEquals
@@ -27,7 +27,7 @@ class HistoryReceiptTest {
         var sharedTripId: String? = null
 
         composeRule.setContent {
-            OnTheRoadTheme {
+            OnTheRoadTheme(themeMode = ThemeMode.SYSTEM) {
                 HistoryScreenContent(
                     uiState = HistoryUiState(
                         trips = listOf(
