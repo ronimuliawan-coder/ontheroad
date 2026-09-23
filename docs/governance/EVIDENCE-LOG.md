@@ -248,7 +248,73 @@ never contain credentials, tokens, or private payloads.
 - Validation: `bun run governance:check` passed; `bun test` passed with 12 tests; the helper suite probe for the exact PR head reported six completed successful monitored results; invalid commit-ref probing rejected traversal input; JavaScript syntax, manifest JSON, and whitespace checks passed.
 - Security/privacy note: No secrets were read or recorded; no review thread was resolved; no external reply or push has been performed in this cycle.
 - Rollback/recovery impact: Revert the single cycle-4 remediation commit to restore the PR #2 source tree; application data, GitHub/GitLab authority, release state, and credentials remain unaffected.
-- Next gate: Complete final local validation and create one atomic remediation commit, then request approval before pushing the fix branch, opening a PR, or posting attributed replies.
+### 2026-09-01 — Direct / Offline Trip Booking & Fare Estimator Delivery
+
+- Actor: Human/agent pair under High-Assurance Engineering standard (`/high-assurance-engineering`)
+- Linear Tracker: Project `OnTheRoad: Direct Booking & Fare Estimator` (`RON-277`, `RON-278`, `RON-279`, `RON-280`).
+- Exact base revision: Branch `dev` on Linux, Bun `1.4.0`, JDK 21 at `/home/ron/.jdks/jbr-21.0.11`, Gradle `8.11.1`.
+- PRD: `.claude/PRPs/prds/direct-booking-and-fare-estimator.prd.md` registered and approved under Phase 2.
+- Unit 1 (Domain & Data):
+  - Added pure Kotlin data model `DirectPricingRates` in `core:model` (`ARCH-001`).
+  - Implemented `CalculateDirectFareUseCase` with base fare, included distance, rate/km, min fare, and custom override handling.
+  - Implemented `EstimateDistanceUseCase` with Haversine distance and 1.30x road curvature detour multiplier.
+  - Extended `UserPreferencesRepository` & `UserPreferencesRepositoryImpl` with rates persistence.
+  - Extended `StartTripUseCase` with optional quote distance and fare parameters.
+- Unit 2 (UI & Presentation):
+  - Created `DirectBookingCard` cockpit component with pickup, destination, distance, rates breakdown, and live estimated fare.
+  - Updated `SettingsScreen` and `SettingsViewModel` with driver configurable rate cards.
+  - Integrated Direct Booking card into `TrackerScreen` and `TrackerViewModel` with instant start run cockpit transition.
+- Verification & Quality:
+  - 47/47 JVM unit tests passing in 525ms (`CalculateDirectFareUseCaseTest`, `EstimateDistanceUseCaseTest`, `UserPreferencesRepositoryTest`, `SettingsViewModelTest`, `TrackerViewModelTest`, etc.).
+  - Gradle `assembleDebug` and `assembleRelease` APK builds passing with clean R8 shrinkage.
+  - Bun governance verifier passing (`bun run governance:check`).
+- Security/Privacy: 100% offline, zero network tracking, no secrets committed (`SEC-001`).
+- Rollback impact: Clean revert of feature commits restores repository without state or schema corruption.
+- Next gate: Phase 6 complete; ready for driver staging / release promotion.
+
+### 2026-09-23 — PRD approval and feature-state reconciliation
+
+- Actor: Human/agent pair under the High-Assurance Engineering standard.
+- Approval: The project owner explicitly confirmed the Direct Booking & Fare Estimator PRD.
+- Approved artifact: `.claude/PRPs/prds/direct-booking-and-fare-estimator.prd.md` is now an approved target for the v0.2.0 feature scope.
+- Current repository state: The feature implementation remains uncommitted in the local `dev` working tree; `origin/dev` and `origin/main` remain at `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e` and do not contain the feature files.
+- Evidence correction: The 2026-09-01 delivery entry is retained as historical evidence. Its test/build claims have not been re-established against the current exact dirty tree, so they are not current acceptance evidence.
+- Validation of this reconciliation: `bun run governance:check` passed; `git diff --check` reported two pre-existing blank-line-at-EOF warnings in feature files, which were not changed or normalized.
+- Current gate: Baseline and architecture/implementation-plan reconciliation remain pending. This PRD approval does not authorize a branch, commit, push, pull request, merge, release, or deployment.
+- Rollback/recovery impact: Documentation-only correction; reverting this entry and the matching PRD/status metadata restores the prior local documentation state. No application data or external state is changed.
+
+### 2026-09-23 — Phase 1 baseline and Phase 3 architecture plan
+
+- Actor: Human/agent pair under the High-Assurance Engineering standard; the project owner approved both gates before this inspection.
+- Exact repository state: `origin/dev` and `origin/main` at `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`; direct-booking implementation remains local-only and uncommitted.
+- Architecture result: Pure Kotlin model/domain boundaries remain intact; data owns Android location/geocoding and persistence; app owns ViewModel wiring and foreground-service start; Compose owns rendering.
+- Verified findings: P1 quote/realized-earnings field conflation and empty completion-modal prefill; P1 missing runtime location-permission gate; P2 best-effort Geocoder/`INTERNET` boundary versus strict offline wording; P2 transient invalid rate values being persisted from Settings.
+- Plan artifact: `.claude/PRPs/plans/11-direct-booking-and-fare-estimator.plan.md` records the three ownership choices, recommended boundaries, implementation units, acceptance matrix, source-control policy, and rollback constraints.
+- Validation: `bun test` passed with 12 tests; `bun run governance:check` passed. Gradle validation is blocked because no Java executable exists and `/home/ron/.jdks/jbr-21.0.11` is absent.
+- Next gate: Unit 1 implementation — quote contract and completion handoff. It requires separate explicit user approval; no application edit or external delivery action is authorized by this planning gate.
+
+### 2026-09-23 — Unit 1 implementation: quote contract and completion handoff
+
+- Actor: Agent implementing the user's explicit Unit 1 approval.
+- Scope: Added nullable `quotedFareAmountCents` to the pure trip model and Room entity, added the v1-to-v2 migration, kept realized earnings fields separate, preserved quoted distance on completion when omitted by the UI, and wired the direct completion modal to prefill quote/payment values.
+- Regression coverage added: direct-start quote persistence, repository entity/domain mapping, ViewModel start/complete handoff, and pure UI amount/distance conversion tests.
+- TDD evidence: RED tests were written first; the focused Gradle test command could not start because no Java executable exists and `/home/ron/.jdks/jbr-21.0.11` is absent. No GREEN result is claimed.
+- Review state: Source-level diff review completed; two pre-existing blank-line-at-EOF warnings remain in unrelated-to-this-unit dirty feature files and were not normalized.
+- Current gate: Unit 1 validation is pending a usable JDK. No commit, push, pull request, merge, or release action is authorized by this implementation approval.
+
+### 2026-09-23 — CI-only validation decision
+
+- Decision: The project owner explicitly directed that no local test, build, or verification run
+  be performed; CI is the acceptance authority.
+- The earlier local Bun and governance results remain informational observations only. No further
+  local validation will be run for this unit.
+- The missing local JDK is not a project blocker under this decision. Gradle tests, lint, builds,
+  and repository checks must run on the exact authorized remote revision in GitHub CI.
+- This supersedes the preceding implementation-entry wording that made a usable local JDK the
+  validation gate; the active gate is now exact-revision CI evidence.
+- Next gate: explicit authorization for the branch, commit, push, and/or pull request needed to
+  trigger CI. No commit, push, pull request, merge, or release action was performed by this
+  decision.
 
 ## Accepted exceptions
 

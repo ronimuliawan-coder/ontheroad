@@ -22,6 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +38,11 @@ import com.ontheroad.core.ui.theme.CockpitDimens
 import com.ontheroad.core.ui.theme.GreenProfit
 import com.ontheroad.core.ui.theme.OnSurfaceSecondary
 import com.ontheroad.core.ui.theme.OnTheRoadTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import com.ontheroad.core.model.DirectPricingRates
+import com.ontheroad.core.ui.theme.DirectBlue
 import com.ontheroad.viewmodel.SettingsViewModel
 
 @Composable
@@ -43,10 +51,13 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 ) {
     val themeMode by viewModel.themeMode.collectAsState()
+    val directPricingRates by viewModel.directPricingRates.collectAsState()
 
     SettingsScreenContent(
         themeMode = themeMode,
         onThemeModeSelected = { viewModel.setThemeMode(it) },
+        directPricingRates = directPricingRates,
+        onUpdateRates = { viewModel.updateDirectPricingRates(it) },
         modifier = modifier
     )
 }
@@ -55,6 +66,8 @@ fun SettingsScreen(
 fun SettingsScreenContent(
     themeMode: ThemeMode,
     onThemeModeSelected: (ThemeMode) -> Unit,
+    directPricingRates: DirectPricingRates,
+    onUpdateRates: (DirectPricingRates) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -76,6 +89,20 @@ fun SettingsScreenContent(
         ThemeSelectionCard(
             selectedMode = themeMode,
             onModeSelected = onThemeModeSelected
+        )
+
+        Spacer(modifier = Modifier.height(CockpitDimens.SpacingSmall))
+
+        Text(
+            text = "DIRECT BOOKING RATES (OFFLINE RUNS)",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Bold
+        )
+
+        DirectPricingRatesCard(
+            rates = directPricingRates,
+            onUpdateRates = onUpdateRates
         )
 
         Spacer(modifier = Modifier.height(CockpitDimens.SpacingSmall))
@@ -107,9 +134,112 @@ fun SettingsScreenContent(
 
         SettingItemCard(
             title = "Version",
-            value = "OnTheRoad 0.1.0",
+            value = "OnTheRoad 0.2.0",
             description = "Open source cockpit tool built for gig workers"
         )
+    }
+}
+
+@Composable
+private fun DirectPricingRatesCard(
+    rates: DirectPricingRates,
+    onUpdateRates: (DirectPricingRates) -> Unit
+) {
+    var baseFareText by remember(rates) { mutableStateOf((rates.baseFareAmountCents / 100).toString()) }
+    var ratePerKmText by remember(rates) { mutableStateOf((rates.ratePerKmAmountCents / 100).toString()) }
+    var minFareText by remember(rates) { mutableStateOf((rates.minimumFareAmountCents / 100).toString()) }
+    var includedKmText by remember(rates) { mutableStateOf(rates.includedBaseDistanceKm.toString()) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(CockpitDimens.CardCornerRadius),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(CockpitDimens.SpacingMedium),
+            verticalArrangement = Arrangement.spacedBy(CockpitDimens.SpacingSmall)
+        ) {
+            Text(
+                text = "Fare Quotation Formula",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Used to auto-calculate price when quoting on-the-spot rides",
+                style = MaterialTheme.typography.bodySmall,
+                color = OnSurfaceSecondary
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(CockpitDimens.SpacingSmall)
+            ) {
+                OutlinedTextField(
+                    value = baseFareText,
+                    onValueChange = {
+                        baseFareText = it
+                        val cents = (it.toLongOrNull() ?: 0L) * 100
+                        onUpdateRates(rates.copy(baseFareAmountCents = cents))
+                    },
+                    label = { Text("Base Fare (Rp)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    shape = RoundedCornerShape(CockpitDimens.CardCornerRadius)
+                )
+
+                OutlinedTextField(
+                    value = ratePerKmText,
+                    onValueChange = {
+                        ratePerKmText = it
+                        val cents = (it.toLongOrNull() ?: 0L) * 100
+                        onUpdateRates(rates.copy(ratePerKmAmountCents = cents))
+                    },
+                    label = { Text("Rate/Km (Rp)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    shape = RoundedCornerShape(CockpitDimens.CardCornerRadius)
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(CockpitDimens.SpacingSmall)
+            ) {
+                OutlinedTextField(
+                    value = minFareText,
+                    onValueChange = {
+                        minFareText = it
+                        val cents = (it.toLongOrNull() ?: 0L) * 100
+                        onUpdateRates(rates.copy(minimumFareAmountCents = cents))
+                    },
+                    label = { Text("Min Fare (Rp)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    shape = RoundedCornerShape(CockpitDimens.CardCornerRadius)
+                )
+
+                OutlinedTextField(
+                    value = includedKmText,
+                    onValueChange = {
+                        includedKmText = it
+                        val km = it.toDoubleOrNull() ?: 0.0
+                        onUpdateRates(rates.copy(includedBaseDistanceKm = km))
+                    },
+                    label = { Text("Base Km Inc.") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    shape = RoundedCornerShape(CockpitDimens.CardCornerRadius)
+                )
+            }
+        }
     }
 }
 
@@ -254,7 +384,9 @@ private fun SettingsScreenPreview() {
     OnTheRoadTheme(themeMode = ThemeMode.DARK) {
         SettingsScreenContent(
             themeMode = ThemeMode.DARK,
-            onThemeModeSelected = {}
+            onThemeModeSelected = {},
+            directPricingRates = DirectPricingRates(),
+            onUpdateRates = {}
         )
     }
 }

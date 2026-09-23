@@ -36,7 +36,12 @@ concurrency:
 jobs:
   test:
     name: JVM Unit Tests
-    runs-on: ubuntu-latest
+    runs-on:
+      - nscloud-ubuntu-24.04-amd64-8x16-with-cache
+      - nscloud-cache-size-20gb
+      - nscloud-cache-tag-ontheroad-gradle
+      - nscloud-cache-allow-commit-from-main
+      - nscloud-runner-tool-cache-20gb
     timeout-minutes: 15
 
     steps:
@@ -48,12 +53,51 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
+          cache: ''
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-disabled: true
+
+      - name: Setup Namespace Gradle cache
+        uses: namespacelabs/nscloud-cache-action@1124a6f3ce44e5cf84cc22111530961f4d2a15f9 # v1
+        with:
+          cache: gradle
 
       - name: Run JVM Unit Tests
-        run: ./gradlew testDebugUnitTest --no-daemon
+        run: ./gradlew testDebugUnitTest --no-daemon --parallel --build-cache
+
+  lint:
+    name: Android Lint
+    runs-on:
+      - nscloud-ubuntu-24.04-amd64-8x16-with-cache
+      - nscloud-cache-size-20gb
+      - nscloud-cache-tag-ontheroad-gradle
+      - nscloud-cache-allow-commit-from-main
+      - nscloud-runner-tool-cache-20gb
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: ''
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-disabled: true
+
+      - name: Setup Namespace Gradle cache
+        uses: namespacelabs/nscloud-cache-action@1124a6f3ce44e5cf84cc22111530961f4d2a15f9 # v1
+        with:
+          cache: gradle
 
       - name: Run Android Lint
-        run: ./gradlew lintDebug --no-daemon
+        run: ./gradlew lintDebug --no-daemon --parallel --build-cache

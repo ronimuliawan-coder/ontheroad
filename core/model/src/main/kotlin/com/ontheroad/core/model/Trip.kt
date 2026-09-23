@@ -19,6 +19,7 @@ data class Trip(
     val endLongitude: Double? = null,
     val actualDistanceMeters: Double = 0.0,
     val quotedDistanceMeters: Double? = null,
+    val quotedFareAmountCents: Long? = null,
     val durationSeconds: Long = 0,
     val platformFeeAmountCents: Long = 0,
     val cashCollectedAmountCents: Long = 0,

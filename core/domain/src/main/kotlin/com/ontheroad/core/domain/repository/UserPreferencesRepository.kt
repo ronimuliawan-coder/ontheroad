@@ -1,5 +1,6 @@
 package com.ontheroad.core.domain.repository
 
+import com.ontheroad.core.model.DirectPricingRates
 import com.ontheroad.core.model.ThemeMode
 import kotlinx.coroutines.flow.Flow
 
@@ -10,4 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface UserPreferencesRepository {
     fun getThemeMode(): Flow<ThemeMode>
     suspend fun setThemeMode(mode: ThemeMode)
+    fun getDirectPricingRates(): Flow<DirectPricingRates>
+    suspend fun setDirectPricingRates(rates: DirectPricingRates)
 }
+

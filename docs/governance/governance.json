@@ -1862,6 +1862,22 @@
       "reason": "PRP implementation plan for Phase 10 retirement and living docs"
     },
     {
+      "path": ".claude/PRPs/plans/11-direct-booking-and-fare-estimator.plan.md",
+      "kind": "implementation-plan",
+      "disposition": "active",
+      "ownerPhase": 3,
+      "authority": "project-owned",
+      "reason": "Approved architecture and implementation plan for Direct Booking & Fare Estimator"
+    },
+    {
+      "path": ".claude/PRPs/prds/direct-booking-and-fare-estimator.prd.md",
+      "kind": "product-requirements-document",
+      "disposition": "active",
+      "ownerPhase": 2,
+      "authority": "project-owned",
+      "reason": "Feature PRD for Direct / Offline Trip Booking & Fare Estimator"
+    },
+    {
       "path": ".claude/PRPs/prds/ontheroad-trip-tracker.prd.md",
       "kind": "product-requirements-document",
       "disposition": "active",

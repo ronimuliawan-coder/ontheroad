@@ -52,7 +52,7 @@ class CompleteTripUseCase(
             platformFeeAmountCents = platformFeeAmountCents,
             cashCollectedAmountCents = cashCollectedAmountCents,
             tipAmountCents = tipAmountCents,
-            quotedDistanceMeters = quotedDistanceMeters,
+            quotedDistanceMeters = quotedDistanceMeters ?: trip.quotedDistanceMeters,
             notes = notes,
             status = TripStatus.COMPLETED
         )
