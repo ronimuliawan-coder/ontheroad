@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.ontheroad.core.data.local.dao.CategoryDao
 import com.ontheroad.core.data.local.dao.PlatformDao
 import com.ontheroad.core.data.local.dao.ShiftDao
@@ -24,7 +26,7 @@ import com.ontheroad.core.data.local.entity.TripEntity
         PlatformEntity::class,
         CategoryEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class OnTheRoadDatabase : RoomDatabase() {
@@ -47,9 +49,16 @@ abstract class OnTheRoadDatabase : RoomDatabase() {
                     OnTheRoadDatabase::class.java,
                     DATABASE_NAME
                 )
+                    .addMigrations(MIGRATION_1_2)
                     .addCallback(PrepopulateDataCallback())
                     .build()
                     .also { instance = it }
+            }
+        }
+
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE trips ADD COLUMN quotedFareAmountCents INTEGER")
             }
         }
     }

@@ -16,13 +16,22 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
-private class TestFakeUserPreferencesRepository : UserPreferencesRepository {
+import com.ontheroad.core.model.DirectPricingRates
+
+private class SettingsFakeUserPreferencesRepository : UserPreferencesRepository {
     val themeModeFlow = MutableStateFlow(ThemeMode.SYSTEM)
+    val directPricingRatesFlow = MutableStateFlow(DirectPricingRates())
 
     override fun getThemeMode(): Flow<ThemeMode> = themeModeFlow
 
     override suspend fun setThemeMode(mode: ThemeMode) {
         themeModeFlow.value = mode
+    }
+
+    override fun getDirectPricingRates(): Flow<DirectPricingRates> = directPricingRatesFlow
+
+    override suspend fun setDirectPricingRates(rates: DirectPricingRates) {
+        directPricingRatesFlow.value = rates
     }
 }
 
@@ -30,13 +39,13 @@ private class TestFakeUserPreferencesRepository : UserPreferencesRepository {
 class SettingsViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var preferencesRepository: TestFakeUserPreferencesRepository
+    private lateinit var preferencesRepository: SettingsFakeUserPreferencesRepository
     private lateinit var viewModel: SettingsViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        preferencesRepository = TestFakeUserPreferencesRepository()
+        preferencesRepository = SettingsFakeUserPreferencesRepository()
         viewModel = SettingsViewModel(preferencesRepository)
     }
 
@@ -57,6 +66,38 @@ class SettingsViewModelTest {
             viewModel.setThemeMode(ThemeMode.LIGHT)
             testDispatcher.scheduler.runCurrent()
             assertEquals(ThemeMode.LIGHT, awaitItem())
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `directPricingRates state flow emits and updates pricing configurations`() = runTest(testDispatcher) {
+        viewModel.directPricingRates.test {
+            val initial = awaitItem()
+            assertEquals(10_000_00L, initial.baseFareAmountCents)
+            assertEquals(3_500_00L, initial.ratePerKmAmountCents)
+            assertEquals(15_000_00L, initial.minimumFareAmountCents)
+
+            viewModel.updateBaseFare(12_000_00L)
+            testDispatcher.scheduler.runCurrent()
+            val afterBase = awaitItem()
+            assertEquals(12_000_00L, afterBase.baseFareAmountCents)
+
+            viewModel.updateRatePerKm(4_000_00L)
+            testDispatcher.scheduler.runCurrent()
+            val afterRate = awaitItem()
+            assertEquals(4_000_00L, afterRate.ratePerKmAmountCents)
+
+            viewModel.updateMinimumFare(20_000_00L)
+            testDispatcher.scheduler.runCurrent()
+            val afterMin = awaitItem()
+            assertEquals(20_000_00L, afterMin.minimumFareAmountCents)
+
+            viewModel.updateIncludedBaseDistance(2.0)
+            testDispatcher.scheduler.runCurrent()
+            val afterDistance = awaitItem()
+            assertEquals(2.0, afterDistance.includedBaseDistanceKm, 0.01)
 
             cancelAndIgnoreRemainingEvents()
         }

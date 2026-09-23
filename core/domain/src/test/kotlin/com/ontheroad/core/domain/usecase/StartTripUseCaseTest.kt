@@ -71,4 +71,23 @@ class StartTripUseCaseTest {
         assertNotNull(exception)
         assertTrue(exception is IllegalStateException)
     }
+
+    @Test
+    fun persistsDirectQuoteWithoutTreatingItAsRealizedEarnings() = runTest {
+        val result = startTripUseCase(
+            startAddress = "Monas, Jakarta",
+            startLatitude = -6.175392,
+            startLongitude = 106.827153,
+            platformId = "direct",
+            categoryId = "passenger",
+            quotedDistanceMeters = 20_000.0,
+            quotedFareAmountCents = 8_000_00L
+        )
+
+        val trip = result.getOrThrow()
+
+        assertEquals(20_000.0, trip.quotedDistanceMeters, 0.001)
+        assertEquals(8_000_00L, trip.quotedFareAmountCents)
+        assertEquals(0L, trip.platformFeeAmountCents)
+    }
 }

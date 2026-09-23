@@ -35,6 +35,7 @@ import com.ontheroad.core.ui.theme.BrandEmerald
 import com.ontheroad.core.ui.theme.CockpitDimens
 import com.ontheroad.core.ui.theme.OnSurfaceSecondary
 import com.ontheroad.core.ui.theme.RedDiscrepancy
+import com.ontheroad.core.ui.component.DirectBookingCard
 import com.ontheroad.service.LocationTrackingService
 import com.ontheroad.viewmodel.TrackerUiState
 import com.ontheroad.viewmodel.TrackerViewModel
@@ -61,6 +62,23 @@ fun TrackerScreen(
                 }
             )
         },
+        onStartDirectTrip = {
+            viewModel.startDirectTrip(
+                startAddress = uiState.directPickupAddress,
+                startLatitude = uiState.directPickupLatitude,
+                startLongitude = uiState.directPickupLongitude,
+                onSuccess = { trip ->
+                    LocationTrackingService.startTracking(context, trip.id)
+                }
+            )
+        },
+        onPickupAddressChange = viewModel::updateDirectPickupAddress,
+        onSelectPickupSuggestion = viewModel::selectPickupSuggestion,
+        onAcquireCurrentLocation = viewModel::acquireCurrentLocation,
+        onDestinationAddressChange = viewModel::updateDirectDestinationAddress,
+        onSelectDestinationSuggestion = viewModel::selectDestinationSuggestion,
+        onEstimatedDistanceChange = viewModel::updateDirectEstimatedDistance,
+        onCustomFareOverrideChange = viewModel::updateDirectCustomFareOverride,
         onOpenCompleteModal = viewModel::openCompleteModal,
         onDismissCompleteModal = viewModel::dismissCompleteModal,
         onCompleteTrip = { endAddress, platformFee, cash, quotedDist, notes ->
@@ -87,6 +105,14 @@ fun TrackerScreenContent(
     uiState: TrackerUiState,
     onSelectPlatform: (String) -> Unit,
     onStartTrip: () -> Unit,
+    onStartDirectTrip: () -> Unit = onStartTrip,
+    onPickupAddressChange: (String) -> Unit = {},
+    onSelectPickupSuggestion: (com.ontheroad.core.model.AddressSuggestion) -> Unit = {},
+    onAcquireCurrentLocation: () -> Unit = {},
+    onDestinationAddressChange: (String) -> Unit = {},
+    onSelectDestinationSuggestion: (com.ontheroad.core.model.AddressSuggestion) -> Unit = {},
+    onEstimatedDistanceChange: (String) -> Unit = {},
+    onCustomFareOverrideChange: (String) -> Unit = {},
     onOpenCompleteModal: () -> Unit,
     onDismissCompleteModal: () -> Unit,
     onCompleteTrip: (String, Long, Long, Double?, String) -> Unit,
@@ -148,66 +174,102 @@ fun TrackerScreenContent(
 
             Spacer(modifier = Modifier.height(CockpitDimens.SpacingLarge))
 
-            // Hero Metric: Actual Odometer Distance
-            MetricCard(
-                title = "Actual Distance",
-                value = String.format("%.2f", uiState.actualDistanceKm),
-                unit = "km",
-                subtitle = if (uiState.isTracking) "GPS Breadcrumbs active" else "Ready to track run",
-                badge = if (uiState.isTracking) {
-                    { DiscrepancyBadge(differenceMeters = 0.0) }
-                } else null
-            )
-
-            Spacer(modifier = Modifier.height(CockpitDimens.SpacingMedium))
-
-            // Secondary Metrics: Duration & Speed
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(CockpitDimens.SpacingMedium)
-            ) {
-                MetricCard(
-                    title = "Duration",
-                    value = if (uiState.isTracking) formattedDuration else "--:--",
-                    modifier = Modifier.weight(1f)
+            if (!uiState.isTracking && uiState.selectedPlatformId == "direct") {
+                // Dedicated Direct / Offline Booking Quoting Card
+                DirectBookingCard(
+                    pickupAddress = uiState.directPickupAddress,
+                    onPickupAddressChange = onPickupAddressChange,
+                    pickupSuggestions = uiState.directPickupSuggestions,
+                    onSelectPickupSuggestion = onSelectPickupSuggestion,
+                    onAcquireCurrentLocation = onAcquireCurrentLocation,
+                    destinationAddress = uiState.directDestinationAddress,
+                    onDestinationAddressChange = onDestinationAddressChange,
+                    destinationSuggestions = uiState.directDestinationSuggestions,
+                    onSelectDestinationSuggestion = onSelectDestinationSuggestion,
+                    isSearchingAddress = uiState.isSearchingAddress,
+                    estimatedDistanceKmText = uiState.directEstimatedDistanceKmText,
+                    onEstimatedDistanceChange = onEstimatedDistanceChange,
+                    isDistanceAutoCalculated = uiState.isDistanceAutoCalculated,
+                    estimatedFareCents = uiState.directCalculatedFareCents,
+                    rates = uiState.directPricingRates,
+                    customFareOverrideText = uiState.directCustomFareOverrideText,
+                    onCustomFareOverrideChange = onCustomFareOverrideChange,
+                    onStartDirectRun = onStartDirectTrip
                 )
+            } else {
+                // Hero Metric: Actual Odometer Distance
                 MetricCard(
-                    title = "Speed",
-                    value = if (uiState.isTracking) "${uiState.speedKmh.toInt()}" else "0",
-                    unit = "km/h",
-                    modifier = Modifier.weight(1f)
+                    title = "Actual Distance",
+                    value = String.format("%.2f", uiState.actualDistanceKm),
+                    unit = "km",
+                    subtitle = if (uiState.isTracking) "GPS Breadcrumbs active" else "Ready to track run",
+                    badge = if (uiState.isTracking) {
+                        { DiscrepancyBadge(differenceMeters = 0.0) }
+                    } else null
                 )
+
+                Spacer(modifier = Modifier.height(CockpitDimens.SpacingMedium))
+
+                // Secondary Metrics: Duration & Speed
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(CockpitDimens.SpacingMedium)
+                ) {
+                    MetricCard(
+                        title = "Duration",
+                        value = if (uiState.isTracking) formattedDuration else "--:--",
+                        modifier = Modifier.weight(1f)
+                    )
+                    MetricCard(
+                        title = "Speed",
+                        value = if (uiState.isTracking) "${uiState.speedKmh.toInt()}" else "0",
+                        unit = "km/h",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
 
-        // Giant Cockpit Action Button (UI-001: 64dp height)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = CockpitDimens.SpacingLarge)
-        ) {
-            if (!uiState.isTracking) {
-                CockpitButton(
-                    text = "Start Trip",
-                    onClick = onStartTrip,
-                    icon = Icons.Default.PlayArrow,
-                    containerColor = BrandEmerald
-                )
-            } else {
-                CockpitButton(
-                    text = "Complete Trip",
-                    onClick = onOpenCompleteModal,
-                    icon = Icons.Default.Check,
-                    containerColor = RedDiscrepancy
-                )
+        // Giant Cockpit Action Button (when not in direct pre-trip quote card or when tracking)
+        if (uiState.isTracking || uiState.selectedPlatformId != "direct") {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = CockpitDimens.SpacingLarge)
+            ) {
+                if (!uiState.isTracking) {
+                    CockpitButton(
+                        text = "Start Trip",
+                        onClick = onStartTrip,
+                        icon = Icons.Default.PlayArrow,
+                        containerColor = BrandEmerald
+                    )
+                } else {
+                    CockpitButton(
+                        text = "Complete Trip",
+                        onClick = onOpenCompleteModal,
+                        icon = Icons.Default.Check,
+                        containerColor = RedDiscrepancy
+                    )
+                }
             }
         }
     }
 
     if (uiState.showCompleteModal) {
+        val activeTrip = uiState.activeTrip
+        val isDirectTrip = activeTrip?.platformId == "direct"
         RapidCompleteModal(
             actualDistanceMeters = uiState.actualDistanceKm * 1000.0,
-            initialEndAddress = "Current Destination",
+            initialEndAddress = activeTrip?.endAddress ?: "Current Destination",
+            initialPlatformFeeCents = if (isDirectTrip) {
+                activeTrip?.quotedFareAmountCents ?: 0L
+            } else {
+                activeTrip?.platformFeeAmountCents ?: 0L
+            },
+            initialCashCollectedCents = activeTrip?.cashCollectedAmountCents ?: 0L,
+            initialQuotedDistanceMeters = activeTrip?.quotedDistanceMeters,
+            isDirectTrip = isDirectTrip,
             onDismissRequest = onDismissCompleteModal,
             onCompleteTrip = onCompleteTrip
         )

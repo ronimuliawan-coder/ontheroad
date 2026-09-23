@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import com.ontheroad.core.ui.theme.CockpitDimens
 import com.ontheroad.core.ui.theme.GreenProfit
 import com.ontheroad.core.ui.theme.OnSurfaceSecondary
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 /**
  * Rapid trip completion modal designed for sub-30-second driver interaction (UI-002).
@@ -43,6 +45,10 @@ import com.ontheroad.core.ui.theme.OnSurfaceSecondary
 fun RapidCompleteModal(
     actualDistanceMeters: Double,
     initialEndAddress: String,
+    initialPlatformFeeCents: Long = 0L,
+    initialCashCollectedCents: Long = 0L,
+    initialQuotedDistanceMeters: Double? = null,
+    isDirectTrip: Boolean = false,
     onDismissRequest: () -> Unit,
     onCompleteTrip: (
         endAddress: String,
@@ -54,11 +60,17 @@ fun RapidCompleteModal(
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
-    var endAddress by remember { mutableStateOf(initialEndAddress) }
-    var platformFeeText by remember { mutableStateOf("") }
+    var endAddress by remember(initialEndAddress) { mutableStateOf(initialEndAddress) }
+    var platformFeeText by remember(initialPlatformFeeCents) {
+        mutableStateOf(centsToInputText(initialPlatformFeeCents))
+    }
     var hasCash by remember { mutableStateOf(false) }
-    var cashCollectedText by remember { mutableStateOf("") }
-    var quotedDistanceKmText by remember { mutableStateOf("") }
+    var cashCollectedText by remember(initialCashCollectedCents) {
+        mutableStateOf(centsToInputText(initialCashCollectedCents))
+    }
+    var quotedDistanceKmText by remember(initialQuotedDistanceMeters) {
+        mutableStateOf(metersToInputText(initialQuotedDistanceMeters))
+    }
     var notesText by remember { mutableStateOf("") }
 
     val quotedDistanceMeters by remember {
@@ -119,7 +131,7 @@ fun RapidCompleteModal(
             OutlinedTextField(
                 value = platformFeeText,
                 onValueChange = { platformFeeText = it },
-                label = { Text("App Payout / Platform Fee") },
+                label = { Text(if (isDirectTrip) "Direct Transfer Amount" else "App Payout / Platform Fee") },
                 placeholder = { Text("e.g. 25000 or 15.00") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -197,8 +209,8 @@ fun RapidCompleteModal(
             CockpitButton(
                 text = "Save & Finish Run",
                 onClick = {
-                    val platformFeeCents = (platformFeeText.toDoubleOrNull() ?: 0.0).toLong()
-                    val cashCents = if (hasCash) (cashCollectedText.toDoubleOrNull() ?: 0.0).toLong() else 0L
+                    val platformFeeCents = parseInputAmountToCents(platformFeeText)
+                    val cashCents = if (hasCash) parseInputAmountToCents(cashCollectedText) else 0L
 
                     onCompleteTrip(
                         endAddress.ifBlank { "Destination" },
@@ -212,4 +224,24 @@ fun RapidCompleteModal(
             )
         }
     }
+}
+
+internal fun centsToInputText(cents: Long): String {
+    if (cents <= 0L) return ""
+    return BigDecimal.valueOf(cents, 2).stripTrailingZeros().toPlainString()
+}
+
+internal fun metersToInputText(meters: Double?): String {
+    if (meters == null || meters <= 0.0) return ""
+    return BigDecimal.valueOf(meters / 1000.0).stripTrailingZeros().toPlainString()
+}
+
+internal fun parseInputAmountToCents(text: String): Long {
+    return runCatching {
+        text.toBigDecimal()
+            .movePointRight(2)
+            .setScale(0, RoundingMode.HALF_UP)
+            .longValueExact()
+            .coerceAtLeast(0L)
+    }.getOrDefault(0L)
 }

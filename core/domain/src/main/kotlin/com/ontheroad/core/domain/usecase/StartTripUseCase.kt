@@ -23,7 +23,11 @@ class StartTripUseCase(
         platformId: String,
         categoryId: String,
         shiftId: String? = null,
-        startTimeMillis: Long = System.currentTimeMillis()
+        startTimeMillis: Long = System.currentTimeMillis(),
+        quotedDistanceMeters: Double? = null,
+        quotedFareAmountCents: Long? = null,
+        platformFeeAmountCents: Long = 0,
+        endAddress: String? = null
     ): Result<Trip> {
         // Enforce active trip exclusivity
         val activeTrip = tripRepository.getActiveTrip().firstOrNull()
@@ -43,6 +47,10 @@ class StartTripUseCase(
             startAddress = startAddress,
             startLatitude = startLatitude,
             startLongitude = startLongitude,
+            endAddress = endAddress,
+            quotedDistanceMeters = quotedDistanceMeters,
+            quotedFareAmountCents = quotedFareAmountCents,
+            platformFeeAmountCents = platformFeeAmountCents,
             status = TripStatus.IN_PROGRESS
         )
 

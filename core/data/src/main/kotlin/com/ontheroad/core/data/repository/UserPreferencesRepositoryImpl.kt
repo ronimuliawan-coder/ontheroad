@@ -2,6 +2,7 @@ package com.ontheroad.core.data.repository
 
 import android.content.SharedPreferences
 import com.ontheroad.core.domain.repository.UserPreferencesRepository
+import com.ontheroad.core.model.DirectPricingRates
 import com.ontheroad.core.model.ThemeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +13,7 @@ class UserPreferencesRepositoryImpl(
 ) : UserPreferencesRepository {
 
     private val themeModeState: MutableStateFlow<ThemeMode>
+    private val directPricingRatesState: MutableStateFlow<DirectPricingRates>
 
     init {
         val savedModeString = sharedPreferences.getString(KEY_THEME_MODE, ThemeMode.SYSTEM.name)
@@ -21,6 +23,22 @@ class UserPreferencesRepositoryImpl(
             ThemeMode.SYSTEM
         }
         themeModeState = MutableStateFlow(initialMode)
+
+        val baseFare = sharedPreferences.getLong(KEY_BASE_FARE_CENTS, DEFAULT_BASE_FARE_CENTS)
+        val ratePerKm = sharedPreferences.getLong(KEY_RATE_PER_KM_CENTS, DEFAULT_RATE_PER_KM_CENTS)
+        val minFare = sharedPreferences.getLong(KEY_MIN_FARE_CENTS, DEFAULT_MIN_FARE_CENTS)
+        val includedBaseKm = sharedPreferences.getFloat(KEY_INCLUDED_BASE_KM, DEFAULT_INCLUDED_BASE_KM.toFloat()).toDouble()
+        val detourMultiplier = sharedPreferences.getFloat(KEY_ROAD_DETOUR_MULTIPLIER, DEFAULT_ROAD_DETOUR_MULTIPLIER.toFloat()).toDouble()
+
+        directPricingRatesState = MutableStateFlow(
+            DirectPricingRates(
+                baseFareAmountCents = baseFare,
+                ratePerKmAmountCents = ratePerKm,
+                minimumFareAmountCents = minFare,
+                includedBaseDistanceKm = includedBaseKm,
+                roadDetourMultiplier = detourMultiplier
+            )
+        )
     }
 
     override fun getThemeMode(): Flow<ThemeMode> = themeModeState.asStateFlow()
@@ -30,8 +48,33 @@ class UserPreferencesRepositoryImpl(
         themeModeState.value = mode
     }
 
+    override fun getDirectPricingRates(): Flow<DirectPricingRates> = directPricingRatesState.asStateFlow()
+
+    override suspend fun setDirectPricingRates(rates: DirectPricingRates) {
+        sharedPreferences.edit()
+            .putLong(KEY_BASE_FARE_CENTS, rates.baseFareAmountCents)
+            .putLong(KEY_RATE_PER_KM_CENTS, rates.ratePerKmAmountCents)
+            .putLong(KEY_MIN_FARE_CENTS, rates.minimumFareAmountCents)
+            .putFloat(KEY_INCLUDED_BASE_KM, rates.includedBaseDistanceKm.toFloat())
+            .putFloat(KEY_ROAD_DETOUR_MULTIPLIER, rates.roadDetourMultiplier.toFloat())
+            .apply()
+        directPricingRatesState.value = rates
+    }
+
     companion object {
         const val PREFS_NAME = "ontheroad_preferences"
         const val KEY_THEME_MODE = "key_theme_mode"
+
+        const val KEY_BASE_FARE_CENTS = "key_base_fare_cents"
+        const val KEY_RATE_PER_KM_CENTS = "key_rate_per_km_cents"
+        const val KEY_MIN_FARE_CENTS = "key_min_fare_cents"
+        const val KEY_INCLUDED_BASE_KM = "key_included_base_km"
+        const val KEY_ROAD_DETOUR_MULTIPLIER = "key_road_detour_multiplier"
+
+        const val DEFAULT_BASE_FARE_CENTS = 10_000_00L
+        const val DEFAULT_RATE_PER_KM_CENTS = 3_500_00L
+        const val DEFAULT_MIN_FARE_CENTS = 15_000_00L
+        const val DEFAULT_INCLUDED_BASE_KM = 0.0
+        const val DEFAULT_ROAD_DETOUR_MULTIPLIER = 1.25
     }
 }
