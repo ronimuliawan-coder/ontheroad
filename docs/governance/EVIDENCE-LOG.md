@@ -13,13 +13,15 @@ never contain credentials, tokens, or private payloads.
 - Canonical repository: `https://github.com/ronimuliawan/ontheroad.git`; project governance declares GitHub as the write and merge authority.
 - Tracker: Local fallback; Linear workspace search found no `OnTheRoad` project or issue.
 - Approval owner: `developer-project-owner` (user approval in this task)
-- Risk profile: `STANDARD`; current Unit 3 scope includes rate editing/persistence and CI instrumentation. No production data, credential, release, or deployment changes are authorized.
+- Risk profile: `STANDARD`; completed Unit 3 scope covered rate editing/persistence and CI instrumentation. No production data, credential, release, or deployment changes were made.
 
-## Active feature scope
+## Current feature delivery
 
 - Feature: Direct Booking & Fare Estimator, Unit 3 — validated rate editing and UI acceptance.
-- Current branch/base: `rons/validated-rate-editing-ui` from GitHub `dev` at `579c14b6ac9b091d3425001aef4eeea7f0f6e724`.
-- Status: approved and in progress; exact-revision GitHub CI is pending.
+- Delivery: PR #11 from `rons/validated-rate-editing-ui`, based on GitHub `dev` at
+  `579c14b6ac9b091d3425001aef4eeea7f0f6e724`, head `5533af057e63e97ea8184fc1fa10f3785378647c`,
+  merged into `dev` as `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
+- Status: Unit 3 accepted; exact post-merge GitHub CI passed. No next implementation unit is active.
 
 ## Authority and approval record
 
@@ -355,15 +357,26 @@ never contain credentials, tokens, or private payloads.
 - Process note: This local start record was added after the first source edits in the resumed task; the explicit Unit 3 approval and exact base had already been established.
 - Scope: Keep Settings drafts local until valid explicit save, guard rate persistence, cover fare/cockpit state edges, and add the planned Android device-profile CI acceptance.
 - Verification authority: GitHub CI on the exact PR revision. The owner's standing instruction excludes local tests, builds, and verification commands.
-- Rollback/recovery impact: Revert the Unit 3 PR to restore prior rate-edit behavior and remove its test/CI additions; no release, credentials, or production data are changed.
-- Next gate: Exact-revision JVM, lint, governance, and Pixel 7 Pro / API 35 instrumentation CI results, followed by review and non-promotion merge to `dev`.
+- Rollback/recovery impact: Revert PR #11's merge commit on `dev` to restore prior rate-edit behavior and remove its test/CI additions; never rewrite shared branch history. No release, credentials, or production data are changed.
+- Next gate: Record exact post-merge CI evidence, then await explicit approval for another implementation unit or a separately scoped promotion decision.
+
+### 2026-09-23 — Unit 3 CI acceptance and merge
+
+- Exact revision: PR #11 source head `5533af057e63e97ea8184fc1fa10f3785378647c`, merged into GitHub `dev` at `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
+- PR acceptance: JVM Unit Tests, Android Lint, Android UI Acceptance (Pixel 7 Pro / API 35), governance, and GitLab trusted-ref checks passed on the PR revision.
+- Post-merge acceptance: Android CI run [35851099402](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35851099402), governance run [35851099256](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35851099256), and GitLab trusted-ref run [35851099357](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35851099357) all completed successfully on the exact merge SHA above. Android CI includes JVM tests, lint, and the Pixel 7 Pro / API 35 instrumentation flow on the Namespace runners.
+- Runner deviation: The first instrumentation attempt failed before tests because `/etc/udev/rules.d` is absent on the Namespace runner image. The workflow now grants access to the existing `/dev/kvm` node directly; the PR and post-merge instrumentation runs passed.
+- Review state: CodeRabbit skipped review because reviews are disabled for the non-default `dev` base; the Codex review bot reported a usage limit. No automated review findings were available. The project owner authorized merging the non-promotion PR after required CI passed.
+- Local verification: None; the owner requires verification to run in CI.
+- Rollback/recovery impact: Revert merge commit `a8ba7c87b06f62cb6e3f54525d741c891a65276d` on `dev`; no force-push, production data, release, or credential changes.
+- Next gate: Unit 3 is complete. Await explicit approval before starting another implementation unit; promotion to `main` remains unauthorized.
 
 ## Current accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |
 |---|---|---|---|---|---|---|
 | External Linear tracking unavailable | Connected workspace has no matching `OnTheRoad` project or issue | Progress is not mirrored to the declared external tracker | This local evidence log records objective, approvals, exact revisions, evidence, deviations, and rollback impact | `developer-project-owner` | Revisit when the canonical Linear project is available | User approved local fallback on 2026-08-31 |
-| Local test/build/verification disabled | Project owner directed that all verification run in CI | No local verification evidence is produced | Require exact-revision GitHub CI, including JVM tests, lint, governance, and Pixel 7 Pro / API 35 instrumentation for Unit 3 | `developer-project-owner` | Revisit only if the owner changes the CI-only direction | Explicit user direction on 2026-09-23 |
+| Local test/build/verification disabled | Project owner directed that all verification run in CI | No local verification evidence is produced | Require exact-revision GitHub CI, including JVM tests, lint, governance, and applicable UI acceptance for each approved unit; Unit 3 passed on its merge revision above | `developer-project-owner` | Revisit only if the owner changes the CI-only direction | Explicit user direction on 2026-09-23 |
 
 ## Historical evidence matrix — 2026-08-31 governance uplift
 

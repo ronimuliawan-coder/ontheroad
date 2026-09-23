@@ -1,7 +1,7 @@
 # OnTheRoad: Direct Booking & Fare Estimator (PRD)
 
 > **Document Status**: Approved Target (user-confirmed 2026-09-23)  
-> **Lifecycle**: Approved PRD; Unit 2 complete; Unit 3 implementation in progress  
+> **Lifecycle**: Approved PRD; Units 1–3 complete; next implementation scope awaits approval  
 > **Tracker Issue**: [RON-277](https://linear.app/rons-space/issue/RON-277/phase-0-and-2-product-discovery-and-prd-direct-booking-and-fare)  
 > **Parent Project**: [OnTheRoad: Direct Booking & Fare Estimator](https://linear.app/rons-space/project/ontheroad-direct-booking-and-fare-estimator-e09b7af9c69f)  
 > **Author**: Antigravity Pair & Project Owner  
@@ -165,7 +165,9 @@ implementation units for its approval and delivery boundaries:
   governance CI, and CodeRabbit passed on the merged revision.
 - **Unit 2 — Permission and address fallback**: `COMPLETE` in PR #9; Android JVM tests, lint,
   and governance CI passed on the merge revision.
-- **Unit 3 — Validated rate editing and UI acceptance**: approved and in progress (2026-09-23).
+- **Unit 3 — Validated rate editing and UI acceptance**: complete in PR #11; JVM tests, lint,
+  governance, and Pixel 7 Pro / API 35 UI acceptance passed on merged `dev` revision
+  `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
 
 ---
 
@@ -176,6 +178,7 @@ implementation units for its approval and delivery boundaries:
 - [x] **Tracker Linked**: Connected to Linear Issue [RON-277](https://linear.app/rons-space/issue/RON-277/phase-0-and-2-product-discovery-and-prd-direct-booking-and-fare) and Project.
 - [x] **Project Owner Approval**: Explicitly confirmed in the active task on 2026-09-23.
 
-**Next Action**: Complete Unit 3 exact-revision GitHub CI and review. Repository governance phases
-are project-wide lifecycle gates; feature implementation slices are tracked as units. GitLab
-review-mirror cleanup is deferred and is not a delivery gate.
+**Next Action**: Units 1–3 are complete. No next implementation unit is approved; obtain explicit
+project-owner approval before defining or starting more feature scope. Repository governance phases
+are project-wide lifecycle gates; feature implementation slices are tracked as units. Promotion to
+`main` is not authorized. GitLab review-mirror cleanup is deferred and is not a delivery gate.
