@@ -305,6 +305,33 @@ class TrackerViewModelTest {
     }
 
     @Test
+    fun updatedRatesRecalculateCockpitFareAndRetainManualOverride() = runTest(testDispatcher) {
+        viewModel.updateDirectEstimatedDistance("2.0")
+        testDispatcher.scheduler.runCurrent()
+        assertEquals(17_000_00L, viewModel.uiState.value.directCalculatedFareCents)
+
+        preferencesRepository.directPricingRatesFlow.value = DirectPricingRates(
+            baseFareAmountCents = 20_000_00L,
+            ratePerKmAmountCents = 1_000_00L,
+            minimumFareAmountCents = 15_000_00L
+        )
+        testDispatcher.scheduler.runCurrent()
+        assertEquals(22_000_00L, viewModel.uiState.value.directCalculatedFareCents)
+
+        viewModel.updateDirectCustomFareOverride("50000")
+        testDispatcher.scheduler.runCurrent()
+        preferencesRepository.directPricingRatesFlow.value = DirectPricingRates(
+            baseFareAmountCents = 1_000_00L,
+            ratePerKmAmountCents = 1_000_00L,
+            minimumFareAmountCents = 2_000_00L
+        )
+        testDispatcher.scheduler.runCurrent()
+
+        assertEquals(50_000_00L, viewModel.uiState.value.directCalculatedFareCents)
+        viewModel.stopDurationTimer()
+    }
+
+    @Test
     fun emptyAddressSearchKeepsManualDistanceFallbackAvailable() = runTest(testDispatcher) {
         locationRepository.searchResults = emptyList()
         viewModel.selectPlatform("direct")

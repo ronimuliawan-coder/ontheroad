@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import com.ontheroad.core.domain.repository.UserPreferencesRepository
 import com.ontheroad.core.model.DirectPricingRates
 import com.ontheroad.core.model.ThemeMode
+import com.ontheroad.core.model.isPersistable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,13 +31,18 @@ class UserPreferencesRepositoryImpl(
         val includedBaseKm = sharedPreferences.getFloat(KEY_INCLUDED_BASE_KM, DEFAULT_INCLUDED_BASE_KM.toFloat()).toDouble()
         val detourMultiplier = sharedPreferences.getFloat(KEY_ROAD_DETOUR_MULTIPLIER, DEFAULT_ROAD_DETOUR_MULTIPLIER.toFloat()).toDouble()
 
+        val defaultRates = DirectPricingRates()
         directPricingRatesState = MutableStateFlow(
             DirectPricingRates(
-                baseFareAmountCents = baseFare,
-                ratePerKmAmountCents = ratePerKm,
-                minimumFareAmountCents = minFare,
-                includedBaseDistanceKm = includedBaseKm,
-                roadDetourMultiplier = detourMultiplier
+                baseFareAmountCents = baseFare.takeIf { it >= 0L } ?: defaultRates.baseFareAmountCents,
+                ratePerKmAmountCents = ratePerKm.takeIf { it >= 0L } ?: defaultRates.ratePerKmAmountCents,
+                minimumFareAmountCents = minFare.takeIf { it >= 0L } ?: defaultRates.minimumFareAmountCents,
+                includedBaseDistanceKm = includedBaseKm.takeIf {
+                    it.isFinite() && it >= 0.0 && it.toFloat().isFinite()
+                } ?: defaultRates.includedBaseDistanceKm,
+                roadDetourMultiplier = detourMultiplier.takeIf {
+                    it.isFinite() && it >= 0.0 && it.toFloat().isFinite()
+                } ?: defaultRates.roadDetourMultiplier
             )
         )
     }
@@ -51,6 +57,7 @@ class UserPreferencesRepositoryImpl(
     override fun getDirectPricingRates(): Flow<DirectPricingRates> = directPricingRatesState.asStateFlow()
 
     override suspend fun setDirectPricingRates(rates: DirectPricingRates) {
+        require(rates.isPersistable()) { "Direct pricing rates must be non-negative and persistable" }
         sharedPreferences.edit()
             .putLong(KEY_BASE_FARE_CENTS, rates.baseFareAmountCents)
             .putLong(KEY_RATE_PER_KM_CENTS, rates.ratePerKmAmountCents)

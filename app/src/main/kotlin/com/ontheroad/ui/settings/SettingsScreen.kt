@@ -14,10 +14,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,21 +31,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ontheroad.R
+import com.ontheroad.core.model.DirectPricingRates
 import com.ontheroad.core.model.ThemeMode
+import com.ontheroad.core.model.isPersistable
 import com.ontheroad.core.ui.theme.CockpitDimens
 import com.ontheroad.core.ui.theme.GreenProfit
 import com.ontheroad.core.ui.theme.OnSurfaceSecondary
 import com.ontheroad.core.ui.theme.OnTheRoadTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.KeyboardType
-import com.ontheroad.core.model.DirectPricingRates
-import com.ontheroad.core.ui.theme.DirectBlue
 import com.ontheroad.viewmodel.SettingsViewModel
 
 @Composable
@@ -149,6 +152,13 @@ private fun DirectPricingRatesCard(
     var ratePerKmText by remember(rates) { mutableStateOf((rates.ratePerKmAmountCents / 100).toString()) }
     var minFareText by remember(rates) { mutableStateOf((rates.minimumFareAmountCents / 100).toString()) }
     var includedKmText by remember(rates) { mutableStateOf(rates.includedBaseDistanceKm.toString()) }
+    val updatedRates = parseRatesDraft(
+        baseFareText = baseFareText,
+        ratePerKmText = ratePerKmText,
+        minFareText = minFareText,
+        includedKmText = includedKmText,
+        rates = rates
+    )
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -180,30 +190,24 @@ private fun DirectPricingRatesCard(
             ) {
                 OutlinedTextField(
                     value = baseFareText,
-                    onValueChange = {
-                        baseFareText = it
-                        val cents = (it.toLongOrNull() ?: 0L) * 100
-                        onUpdateRates(rates.copy(baseFareAmountCents = cents))
-                    },
+                    onValueChange = { baseFareText = it },
                     label = { Text("Base Fare (Rp)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).testTag("direct_base_fare"),
                     singleLine = true,
-                    shape = RoundedCornerShape(CockpitDimens.CardCornerRadius)
+                    shape = RoundedCornerShape(CockpitDimens.CardCornerRadius),
+                    isError = parseAmountCents(baseFareText) == null
                 )
 
                 OutlinedTextField(
                     value = ratePerKmText,
-                    onValueChange = {
-                        ratePerKmText = it
-                        val cents = (it.toLongOrNull() ?: 0L) * 100
-                        onUpdateRates(rates.copy(ratePerKmAmountCents = cents))
-                    },
+                    onValueChange = { ratePerKmText = it },
                     label = { Text("Rate/Km (Rp)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.weight(1f),
                     singleLine = true,
-                    shape = RoundedCornerShape(CockpitDimens.CardCornerRadius)
+                    shape = RoundedCornerShape(CockpitDimens.CardCornerRadius),
+                    isError = parseAmountCents(ratePerKmText) == null
                 )
             }
 
@@ -213,33 +217,79 @@ private fun DirectPricingRatesCard(
             ) {
                 OutlinedTextField(
                     value = minFareText,
-                    onValueChange = {
-                        minFareText = it
-                        val cents = (it.toLongOrNull() ?: 0L) * 100
-                        onUpdateRates(rates.copy(minimumFareAmountCents = cents))
-                    },
+                    onValueChange = { minFareText = it },
                     label = { Text("Min Fare (Rp)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.weight(1f),
                     singleLine = true,
-                    shape = RoundedCornerShape(CockpitDimens.CardCornerRadius)
+                    shape = RoundedCornerShape(CockpitDimens.CardCornerRadius),
+                    isError = parseAmountCents(minFareText) == null
                 )
 
                 OutlinedTextField(
                     value = includedKmText,
-                    onValueChange = {
-                        includedKmText = it
-                        val km = it.toDoubleOrNull() ?: 0.0
-                        onUpdateRates(rates.copy(includedBaseDistanceKm = km))
-                    },
+                    onValueChange = { includedKmText = it },
                     label = { Text("Base Km Inc.") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).testTag("direct_included_distance"),
                     singleLine = true,
-                    shape = RoundedCornerShape(CockpitDimens.CardCornerRadius)
+                    shape = RoundedCornerShape(CockpitDimens.CardCornerRadius),
+                    isError = parseIncludedDistance(includedKmText) == null
                 )
             }
+
+            if (updatedRates == null) {
+                Text(
+                    text = stringResource(R.string.direct_rates_invalid),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            Button(
+                onClick = { updatedRates?.let(onUpdateRates) },
+                enabled = updatedRates != null && updatedRates != rates,
+                modifier = Modifier.fillMaxWidth().testTag("direct_rates_save_button")
+            ) {
+                Text(stringResource(R.string.direct_rates_save))
+            }
         }
+    }
+}
+
+private fun parseRatesDraft(
+    baseFareText: String,
+    ratePerKmText: String,
+    minFareText: String,
+    includedKmText: String,
+    rates: DirectPricingRates
+): DirectPricingRates? {
+    val baseFareCents = parseAmountCents(baseFareText) ?: return null
+    val ratePerKmCents = parseAmountCents(ratePerKmText) ?: return null
+    val minimumFareCents = parseAmountCents(minFareText) ?: return null
+    val includedBaseDistanceKm = parseIncludedDistance(includedKmText) ?: return null
+
+    return rates.copy(
+        baseFareAmountCents = baseFareCents,
+        ratePerKmAmountCents = ratePerKmCents,
+        minimumFareAmountCents = minimumFareCents,
+        includedBaseDistanceKm = includedBaseDistanceKm
+    ).takeIf(DirectPricingRates::isPersistable)
+}
+
+private fun parseAmountCents(text: String): Long? {
+    val amount = text.toLongOrNull()?.takeIf { it >= 0L } ?: return null
+    return try {
+        Math.multiplyExact(amount, 100L)
+    } catch (_: ArithmeticException) {
+        null
+    }
+}
+
+private fun parseIncludedDistance(text: String): Double? {
+    val distanceKm = text.toDoubleOrNull() ?: return null
+    return distanceKm.takeIf {
+        it.isFinite() && it >= 0.0 && it.toFloat().isFinite()
     }
 }
 

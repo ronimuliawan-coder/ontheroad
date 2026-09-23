@@ -1,16 +1,17 @@
 # Implementation Plan: Direct Booking & Fare Estimator
 
-> **Document Status**: Approved plan; Unit 2 complete, Unit 3 awaits implementation approval  
+> **Document Status**: Approved plan; Unit 2 complete, Unit 3 implementation in progress  
 > **Product authority**: [Direct Booking & Fare Estimator PRD](../prds/direct-booking-and-fare-estimator.prd.md)  
 > **Planning approval**: Project owner approved the baseline/reconciliation and architecture-plan gates on 2026-09-23  
 > **Target**: `v0.2.0`, feature delivery into GitHub `dev`  
 
 ## 1. Exact baseline
 
-- Remote `origin/dev`: `685c530c090672ec6f55ba5221e6c4f5fd304727` (PR #9 merge); `origin/main`:
-  `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`.
+- Remote `origin/dev`: `579c14b6ac9b091d3425001aef4eeea7f0f6e724` (PR #10 documentation-only merge);
+  the latest accepted feature revision is PR #9 merge `685c530c090672ec6f55ba5221e6c4f5fd304727`.
+  `origin/main` remains `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`.
 - Units 1 and 2 are merged into `dev`. Android JVM tests, Android lint, and governance CI passed
-  on Unit 2's exact merge revision. Unit 3 has not started.
+  on Unit 2's exact merge revision. Unit 3 is approved and in progress.
 - Earlier `bun test` and `bun run governance:check` results are retained as informational
   observations only; they are not acceptance evidence for the current implementation.
 - Local Gradle test/build verification is intentionally skipped by explicit project-owner
@@ -129,16 +130,19 @@ usable without lookup, and the foreground service starts only after the required
 
 ### Unit 3 — Validated rate editing and UI acceptance
 
-**Status:** Planned; implementation requires separate project-owner approval.
+**Status:** In progress; project-owner approval recorded on 2026-09-23.
 
 - Keep transient text local while editing and persist only non-negative, finite, bounded rates.
+- Bounds are representation-based: fare inputs must convert exactly to non-negative `Long` cents;
+  distance and detour values must be finite, non-negative, and representable by the existing
+  `SharedPreferences` `Float` storage. No new business-price ceiling is imposed.
 - Verify fare formula edge cases, custom overrides, settings persistence, and direct cockpit UDF.
-- Run all tests and UI acceptance in CI. Unit 3 cannot close until the critical user flow is
-  accepted against the declared Android device profile in CI; confirm Namespace runner emulator
-  support and configure the required Android instrumentation job as part of that unit.
+- Run JVM, lint, and UI acceptance in GitHub CI. The isolated instrumentation job uses the existing
+  Namespace runner profile and a Pixel 7 Pro / API 35 / x86_64 emulator; CI must prove the runner can
+  execute it before Unit 3 is accepted.
 
 **Done when:** invalid input cannot corrupt stored rates and the critical user flow is observable
-on a declared Android device profile.
+on the declared Android device profile, with exact-revision GitHub CI passing.
 
 ## 6. Verification matrix
 
@@ -146,16 +150,17 @@ on a declared Android device profile.
 |---|---|
 | Pure domain | JVM tests for fare formula, negative/blank inputs, overrides, distance multiplier, and model contracts |
 | Persistence | SharedPreferences tests plus Room v1-to-v2 migration and round-trip tests |
-| User flow | ViewModel and Compose-facing tests for quote, start, completion prefill, edit, and save |
+| User flow | ViewModel tests for quote, start, completion prefill, direct cockpit rate updates, and override; Compose instrumentation test for validated Settings edit/save |
 | Permissions | Denied/granted runtime permission paths; service start only on an allowed path |
 | Offline behavior | Calculation/persistence with no network; address lookup failure falls back to manual input |
 | Architecture | No Android imports in `core:model`/`core:domain`; one owner per state/data responsibility |
-| Repository gates | GitHub CI: governance checks, Gradle JVM tests, lint, and the builds required by the unit |
+| Repository gates | GitHub CI: governance checks, Gradle JVM tests, lint, and Pixel 7 Pro / API 35 instrumentation for Unit 3 |
 | Review/delivery | Exact branch head, GitHub checks, available review feedback, no unresolved valid findings |
 
-Local Android verification is intentionally out of scope. CI must run the repository's Gradle
-tests, lint, and debug/release build on the exact authorized remote revision before any
-implementation completion claim.
+Local Android verification is intentionally out of scope by project-owner decision. GitHub CI is
+the acceptance authority; Unit 3 requires JVM tests, lint, and the declared instrumentation flow
+on the exact PR revision. No release build is added to this unit because it changes no release or
+signing surface.
 
 ## 7. Source control, rollback, and human-only actions
 
@@ -163,19 +168,17 @@ implementation completion claim.
   `rons/` prefix; target PRs at GitHub `dev`.
 - GitHub remains the sole write/merge authority. GitLab is a deferred review-only mirror and is
   not a delivery path.
-- Keep the current dirty user work intact until the implementation unit is explicitly selected.
-  Do not commit, push, open a PR, merge, or promote from this planning gate.
+- Unit 3 is selected and approved. The user authorized the normal non-promotion commit, push, PR to
+  `dev`, and merge flow after required checks pass; promotion to `main` remains unauthorized.
 - Roll back a source change by reverting its atomic commit. For the Room migration, preserve the
   forward schema and use a corrective migration/build; never downgrade an installed v2 database
   destructively.
-- Human-only actions later: approve each implementation unit, approve branch/commit/push/PR
-  actions that trigger CI, and accept device-flow evidence if the phase requires it.
+- Human-only action: accept any future promotion to `main`; no promotion is included here.
 
 ## Next gate
 
 Repository governance uses **phases** for project-wide lifecycle gates; this feature uses
 **implementation units** for approved slices. “Stage” is not used as a tracking term.
 
-The active gate is **Unit 3 approval: validated rate editing and UI acceptance**. Its scope is
-planned, but implementation has not started and requires explicit project-owner approval. All
-verification runs in CI; no local test/build run is required.
+The active gate is **Unit 3 implementation: validated rate editing and UI acceptance**. It is
+approved and in progress. All verification runs in GitHub CI; no local test/build run is required.

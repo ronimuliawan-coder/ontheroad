@@ -9,4 +9,6 @@
     <string name="discrepancy_title">Odometer vs. Platform</string>
     <string name="location_permission_required">Location permission is required for GPS tracking. You can still enter the quote manually.</string>
     <string name="address_lookup_fallback">Address lookup is unavailable or found no match. Enter the address and distance manually.</string>
+    <string name="direct_rates_save">Save rates</string>
+    <string name="direct_rates_invalid">Enter non-negative whole fare amounts and a finite included distance within the supported range.</string>
 </resources>

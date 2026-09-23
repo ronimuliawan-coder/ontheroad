@@ -27,11 +27,24 @@ class CalculateDirectFareUseCase {
             return customFareOverrideCents
         }
 
-        val safeDistanceKm = maxOf(0.0, distanceKm)
-        val chargeableKm = maxOf(0.0, safeDistanceKm - rates.includedBaseDistanceKm)
-        val distanceChargeCents = (chargeableKm * rates.ratePerKmAmountCents).roundToLong()
-        val calculatedFareCents = rates.baseFareAmountCents + distanceChargeCents
+        val safeDistanceKm = if (distanceKm.isNaN() || distanceKm < 0.0) 0.0 else distanceKm
+        val includedBaseDistanceKm = rates.includedBaseDistanceKm
+            .takeIf { it.isFinite() && it >= 0.0 } ?: 0.0
+        val chargeableKm = maxOf(0.0, safeDistanceKm - includedBaseDistanceKm)
+        val ratePerKmAmountCents = rates.ratePerKmAmountCents.coerceAtLeast(0L)
+        val rawDistanceChargeCents = chargeableKm * ratePerKmAmountCents.toDouble()
+        val distanceChargeCents = when {
+            rawDistanceChargeCents.isNaN() || rawDistanceChargeCents <= 0.0 -> 0L
+            !rawDistanceChargeCents.isFinite() || rawDistanceChargeCents >= Long.MAX_VALUE.toDouble() -> Long.MAX_VALUE
+            else -> rawDistanceChargeCents.roundToLong()
+        }
+        val baseFareAmountCents = rates.baseFareAmountCents.coerceAtLeast(0L)
+        val calculatedFareCents = if (distanceChargeCents > Long.MAX_VALUE - baseFareAmountCents) {
+            Long.MAX_VALUE
+        } else {
+            baseFareAmountCents + distanceChargeCents
+        }
 
-        return maxOf(rates.minimumFareAmountCents, calculatedFareCents)
+        return maxOf(rates.minimumFareAmountCents.coerceAtLeast(0L), calculatedFareCents)
     }
 }

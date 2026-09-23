@@ -13,16 +13,23 @@ never contain credentials, tokens, or private payloads.
 - Canonical repository: `https://github.com/ronimuliawan/ontheroad.git`; project governance declares GitHub as the write and merge authority.
 - Tracker: Local fallback; Linear workspace search found no `OnTheRoad` project or issue.
 - Approval owner: `developer-project-owner` (user approval in this task)
-- Risk profile: `STANDARD` for documentation, governance, build-contract, and release-contract changes; no production or data changes authorized.
+- Risk profile: `STANDARD`; current Unit 3 scope includes rate editing/persistence and CI instrumentation. No production data, credential, release, or deployment changes are authorized.
+
+## Active feature scope
+
+- Feature: Direct Booking & Fare Estimator, Unit 3 — validated rate editing and UI acceptance.
+- Current branch/base: `rons/validated-rate-editing-ui` from GitHub `dev` at `579c14b6ac9b091d3425001aef4eeea7f0f6e724`.
+- Status: approved and in progress; exact-revision GitHub CI is pending.
 
 ## Authority and approval record
 
 | Boundary | State | Evidence |
 |---|---|---|
 | Read-only discovery and baseline | Approved and complete | User-approved Gate 0/1; baseline entries below |
-| Target design and implementation plan | Approved | User-approved Gate 2/3 on 2026-08-31 |
-| Local repository edits | Authorized for approved uplift units | User approval on 2026-08-31 |
-| Branch, commit, push, PR, merge, deploy, or production change | Not authorized | No external write or release approval supplied |
+| Target design and implementation plan | Approved | User-approved feature PRD/plan and Unit 3 on 2026-09-23 |
+| Local repository edits | Authorized for approved units | User approval for Units 1–3 |
+| Branch, commit, push, PR, and merge | Authorized for non-promotion PRs into GitHub `dev` after CI/review | User authorized continued non-promotion PR delivery; no promotion to `main` |
+| Deploy or production change | Not authorized | No release or deployment approval supplied |
 | Credential or paid-resource changes | Not authorized | No such change is in scope |
 
 ## Evidence entries
@@ -341,14 +348,28 @@ never contain credentials, tokens, or private payloads.
 - Current gate: Unit 2 is complete. Unit 3 — validated rate editing and UI acceptance — is
   planned but not started; it requires separate explicit approval. No local tests/builds ran.
 
-## Accepted exceptions
+### 2026-09-23 — Unit 3 implementation start
+
+- Actor: Agent implementing the project owner's explicit approval in the active task.
+- Exact base revision: GitHub `origin/dev` `579c14b6ac9b091d3425001aef4eeea7f0f6e724`; branch `rons/validated-rate-editing-ui`.
+- Process note: This local start record was added after the first source edits in the resumed task; the explicit Unit 3 approval and exact base had already been established.
+- Scope: Keep Settings drafts local until valid explicit save, guard rate persistence, cover fare/cockpit state edges, and add the planned Android device-profile CI acceptance.
+- Verification authority: GitHub CI on the exact PR revision. The owner's standing instruction excludes local tests, builds, and verification commands.
+- Rollback/recovery impact: Revert the Unit 3 PR to restore prior rate-edit behavior and remove its test/CI additions; no release, credentials, or production data are changed.
+- Next gate: Exact-revision JVM, lint, governance, and Pixel 7 Pro / API 35 instrumentation CI results, followed by review and non-promotion merge to `dev`.
+
+## Current accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |
 |---|---|---|---|---|---|---|
 | External Linear tracking unavailable | Connected workspace has no matching `OnTheRoad` project or issue | Progress is not mirrored to the declared external tracker | This local evidence log records objective, approvals, exact revisions, evidence, deviations, and rollback impact | `developer-project-owner` | Revisit when the canonical Linear project is available | User approved local fallback on 2026-08-31 |
-| Remote/CI verification unavailable locally | No Git remote is configured in the checkout | Exact remote branch protection, CI, and review state cannot be independently verified here | Preserve the GitHub authority declared by project docs; do not push, merge, or deploy | `developer-project-owner` | Revisit after canonical remote access is configured | User approval required before external actions |
+| Local test/build/verification disabled | Project owner directed that all verification run in CI | No local verification evidence is produced | Require exact-revision GitHub CI, including JVM tests, lint, governance, and Pixel 7 Pro / API 35 instrumentation for Unit 3 | `developer-project-owner` | Revisit only if the owner changes the CI-only direction | Explicit user direction on 2026-09-23 |
 
-## Final evidence matrix
+## Historical evidence matrix — 2026-08-31 governance uplift
+
+The following matrix and resume packet record the earlier Phase 4 governance uplift closeout.
+They are historical and do not describe the current Direct Booking feature unit; its status and
+evidence are in the dated 2026-09-23 entries above.
 
 | Required gate | Exact revision/environment | Result | Evidence | Accepted exception |
 |---|---|---|---|---|
@@ -361,10 +382,10 @@ never contain credentials, tokens, or private payloads.
 | Build/CI/review | Local exact revision plus approved Unit 3 working tree | Local pass; remote pending | Bun and Gradle Unit 3 completion evidence above | No remote configured |
 | Deployment/acceptance | No deployment authorized | Not run | No deployment environment supplied | External release remains human-only |
 
-## Resume packet
+## Historical resume packet — 2026-08-31 governance uplift
 
-- Current phase: Phase 4 / Unit 3 complete; final review/handoff complete.
-- Approved actions: local changes to the complete bundle's governance registration and approved status/evidence/contract documentation units.
-- Not authorized: push, pull request, merge, deploy, production changes, credential changes, or paid resources.
-- Pre-existing user work: the high-assurance and PR-review bundle was already untracked before this branch was created; preserve it.
-- Next unstarted work: No further implementation unit in this engagement.
+- Phase at that time: Phase 4 / Unit 3 complete; final review/handoff complete.
+- Approved actions at that time: local changes to the complete bundle's governance registration and approved status/evidence/contract documentation units.
+- Not authorized at that time: push, pull request, merge, deploy, production changes, credential changes, or paid resources.
+- Pre-existing user work at that time: the high-assurance and PR-review bundle was already untracked before its branch was created; preserve it.
+- Next unstarted work then: No further implementation unit in that uplift engagement.

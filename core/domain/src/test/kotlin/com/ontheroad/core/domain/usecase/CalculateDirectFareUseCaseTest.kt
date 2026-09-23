@@ -82,4 +82,17 @@ class CalculateDirectFareUseCaseTest {
         val negFare = useCase(distanceKm = -5.0, rates = defaultRates)
         assertEquals(15_000_00L, negFare)
     }
+
+    @Test
+    fun `handles non-finite and overflowing distance calculations safely`() {
+        assertEquals(15_000_00L, useCase(Double.NaN, defaultRates))
+        assertEquals(Long.MAX_VALUE, useCase(Double.POSITIVE_INFINITY, defaultRates))
+
+        val extremeRates = defaultRates.copy(
+            baseFareAmountCents = Long.MAX_VALUE,
+            ratePerKmAmountCents = Long.MAX_VALUE,
+            minimumFareAmountCents = Long.MAX_VALUE
+        )
+        assertEquals(Long.MAX_VALUE, useCase(Double.MAX_VALUE, extremeRates))
+    }
 }
