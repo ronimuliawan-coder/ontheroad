@@ -1,17 +1,16 @@
 # Implementation Plan: Direct Booking & Fare Estimator
 
-> **Document Status**: Approved planning artifact; Unit 2 implementation in progress  
+> **Document Status**: Approved plan; Unit 2 complete, Unit 3 awaits implementation approval  
 > **Product authority**: [Direct Booking & Fare Estimator PRD](../prds/direct-booking-and-fare-estimator.prd.md)  
 > **Planning approval**: Project owner approved the baseline/reconciliation and architecture-plan gates on 2026-09-23  
 > **Target**: `v0.2.0`, feature delivery into GitHub `dev`  
 
 ## 1. Exact baseline
 
-- Remote `origin/dev`: `93a2b189ec426de018f0d138d9469d1de2e2d01e` (PR #8 merge); `origin/main`:
+- Remote `origin/dev`: `685c530c090672ec6f55ba5221e6c4f5fd304727` (PR #9 merge); `origin/main`:
   `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`.
-- Unit 1 is merged into `dev` and accepted by the Android and governance CI checks on the exact
-  merge revision. Unit 2 is the current local implementation branch; it is not yet an accepted
-  revision, PR, or release.
+- Units 1 and 2 are merged into `dev`. Android JVM tests, Android lint, and governance CI passed
+  on Unit 2's exact merge revision. Unit 3 has not started.
 - Earlier `bun test` and `bun run governance:check` results are retained as informational
   observations only; they are not acceptance evidence for the current implementation.
 - Local Gradle test/build verification is intentionally skipped by explicit project-owner
@@ -116,7 +115,8 @@ green.
 
 ### Unit 2 — Permission and address fallback
 
-**Status:** In progress under explicit project-owner approval.
+**Status:** Complete in PR #9; exact-revision Android JVM tests, lint, and governance CI passed on
+merge commit `685c530c090672ec6f55ba5221e6c4f5fd304727`.
 
 - Add a user-visible runtime location permission gate before tracking starts.
 - Keep address lookup cancellable/best-effort and expose manual address/distance entry when it
@@ -129,9 +129,13 @@ usable without lookup, and the foreground service starts only after the required
 
 ### Unit 3 — Validated rate editing and UI acceptance
 
+**Status:** Planned; implementation requires separate project-owner approval.
+
 - Keep transient text local while editing and persist only non-negative, finite, bounded rates.
 - Verify fare formula edge cases, custom overrides, settings persistence, and direct cockpit UDF.
-- Run device/emulator acceptance for the critical quote-to-start-to-complete flow.
+- Run all tests and UI acceptance in CI. Unit 3 cannot close until the critical user flow is
+  accepted against the declared Android device profile in CI; confirm Namespace runner emulator
+  support and configure the required Android instrumentation job as part of that unit.
 
 **Done when:** invalid input cannot corrupt stored rates and the critical user flow is observable
 on a declared Android device profile.
@@ -146,8 +150,8 @@ on a declared Android device profile.
 | Permissions | Denied/granted runtime permission paths; service start only on an allowed path |
 | Offline behavior | Calculation/persistence with no network; address lookup failure falls back to manual input |
 | Architecture | No Android imports in `core:model`/`core:domain`; one owner per state/data responsibility |
-| Repository gates | GitHub CI: governance checks, Gradle JVM tests, lint, and debug/release build |
-| Review/delivery | Exact branch head, GitHub checks, CodeRabbit/GitLab advisory review, no unresolved valid findings |
+| Repository gates | GitHub CI: governance checks, Gradle JVM tests, lint, and the builds required by the unit |
+| Review/delivery | Exact branch head, GitHub checks, available review feedback, no unresolved valid findings |
 
 Local Android verification is intentionally out of scope. CI must run the repository's Gradle
 tests, lint, and debug/release build on the exact authorized remote revision before any
@@ -157,8 +161,8 @@ implementation completion claim.
 
 - Start the implementation branch from the current GitHub `dev` tip using the repository's
   `rons/` prefix; target PRs at GitHub `dev`.
-- GitHub remains the sole write/merge authority. GitLab is review-only; its mirror and advisory
-  MR are not delivery paths.
+- GitHub remains the sole write/merge authority. GitLab is a deferred review-only mirror and is
+  not a delivery path.
 - Keep the current dirty user work intact until the implementation unit is explicitly selected.
   Do not commit, push, open a PR, merge, or promote from this planning gate.
 - Roll back a source change by reverting its atomic commit. For the Room migration, preserve the
@@ -169,6 +173,9 @@ implementation completion claim.
 
 ## Next gate
 
-The active gate is **Unit 2 implementation: permission and address fallback**. Application edits
-are authorized for this unit. CI validation, commit, push, PR, merge, and release remain separate
-gates; no local JDK setup or local test/build run is required.
+Repository governance uses **phases** for project-wide lifecycle gates; this feature uses
+**implementation units** for approved slices. “Stage” is not used as a tracking term.
+
+The active gate is **Unit 3 approval: validated rate editing and UI acceptance**. Its scope is
+planned, but implementation has not started and requires explicit project-owner approval. All
+verification runs in CI; no local test/build run is required.
