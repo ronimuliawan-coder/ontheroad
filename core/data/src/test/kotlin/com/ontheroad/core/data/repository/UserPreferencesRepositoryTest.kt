@@ -6,9 +6,7 @@ import com.ontheroad.core.model.DirectPricingRates
 import com.ontheroad.core.model.DirectPricingProfile
 import com.ontheroad.core.model.ThemeMode
 import io.mockk.every
-import io.mockk.firstArg
 import io.mockk.mockk
-import io.mockk.secondArg
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.flow.first
