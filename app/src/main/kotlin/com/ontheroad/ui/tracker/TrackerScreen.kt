@@ -1,6 +1,10 @@
 package com.ontheroad.ui.tracker
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,12 +24,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ontheroad.R
 import com.ontheroad.core.ui.component.CockpitButton
 import com.ontheroad.core.ui.component.DiscrepancyBadge
 import com.ontheroad.core.ui.component.MetricCard
@@ -40,6 +49,21 @@ import com.ontheroad.service.LocationTrackingService
 import com.ontheroad.viewmodel.TrackerUiState
 import com.ontheroad.viewmodel.TrackerViewModel
 
+private enum class PendingLocationAction {
+    START_TRIP,
+    START_DIRECT_TRIP,
+    ACQUIRE_CURRENT_LOCATION
+}
+
+private val locationPermissions = arrayOf(
+    Manifest.permission.ACCESS_FINE_LOCATION,
+    Manifest.permission.ACCESS_COARSE_LOCATION
+)
+
+private fun hasLocationPermission(context: Context): Boolean = locationPermissions.any { permission ->
+    ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackerScreen(
@@ -48,33 +72,71 @@ fun TrackerScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var pendingLocationAction by remember { mutableStateOf<PendingLocationAction?>(null) }
+
+    fun startTrip() {
+        viewModel.startTrip(
+            startAddress = "Current GPS Location",
+            startLatitude = -6.175392,
+            startLongitude = 106.827153,
+            onSuccess = { trip ->
+                LocationTrackingService.startTracking(context, trip.id)
+            }
+        )
+    }
+
+    fun startDirectTrip() {
+        viewModel.startDirectTrip(
+            startAddress = uiState.directPickupAddress,
+            startLatitude = uiState.directPickupLatitude,
+            startLongitude = uiState.directPickupLongitude,
+            onSuccess = { trip ->
+                LocationTrackingService.startTracking(context, trip.id)
+            }
+        )
+    }
+
+    fun executePendingLocationAction(action: PendingLocationAction) {
+        when (action) {
+            PendingLocationAction.START_TRIP -> startTrip()
+            PendingLocationAction.START_DIRECT_TRIP -> startDirectTrip()
+            PendingLocationAction.ACQUIRE_CURRENT_LOCATION -> viewModel.acquireCurrentLocation()
+        }
+    }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = hasLocationPermission(context) || permissions.values.any { it }
+        val action = pendingLocationAction
+        pendingLocationAction = null
+        if (granted && action != null) {
+            executePendingLocationAction(action)
+        } else if (!granted) {
+            viewModel.reportLocationPermissionDenied()
+        }
+    }
+
+    fun runWithLocationPermission(action: PendingLocationAction) {
+        viewModel.clearLocationPermissionMessage()
+        if (hasLocationPermission(context)) {
+            executePendingLocationAction(action)
+        } else {
+            pendingLocationAction = action
+            locationPermissionLauncher.launch(locationPermissions)
+        }
+    }
 
     TrackerScreenContent(
         uiState = uiState,
         onSelectPlatform = viewModel::selectPlatform,
-        onStartTrip = {
-            viewModel.startTrip(
-                startAddress = "Current GPS Location",
-                startLatitude = -6.175392,
-                startLongitude = 106.827153,
-                onSuccess = { trip ->
-                    LocationTrackingService.startTracking(context, trip.id)
-                }
-            )
-        },
-        onStartDirectTrip = {
-            viewModel.startDirectTrip(
-                startAddress = uiState.directPickupAddress,
-                startLatitude = uiState.directPickupLatitude,
-                startLongitude = uiState.directPickupLongitude,
-                onSuccess = { trip ->
-                    LocationTrackingService.startTracking(context, trip.id)
-                }
-            )
-        },
+        onStartTrip = { runWithLocationPermission(PendingLocationAction.START_TRIP) },
+        onStartDirectTrip = { runWithLocationPermission(PendingLocationAction.START_DIRECT_TRIP) },
         onPickupAddressChange = viewModel::updateDirectPickupAddress,
         onSelectPickupSuggestion = viewModel::selectPickupSuggestion,
-        onAcquireCurrentLocation = viewModel::acquireCurrentLocation,
+        onAcquireCurrentLocation = {
+            runWithLocationPermission(PendingLocationAction.ACQUIRE_CURRENT_LOCATION)
+        },
         onDestinationAddressChange = viewModel::updateDirectDestinationAddress,
         onSelectDestinationSuggestion = viewModel::selectDestinationSuggestion,
         onEstimatedDistanceChange = viewModel::updateDirectEstimatedDistance,
@@ -175,13 +237,18 @@ fun TrackerScreenContent(
             Spacer(modifier = Modifier.height(CockpitDimens.SpacingLarge))
 
             if (!uiState.isTracking && uiState.selectedPlatformId == "direct") {
-                // Dedicated Direct / Offline Booking Quoting Card
+                // Dedicated Direct Booking Quoting Card
                 DirectBookingCard(
                     pickupAddress = uiState.directPickupAddress,
                     onPickupAddressChange = onPickupAddressChange,
                     pickupSuggestions = uiState.directPickupSuggestions,
                     onSelectPickupSuggestion = onSelectPickupSuggestion,
                     onAcquireCurrentLocation = onAcquireCurrentLocation,
+                    addressLookupHint = if (uiState.addressLookupUnavailable) {
+                        stringResource(R.string.address_lookup_fallback)
+                    } else {
+                        null
+                    },
                     destinationAddress = uiState.directDestinationAddress,
                     onDestinationAddressChange = onDestinationAddressChange,
                     destinationSuggestions = uiState.directDestinationSuggestions,
@@ -227,6 +294,15 @@ fun TrackerScreenContent(
                         modifier = Modifier.weight(1f)
                     )
                 }
+            }
+
+            if (uiState.locationPermissionDenied) {
+                Text(
+                    text = stringResource(R.string.location_permission_required),
+                    color = RedDiscrepancy,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = CockpitDimens.SpacingSmall)
+                )
             }
         }
 

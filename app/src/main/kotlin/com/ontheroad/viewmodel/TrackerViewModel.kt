@@ -47,6 +47,8 @@ data class TrackerUiState(
     val directDestinationLongitude: Double? = null,
     val directDestinationSuggestions: List<AddressSuggestion> = emptyList(),
     val isSearchingAddress: Boolean = false,
+    val addressLookupUnavailable: Boolean = false,
+    val locationPermissionDenied: Boolean = false,
     val directEstimatedDistanceKmText: String = "",
     val isDistanceAutoCalculated: Boolean = false,
     val directCustomFareOverrideText: String = "",
@@ -75,7 +77,7 @@ class TrackerViewModel(
     init {
         observeActiveTrip()
         observeDirectPricingRates()
-        acquireCurrentLocation()
+        acquireCurrentLocation(showFallback = false)
     }
 
     private fun observeDirectPricingRates() {
@@ -162,8 +164,13 @@ class TrackerViewModel(
         }
     }
 
-    fun acquireCurrentLocation() {
-        if (getCurrentLocationUseCase == null) return
+    fun acquireCurrentLocation(showFallback: Boolean = true) {
+        if (getCurrentLocationUseCase == null) {
+            if (showFallback) {
+                _uiState.update { it.copy(addressLookupUnavailable = true) }
+            }
+            return
+        }
         viewModelScope.launch {
             val location = getCurrentLocationUseCase.invoke()
             if (location != null) {
@@ -171,16 +178,32 @@ class TrackerViewModel(
                     val updatedState = current.copy(
                         directPickupAddress = location.fullAddress,
                         directPickupLatitude = location.latitude,
-                        directPickupLongitude = location.longitude
+                        directPickupLongitude = location.longitude,
+                        addressLookupUnavailable = false
                     )
                     recalculateDistanceAndFare(updatedState)
                 }
+            } else if (showFallback) {
+                _uiState.update { it.copy(addressLookupUnavailable = true) }
             }
         }
     }
 
+    fun reportLocationPermissionDenied() {
+        _uiState.update { it.copy(locationPermissionDenied = true) }
+    }
+
+    fun clearLocationPermissionMessage() {
+        _uiState.update { it.copy(locationPermissionDenied = false) }
+    }
+
     fun updateDirectPickupAddress(address: String) {
-        _uiState.update { it.copy(directPickupAddress = address) }
+        _uiState.update {
+            it.copy(
+                directPickupAddress = address,
+                addressLookupUnavailable = false
+            )
+        }
         pickupSearchJob?.cancel()
 
         if (searchAddressUseCase == null || address.trim().length < 2) {
@@ -199,7 +222,8 @@ class TrackerViewModel(
             _uiState.update {
                 it.copy(
                     directPickupSuggestions = suggestions,
-                    isSearchingAddress = false
+                    isSearchingAddress = false,
+                    addressLookupUnavailable = suggestions.isEmpty()
                 )
             }
         }
@@ -212,14 +236,20 @@ class TrackerViewModel(
                 directPickupAddress = suggestion.fullAddress,
                 directPickupLatitude = suggestion.latitude,
                 directPickupLongitude = suggestion.longitude,
-                directPickupSuggestions = emptyList()
+                directPickupSuggestions = emptyList(),
+                addressLookupUnavailable = false
             )
             recalculateDistanceAndFare(updatedState)
         }
     }
 
     fun updateDirectDestinationAddress(address: String) {
-        _uiState.update { it.copy(directDestinationAddress = address) }
+        _uiState.update {
+            it.copy(
+                directDestinationAddress = address,
+                addressLookupUnavailable = false
+            )
+        }
         destinationSearchJob?.cancel()
 
         if (searchAddressUseCase == null || address.trim().length < 2) {
@@ -261,12 +291,14 @@ class TrackerViewModel(
                         directEstimatedDistanceKmText = distanceText,
                         isDistanceAutoCalculated = true,
                         directCalculatedFareCents = fare,
-                        isSearchingAddress = false
+                        isSearchingAddress = false,
+                        addressLookupUnavailable = false
                     )
                 } else {
                     current.copy(
                         directDestinationSuggestions = suggestions,
-                        isSearchingAddress = false
+                        isSearchingAddress = false,
+                        addressLookupUnavailable = suggestions.isEmpty()
                     )
                 }
                 autoUpdated
@@ -299,7 +331,8 @@ class TrackerViewModel(
                 directDestinationSuggestions = emptyList(),
                 directEstimatedDistanceKmText = distanceText,
                 isDistanceAutoCalculated = true,
-                directCalculatedFareCents = fare
+                directCalculatedFareCents = fare,
+                addressLookupUnavailable = false
             )
         }
     }

@@ -1,15 +1,17 @@
 # Implementation Plan: Direct Booking & Fare Estimator
 
-> **Document Status**: Approved planning artifact; Unit 1 implementation in progress, validation pending  
+> **Document Status**: Approved planning artifact; Unit 2 implementation in progress  
 > **Product authority**: [Direct Booking & Fare Estimator PRD](../prds/direct-booking-and-fare-estimator.prd.md)  
-> **Planning approval**: Project owner approved the Phase 1 baseline/reconciliation and Phase 3 architecture-plan gates on 2026-09-23  
+> **Planning approval**: Project owner approved the baseline/reconciliation and architecture-plan gates on 2026-09-23  
 > **Target**: `v0.2.0`, feature delivery into GitHub `dev`  
 
 ## 1. Exact baseline
 
-- Remote `origin/dev` and `origin/main`: `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`.
-- The direct-booking implementation is present only in the local dirty working tree: 29
-  modified or untracked entries. It is not yet an accepted revision, branch, PR, or release.
+- Remote `origin/dev`: `93a2b189ec426de018f0d138d9469d1de2e2d01e` (PR #8 merge); `origin/main`:
+  `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`.
+- Unit 1 is merged into `dev` and accepted by the Android and governance CI checks on the exact
+  merge revision. Unit 2 is the current local implementation branch; it is not yet an accepted
+  revision, PR, or release.
 - Earlier `bun test` and `bun run governance:check` results are retained as informational
   observations only; they are not acceptance evidence for the current implementation.
 - Local Gradle test/build verification is intentionally skipped by explicit project-owner
@@ -100,6 +102,8 @@ persistence being offline-guaranteed.
 
 ### Unit 1 — Quote contract and completion handoff
 
+**Status:** Complete in PR #8; exact-revision CI passed after merge.
+
 - Add distinct quote fare persistence with a forward Room migration.
 - Pass quote fare through start/complete use cases without overwriting realized earnings.
 - Prefill the completion modal from the active direct trip: quote fare into the direct payment
@@ -111,6 +115,8 @@ quote and records the final payment independently, and all existing trip earning
 green.
 
 ### Unit 2 — Permission and address fallback
+
+**Status:** In progress under explicit project-owner approval.
 
 - Add a user-visible runtime location permission gate before tracking starts.
 - Keep address lookup cancellable/best-effort and expose manual address/distance entry when it
@@ -163,6 +169,6 @@ implementation completion claim.
 
 ## Next gate
 
-The active gate is **Unit 1 implementation: quote contract and completion handoff**. Application
-edits are authorized for this unit only. CI validation, commit, push, PR, merge, and release
-remain separate gates; no local JDK setup or local test/build run is required.
+The active gate is **Unit 2 implementation: permission and address fallback**. Application edits
+are authorized for this unit. CI validation, commit, push, PR, merge, and release remain separate
+gates; no local JDK setup or local test/build run is required.

@@ -1,5 +1,6 @@
 package com.ontheroad.service
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
@@ -8,12 +9,14 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -78,6 +81,10 @@ class LocationTrackingService : Service() {
             ACTION_START -> {
                 val tripId = intent.getStringExtra(EXTRA_TRIP_ID)
                 if (tripId != null) {
+                    if (!hasLocationPermission()) {
+                        stopSelf(startId)
+                        return START_NOT_STICKY
+                    }
                     activeTripId = tripId
                     startForegroundServiceWithNotification()
                     startLocationUpdates()
@@ -120,8 +127,17 @@ class LocationTrackingService : Service() {
                 Looper.getMainLooper()
             )
         } catch (e: SecurityException) {
-            // Handled if permission is revoked
+            stopLocationUpdates()
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
         }
+    }
+
+    private fun hasLocationPermission(): Boolean = listOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    ).any { permission ->
+        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun stopLocationUpdates() {

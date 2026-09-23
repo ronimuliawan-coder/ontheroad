@@ -54,8 +54,8 @@ import com.ontheroad.core.ui.theme.OnSurfaceSecondary
 import com.ontheroad.core.ui.theme.OnSurfaceWhite
 
 /**
- * High-contrast Cockpit component for quoting and starting on-the-spot / offline direct bookings.
- * Features automated address search, geocoding suggestions, and auto-distance calculation.
+ * High-contrast Cockpit component for quoting and starting on-the-spot direct bookings.
+ * Address lookup is best-effort; manual addresses and distance remain available as the fallback.
  * Follows UI-001 (Unidirectional Data Flow) and Cockpit Design Tokens.
  */
 @Composable
@@ -70,6 +70,7 @@ fun DirectBookingCard(
     destinationSuggestions: List<AddressSuggestion> = emptyList(),
     onSelectDestinationSuggestion: (AddressSuggestion) -> Unit = {},
     isSearchingAddress: Boolean = false,
+    addressLookupHint: String? = null,
     estimatedDistanceKmText: String,
     onEstimatedDistanceChange: (String) -> Unit,
     isDistanceAutoCalculated: Boolean = false,
@@ -110,7 +111,7 @@ fun DirectBookingCard(
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "OFFLINE RUN / DIRECT QUOTE",
+                        text = "DIRECT QUOTE / MANUAL FALLBACK",
                         style = MaterialTheme.typography.labelMedium,
                         color = DirectBlue,
                         fontWeight = FontWeight.Bold,
@@ -135,6 +136,15 @@ fun DirectBookingCard(
                         )
                     }
                 }
+            }
+
+            addressLookupHint?.let { hint ->
+                Text(
+                    text = hint,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = OnSurfaceSecondary,
+                    modifier = Modifier.padding(top = CockpitDimens.SpacingSmall)
+                )
             }
 
             Spacer(modifier = Modifier.height(CockpitDimens.SpacingMedium))

@@ -4,7 +4,7 @@ import com.ontheroad.core.domain.repository.LocationRepository
 import com.ontheroad.core.model.AddressSuggestion
 
 /**
- * Pure Kotlin UseCase to retrieve current GPS location and reverse-geocoded address.
+ * Pure Kotlin UseCase to retrieve current GPS location and a best-effort reverse-geocoded address.
  *
  * Adheres to ARCH-001.
  */
