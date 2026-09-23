@@ -328,6 +328,19 @@ never contain credentials, tokens, or private payloads.
   in progress on a new branch from the merged `dev` tip. No local test, build, or verification
   run is being performed.
 
+### 2026-09-23 — Unit 2 CI acceptance and merge
+
+- Exact revision: PR #9 merged into GitHub `dev` at
+  `685c530c090672ec6f55ba5221e6c4f5fd304727`.
+- Acceptance evidence: Android JVM tests, Android lint, and governance CI passed on the PR head
+  and again on the post-merge `dev` revision.
+- Review state: CodeRabbit skipped automated review because `dev` is not the repository default
+  branch; the Codex review bot reported usage limits. The project owner authorized merging the
+  non-promotion PR after CI passed.
+- GitLab review-mirror cleanup remains deferred by the project owner and is not a delivery gate.
+- Current gate: Unit 2 is complete. Unit 3 — validated rate editing and UI acceptance — is
+  planned but not started; it requires separate explicit approval. No local tests/builds ran.
+
 ## Accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |

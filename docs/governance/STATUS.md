@@ -5,10 +5,11 @@ feature delivery. Durable evidence and approvals are recorded in
 [`EVIDENCE-LOG.md`](EVIDENCE-LOG.md); repository authority and invariants remain in
 [`GOVERNANCE.md`](GOVERNANCE.md).
 
-- Last verified: `2026-09-23` (Asia/Jakarta; remote merge and CI status inspection)
-- Exact revision/environment: `origin/dev` at `93a2b189ec426de018f0d138d9469d1de2e2d01e`; `origin/main` at `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`; Unit 2 branch is local-only
-- Current work item: Unit 2 — permission and address fallback `IN PROGRESS`
-- Overall health: `IMPLEMENTATION IN PROGRESS / UNIT 2 CI PENDING`
+- Last verified: `2026-09-23` (Asia/Jakarta; PR #9 merge and post-merge GitHub CI)
+- Accepted feature revision: PR #9 merge `685c530c090672ec6f55ba5221e6c4f5fd304727`; `main` baseline `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`
+- Repository governance lifecycle: Phase 10 complete; active feature delivery is tracked with implementation units
+- Current work item: Unit 2 complete; Unit 3 awaits explicit implementation approval
+- Overall health: `UNITS 1–2 ACCEPTED / UNIT 3 NOT STARTED`
 - Tracker/project: Linear Project `OnTheRoad: Direct Booking & Fare Estimator` (`RON-277`, `RON-278`, `RON-279`, `RON-280`)
 
 ## Current objective
@@ -23,20 +24,19 @@ dirty tree.
 
 | Area | Status | Current evidence | Target/threshold | Owner / next action |
 |---|---|---|---|---|
-| Correctness | `UNIT 1 ACCEPTED` | PR #8 Android JVM tests and lint passed; Unit 2 has not yet reached CI | 100% green tests & clean builds on the exact accepted revision | `developer-project-owner` / deliver Unit 2 to CI |
+| Correctness | `UNITS 1–2 ACCEPTED` | PR #8 and PR #9 merge revisions passed Android JVM tests, lint, and governance CI | 100% green tests & clean builds on the exact accepted revision | `developer-project-owner` / approve Unit 3 |
 | Security/privacy | `PENDING` | Historical offline/no-secret claim exists; current diff still requires exact-tree review | Zero secret-bearing files, URLs, or network leaks | `developer-project-owner` / verify changed surfaces |
 | Reliability/recovery | `PENDING` | Historical rollback claim exists; current integration path is not yet accepted | Reversible changes without state corruption | `developer-project-owner` / verify data and service boundaries |
 | Performance | `PENDING` | Historical calculation timing exists; no current exact-tree measurement | Cold start <800ms; sub-15s driver quoting workflow | `developer-project-owner` / measure only if phase requires |
-| Delivery | `INTEGRATION` | PR #8 is merged into `dev`; promotion to `main` is not yet authorized | Approved branch, CI, review, and merge flow | `developer-project-owner` / complete Unit 2 and later approve promotion |
-| Developer experience | `PENDING` | Local feature files and governance docs are dirty; no accepted commit exists | CI provides the authoritative build and governance result | `developer-project-owner` / authorize CI delivery gate |
+| Delivery | `INTEGRATION` | PRs #8 and #9 are merged into `dev`; promotion to `main` is not yet authorized | Approved branch, CI, review, and merge flow | `developer-project-owner` / complete the remaining approved units, then consider promotion |
+| Developer experience | `CI ACCEPTANCE` | Unit 2 passed post-merge GitHub CI on Namespace runners | CI provides the authoritative build and governance result | `developer-project-owner` / preserve CI-only verification |
 
 ## Active blockers and risks
 
 | Risk/blocker | Impact | Evidence | Owner | Resolution trigger |
 |---|---|---|---|---|
 | Canonical Linear project and issue are unavailable in the connected workspace | Progress is not mirrored to the declared external tracker | Local fallback and exception record in `EVIDENCE-LOG.md` | `developer-project-owner` | Revisit when the project is available |
-| Unit 2 implementation is local-only | No exact Unit 2 revision is currently eligible for CI/review or release | Current branch and implementation-plan entry | `developer-project-owner` | Commit/push/open the Unit 2 PR after local implementation review |
-| GitLab review-mirror cleanup is deferred | Advisory close cleanup currently returns HTTP 401; application delivery is unaffected | PR #8 post-merge workflow result | `developer-project-owner` | Revisit when GitLab review operations are resumed |
+| Unit 3 is awaiting approval | Rate editing and UI acceptance work has not started | Approved PRD and implementation plan | `developer-project-owner` | Explicitly approve Unit 3 implementation |
 | Device/emulator UI validation is deferred | Accessibility and visual runtime behavior remain outside this documentation/build-contract unit | No `androidTest` suite was present in the baseline inventory | `developer-project-owner` | Run a separately approved UI audit |
 
 ## Intentional-removal delete-zone
@@ -55,8 +55,9 @@ dirty tree.
 ## Next gate
 
 - Work completed: PRD approval, architecture plan, Unit 1 implementation, PR #8 merge, and
-  exact-revision GitHub CI acceptance.
-- Current work: Unit 2 permission and address fallback implementation under explicit approval.
-- Required decision/evidence: GitHub CI must provide the Gradle tests, lint, build, and repository
-  governance results for Unit 2 before declaring it complete. Branch, commit, push, PR, merge,
-  promotion, and release remain separate approvals; no local test/build run will be performed.
+  Unit 2 implementation, PR #9 merge, and post-merge Android/governance CI acceptance.
+- Current work: Unit 3 — validated rate editing and UI acceptance — is planned but not started.
+- Required decision: explicit project-owner approval to begin Unit 3. Its tests/build/UI acceptance
+  will run in GitHub CI; local test/build runs remain disabled by the owner's standing direction.
+- Terminology: governance **phases** are project-wide gates; feature **units** are implementation
+  slices. We do not use “stage” as a tracking term.

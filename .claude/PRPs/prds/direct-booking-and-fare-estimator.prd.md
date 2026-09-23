@@ -1,7 +1,7 @@
 # OnTheRoad: Direct Booking & Fare Estimator (PRD)
 
 > **Document Status**: Approved Target (user-confirmed 2026-09-23)  
-> **Lifecycle**: Approved PRD; Unit 2 implementation in progress  
+> **Lifecycle**: Approved PRD; Unit 2 complete; Unit 3 awaits approval  
 > **Tracker Issue**: [RON-277](https://linear.app/rons-space/issue/RON-277/phase-0-and-2-product-discovery-and-prd-direct-booking-and-fare)  
 > **Parent Project**: [OnTheRoad: Direct Booking & Fare Estimator](https://linear.app/rons-space/project/ontheroad-direct-booking-and-fare-estimator-e09b7af9c69f)  
 > **Author**: Antigravity Pair & Project Owner  
@@ -163,10 +163,10 @@ implementation units for its approval and delivery boundaries:
 
 - **Unit 1 — Quote contract and completion handoff**: `COMPLETE` in PR #8; GitHub Android CI,
   governance CI, and CodeRabbit passed on the merged revision.
-- **Unit 2 — Permission and address fallback**: `IN PROGRESS`; runtime permission gating,
-  best-effort address lookup, and manual address/distance fallback.
-- **Unit 3 — Validated rate editing and UI acceptance**: not started; requires separate approval
-  after Unit 2.
+- **Unit 2 — Permission and address fallback**: `COMPLETE` in PR #9; Android JVM tests, lint,
+  and governance CI passed on the merge revision.
+- **Unit 3 — Validated rate editing and UI acceptance**: planned; not started and requires
+  separate project-owner approval.
 
 ---
 
@@ -177,5 +177,6 @@ implementation units for its approval and delivery boundaries:
 - [x] **Tracker Linked**: Connected to Linear Issue [RON-277](https://linear.app/rons-space/issue/RON-277/phase-0-and-2-product-discovery-and-prd-direct-booking-and-fare) and Project.
 - [x] **Project Owner Approval**: Explicitly confirmed in the active task on 2026-09-23.
 
-**Next Action**: Complete Unit 2 implementation and submit its exact branch revision to GitHub
-CI and review. GitLab review-mirror cleanup is deferred and is not a delivery gate.
+**Next Action**: Approve Unit 3 implementation. Repository governance phases are project-wide
+lifecycle gates; feature implementation slices are tracked as units. GitLab review-mirror cleanup
+is deferred and is not a delivery gate.
