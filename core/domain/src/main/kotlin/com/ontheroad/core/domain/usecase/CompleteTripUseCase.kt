@@ -32,6 +32,25 @@ class CompleteTripUseCase(
             return Result.failure(IllegalStateException("Trip '$tripId' is not currently in progress"))
         }
 
+        if (trip.platformId == DIRECT_PLATFORM_ID &&
+            (platformFeeAmountCents < 0L || cashCollectedAmountCents < 0L || tipAmountCents < 0L)
+        ) {
+            return Result.failure(IllegalArgumentException("Direct trip payment amounts cannot be negative"))
+        }
+
+        val customerPaidTotalAmountCents = if (trip.platformId == DIRECT_PLATFORM_ID) {
+            try {
+                Math.addExact(
+                    Math.addExact(platformFeeAmountCents, cashCollectedAmountCents),
+                    tipAmountCents
+                )
+            } catch (_: ArithmeticException) {
+                return Result.failure(IllegalArgumentException("Direct trip payment total is too large"))
+            }
+        } else {
+            null
+        }
+
         val durationSeconds = maxOf(0L, (endTimeMillis - trip.startTimeMillis) / 1000)
 
         // Record final destination point
@@ -52,6 +71,7 @@ class CompleteTripUseCase(
             platformFeeAmountCents = platformFeeAmountCents,
             cashCollectedAmountCents = cashCollectedAmountCents,
             tipAmountCents = tipAmountCents,
+            customerPaidTotalAmountCents = customerPaidTotalAmountCents,
             quotedDistanceMeters = quotedDistanceMeters ?: trip.quotedDistanceMeters,
             notes = notes,
             status = TripStatus.COMPLETED
@@ -60,5 +80,9 @@ class CompleteTripUseCase(
         tripRepository.updateTrip(completedTrip)
 
         return Result.success(completedTrip)
+    }
+
+    private companion object {
+        const val DIRECT_PLATFORM_ID = "direct"
     }
 }

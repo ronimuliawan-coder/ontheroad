@@ -130,6 +130,7 @@ fun TrackerScreen(
     TrackerScreenContent(
         uiState = uiState,
         onSelectPlatform = viewModel::selectPlatform,
+        onSelectDirectPricingProfile = viewModel::selectDirectPricingProfile,
         onStartTrip = { runWithLocationPermission(PendingLocationAction.START_TRIP) },
         onStartDirectTrip = { runWithLocationPermission(PendingLocationAction.START_DIRECT_TRIP) },
         onPickupAddressChange = viewModel::updateDirectPickupAddress,
@@ -166,6 +167,7 @@ fun TrackerScreen(
 fun TrackerScreenContent(
     uiState: TrackerUiState,
     onSelectPlatform: (String) -> Unit,
+    onSelectDirectPricingProfile: (String) -> Unit = {},
     onStartTrip: () -> Unit,
     onStartDirectTrip: () -> Unit = onStartTrip,
     onPickupAddressChange: (String) -> Unit = {},
@@ -259,6 +261,9 @@ fun TrackerScreenContent(
                     isDistanceAutoCalculated = uiState.isDistanceAutoCalculated,
                     estimatedFareCents = uiState.directCalculatedFareCents,
                     rates = uiState.directPricingRates,
+                    pricingProfiles = uiState.directPricingProfiles,
+                    activePricingProfileId = uiState.activeDirectPricingProfileId,
+                    onSelectPricingProfile = onSelectDirectPricingProfile,
                     customFareOverrideText = uiState.directCustomFareOverrideText,
                     onCustomFareOverrideChange = onCustomFareOverrideChange,
                     onStartDirectRun = onStartDirectTrip

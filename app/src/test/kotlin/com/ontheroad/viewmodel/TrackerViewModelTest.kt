@@ -12,6 +12,8 @@ import com.ontheroad.core.domain.usecase.SearchAddressUseCase
 import com.ontheroad.core.domain.usecase.StartTripUseCase
 import com.ontheroad.core.model.AddressSuggestion
 import com.ontheroad.core.model.DirectPricingRates
+import com.ontheroad.core.model.DirectPricingProfile
+import com.ontheroad.core.model.DirectPricingProfileSettings
 import com.ontheroad.core.model.RoutePoint
 import com.ontheroad.core.model.ThemeMode
 import com.ontheroad.core.model.Trip
@@ -63,11 +65,36 @@ private class TrackerFakeTripRepository : TripRepository {
 private class TrackerFakeUserPreferencesRepository : UserPreferencesRepository {
     val themeModeFlow = MutableStateFlow(ThemeMode.SYSTEM)
     val directPricingRatesFlow = MutableStateFlow(DirectPricingRates())
+    val directPricingProfilesFlow = MutableStateFlow(DirectPricingProfileSettings())
 
     override fun getThemeMode(): Flow<ThemeMode> = themeModeFlow
     override suspend fun setThemeMode(mode: ThemeMode) { themeModeFlow.value = mode }
     override fun getDirectPricingRates(): Flow<DirectPricingRates> = directPricingRatesFlow
-    override suspend fun setDirectPricingRates(rates: DirectPricingRates) { directPricingRatesFlow.value = rates }
+    override suspend fun setDirectPricingRates(rates: DirectPricingRates) {
+        directPricingRatesFlow.value = rates
+        val settings = directPricingProfilesFlow.value
+        directPricingProfilesFlow.value = settings.copy(
+            profiles = settings.profiles.map { profile ->
+                if (profile.id == settings.activeProfileId) profile.copy(rates = rates) else profile
+            }
+        )
+    }
+    override fun getDirectPricingProfileSettings(): Flow<DirectPricingProfileSettings> = directPricingProfilesFlow
+    override suspend fun setActiveDirectPricingProfile(profileId: String) {
+        directPricingProfilesFlow.value = directPricingProfilesFlow.value.copy(activeProfileId = profileId)
+        directPricingRatesFlow.value = directPricingProfilesFlow.value.activeProfile.rates
+    }
+    override suspend fun saveDirectPricingProfile(profile: DirectPricingProfile) {
+        val settings = directPricingProfilesFlow.value
+        directPricingProfilesFlow.value = settings.copy(
+            profiles = settings.profiles.filterNot { it.id == profile.id } + profile
+        )
+    }
+    override suspend fun deleteDirectPricingProfile(profileId: String) {
+        val settings = directPricingProfilesFlow.value
+        val profiles = settings.profiles.filterNot { it.id == profileId }
+        directPricingProfilesFlow.value = DirectPricingProfileSettings(profiles, profiles.first().id)
+    }
 }
 
 private class TrackerFakeLocationRepository : LocationRepository {
@@ -248,10 +275,44 @@ class TrackerViewModelTest {
 
         val completedTrip = tripRepository.getTripById(startedTrip!!.id)
         assertEquals(80_000_00L, completedTrip?.quotedFareAmountCents)
+        assertEquals(80_000_00L, completedTrip?.customerPaidTotalAmountCents)
         assertEquals(80_000_00L, completedTrip?.cashCollectedAmountCents)
         assertEquals(80_000_00L, completedTrip?.totalEarningsCents)
 
         viewModel.stopDurationTimer()
+    }
+
+    @Test
+    fun selectingRateProfileRecalculatesAutoEstimatedRoadDistance() = runTest(testDispatcher) {
+        val rates = DirectPricingRates(roadDetourMultiplier = 1.0)
+        val motorcycleRates = rates.copy(roadDetourMultiplier = 2.0)
+        preferencesRepository.directPricingProfilesFlow.value = DirectPricingProfileSettings(
+            profiles = listOf(
+                DirectPricingProfile("car", "Car / Passenger", rates),
+                DirectPricingProfile("motorcycle", "Motorcycle / Courier", motorcycleRates)
+            ),
+            activeProfileId = "car"
+        )
+        testDispatcher.scheduler.runCurrent()
+
+        viewModel.selectPlatform("direct")
+        viewModel.selectDestinationSuggestion(
+            AddressSuggestion(
+                title = "Airport",
+                fullAddress = "Soekarno-Hatta Airport",
+                latitude = -6.125556,
+                longitude = 106.655833
+            )
+        )
+        val carDistance = viewModel.uiState.value.directEstimatedDistanceKmText.toDouble()
+        assertEquals("car", viewModel.uiState.value.activeDirectPricingProfileId)
+
+        viewModel.selectDirectPricingProfile("motorcycle")
+        testDispatcher.scheduler.runCurrent()
+
+        val motorcycleDistance = viewModel.uiState.value.directEstimatedDistanceKmText.toDouble()
+        assertEquals("motorcycle", viewModel.uiState.value.activeDirectPricingProfileId)
+        assertTrue(motorcycleDistance > carDistance * 1.9)
     }
 
     @Test

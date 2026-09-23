@@ -5,6 +5,7 @@ import com.ontheroad.core.model.TripStatus
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -58,10 +59,74 @@ class CompleteTripUseCaseTest {
         assertEquals(10000L, completedTrip.cashCollectedAmountCents)
         assertEquals(5000L, completedTrip.tipAmountCents)
         assertEquals(40000L, completedTrip.totalEarningsCents)
+        assertNull(completedTrip.customerPaidTotalAmountCents)
         assertEquals(4200.0, completedTrip.quotedDistanceMeters!!, 0.01)
 
         val stored = tripRepository.getTripById(trip.id)
         assertNotNull(stored)
         assertEquals(TripStatus.COMPLETED, stored?.status)
+    }
+
+    @Test
+    fun recordsDirectCustomerPaymentSeparatelyFromQuoteAndEarnings() = runTest {
+        val trip = startTripUseCase(
+            startAddress = "Pickup",
+            startLatitude = 1.0,
+            startLongitude = 1.0,
+            platformId = "direct",
+            categoryId = "passenger",
+            quotedFareAmountCents = 10_000L,
+            startTimeMillis = 1000
+        ).getOrThrow()
+
+        val completed = completeTripUseCase(
+            tripId = trip.id,
+            endAddress = "Drop-off",
+            endLatitude = 1.1,
+            endLongitude = 1.1,
+            platformFeeAmountCents = 7_000L,
+            cashCollectedAmountCents = 2_000L,
+            tipAmountCents = 500L,
+            endTimeMillis = 2000
+        ).getOrThrow()
+
+        assertEquals(10_000L, completed.quotedFareAmountCents)
+        assertEquals(9_500L, completed.customerPaidTotalAmountCents)
+        assertEquals(9_500L, completed.totalEarningsCents)
+    }
+
+    @Test
+    fun rejectsNegativeOrOverflowingDirectPaymentAmountsWithoutCompletingTrip() = runTest {
+        val trip = startTripUseCase(
+            startAddress = "Pickup",
+            startLatitude = 1.0,
+            startLongitude = 1.0,
+            platformId = "direct",
+            categoryId = "passenger",
+            startTimeMillis = 1_000L
+        ).getOrThrow()
+
+        val negative = completeTripUseCase(
+            tripId = trip.id,
+            endAddress = "Drop-off",
+            endLatitude = 1.1,
+            endLongitude = 1.1,
+            platformFeeAmountCents = -1L,
+            cashCollectedAmountCents = 0L,
+            endTimeMillis = 2_000L
+        )
+        val overflowing = completeTripUseCase(
+            tripId = trip.id,
+            endAddress = "Drop-off",
+            endLatitude = 1.1,
+            endLongitude = 1.1,
+            platformFeeAmountCents = Long.MAX_VALUE,
+            cashCollectedAmountCents = 1L,
+            endTimeMillis = 2_000L
+        )
+
+        assertTrue(negative.isFailure)
+        assertTrue(overflowing.isFailure)
+        assertEquals(TripStatus.IN_PROGRESS, tripRepository.getTripById(trip.id)?.status)
     }
 }

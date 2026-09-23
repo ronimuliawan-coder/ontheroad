@@ -1,6 +1,6 @@
 # Implementation Plan: Direct Booking & Fare Estimator
 
-> **Document Status**: Approved plan; Units 1–3 complete  
+> **Document Status**: Approved plan; Units 1–3 complete; Unit 4 approved and in progress  
 > **Product authority**: [Direct Booking & Fare Estimator PRD](../prds/direct-booking-and-fare-estimator.prd.md)  
 > **Planning approval**: Project owner approved the baseline/reconciliation and architecture-plan gates on 2026-09-23  
 > **Target**: `v0.2.0`, feature delivery into GitHub `dev`  
@@ -8,9 +8,9 @@
 ## 1. Exact baseline
 
 - Latest accepted application revision on GitHub `dev`: PR #11 merge
-  `a8ba7c87b06f62cb6e3f54525d741c891a65276d`. Documentation-only PR #12 subsequently merged at
-  `6d1a93148d28e45a5c28af36143d793b88201e89`; its post-merge governance and GitLab trusted-ref
-  checks passed. `origin/main` remains `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`.
+  `a8ba7c87b06f62cb6e3f54525d741c891a65276d`. Documentation-only PRs #12 and #13 subsequently
+  advanced `dev` to `7cbb0d3335e5e3dfaaa708a389687265086b7843`; `origin/main` remains
+  `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`.
 - Units 1–3 are merged into `dev`. Android JVM tests, Android lint, governance, and Pixel 7 Pro /
   API 35 instrumentation passed on Unit 3's exact merge revision.
 - Earlier `bun test` and `bun run governance:check` results are retained as informational
@@ -146,6 +146,45 @@ instrumentation passed on merge revision `a8ba7c87b06f62cb6e3f54525d741c891a6527
 **Done when:** invalid input cannot corrupt stored rates and the critical user flow is observable
 on the declared Android device profile, with exact-revision GitHub CI passing.
 
+### Unit 4 — Configurable profiles and shareable direct receipt
+
+**Status:** Approved by the project owner on 2026-09-23; implementation in progress from
+`dev` tip `7cbb0d3335e5e3dfaaa708a389687265086b7843` on branch
+`rons/unit-4-direct-rate-profiles-receipts`; tracked in Linear issue
+[`RON-385`](https://linear.app/rons-space/issue/RON-385/phase-4-unit-4-direct-pricing-profiles-and-shareable-receipts).
+
+- Implement `FR-DIR-08/09/10` together. Each named local profile owns all five
+  `DirectPricingRates` values, including `roadDetourMultiplier`; the Settings profile editor
+  manages profiles and the direct-booking form selects the active profile used by the quote.
+- On first upgrade, preserve the existing scalar rate values in a `Default` profile. Keep the
+  existing scalar preference keys mirrored to the active profile for a safe old-app fallback.
+  Keep settings in the existing `UserPreferencesRepository` / `SharedPreferences` ownership; do
+  not add a settings database or dependency.
+- `FR-DIR-10`: show sharing only for completed direct trips. Generate a PNG locally and launch
+  Android's Sharesheet using a temporary `content://` URI from a `FileProvider` scoped to a
+  receipt-only cache directory. Include trip date/time, display pickup/drop-off addresses, actual
+  distance, and a distinct customer-paid total. Do not expose coordinates, route traces, notes,
+  or internal earnings metrics; do not add a network service.
+- Capture the customer's actual paid total separately from both the original quote and the
+  driver's earnings breakdown. For direct completion, derive it from the payment amounts entered
+  in the existing completion flow (including any separately recorded tip); leave it null for
+  non-direct or unfinished trips. Existing completed direct rows receive a forward-only Room
+  migration based on their already-recorded completion amounts.
+- Keep profile CRUD local, preserve at least one profile, validate names/rates, and ensure the
+  selected profile's rates and detour factor drive both the booking quote and estimate. Creating
+  a profile starts from the current profile's rates; deleting the active profile selects the
+  remaining profile.
+
+**Acceptance:** CI tests cover scalar-to-`Default` migration, profile create/edit/select/delete,
+profile validation, profile selection in the quote flow, Room v2-to-v3 migration and payment-total
+round trips, receipt eligibility/content, and the scoped share URI. GitHub CI on the exact PR
+revision is authoritative; no local build, tests, or verification are run.
+
+**Recovery:** preference updates are atomic and retain the legacy scalar mirror. The Room change
+is additive; never downgrade a v3 database destructively. If reverting source after the migration
+has shipped, restore compatible code with a forward fix rather than opening the database with a
+v2-only binary. Promotion to `main` remains out of scope.
+
 ## 6. Verification matrix
 
 | Area | Evidence required |
@@ -156,7 +195,7 @@ on the declared Android device profile, with exact-revision GitHub CI passing.
 | Permissions | Denied/granted runtime permission paths; service start only on an allowed path |
 | Offline behavior | Calculation/persistence with no network; address lookup failure falls back to manual input |
 | Architecture | No Android imports in `core:model`/`core:domain`; one owner per state/data responsibility |
-| Repository gates | GitHub CI: governance checks, Gradle JVM tests, lint, and Pixel 7 Pro / API 35 instrumentation for Unit 3 |
+| Repository gates | GitHub CI: governance checks, Gradle JVM tests, lint, and Pixel 7 Pro / API 35 instrumentation for Units 3–4 |
 | Review/delivery | PR #11 merged into `dev`; all required PR and post-merge checks passed. CodeRabbit skipped because `dev` is not the default branch and the Codex review bot was rate-limited; no automated review findings were available, and the owner authorized the merge. |
 
 Local Android verification is intentionally out of scope by project-owner decision. GitHub CI is
@@ -170,8 +209,9 @@ signing surface.
   `rons/` prefix; target PRs at GitHub `dev`.
 - GitHub remains the sole write/merge authority. GitLab is a deferred review-only mirror and is
   not a delivery path.
-- Unit 3 is selected and approved. The user authorized the normal non-promotion commit, push, PR to
-  `dev`, and merge flow after required checks pass; promotion to `main` remains unauthorized.
+- Units 3 and 4 are selected and approved. The user authorized the normal non-promotion commit,
+  push, PR to `dev`, and merge flow after required checks pass; promotion to `main` remains
+  unauthorized.
 - Roll back a source change by reverting its atomic commit. For the Room migration, preserve the
   forward schema and use a corrective migration/build; never downgrade an installed v2 database
   destructively.
@@ -182,6 +222,6 @@ signing surface.
 Repository governance uses **phases** for project-wide lifecycle gates; this feature uses
 **implementation units** for approved slices. “Stage” is not used as a tracking term.
 
-Unit 3 — **validated rate editing and UI acceptance** — is complete. No further implementation
-unit is active; a new unit requires explicit project-owner approval. All verification runs in
-GitHub CI; no local test/build run is required. Promotion to `main` remains unauthorized.
+Unit 4 — **configurable profiles and shareable direct receipt** — is active. Its completion gate is
+exact-revision GitHub CI for the documented acceptance criteria. No local test/build/verification
+is run. Promotion to `main` remains unauthorized.

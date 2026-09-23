@@ -1,0 +1,5 @@
+<resources>
+    <string name="direct_rate_profile_label">Rate profile</string>
+    <string name="direct_customer_paid_total">Total paid by customer (transfer + cash): Rp %1$s</string>
+    <string name="direct_customer_total_invalid">Enter the amount paid; if cash is selected, enter its amount too.</string>
+</resources>

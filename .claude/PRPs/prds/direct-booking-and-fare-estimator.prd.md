@@ -1,7 +1,7 @@
 # OnTheRoad: Direct Booking & Fare Estimator (PRD)
 
 > **Document Status**: Approved Target (user-confirmed 2026-09-23)  
-> **Lifecycle**: Approved PRD; Units 1–3 complete; next implementation scope awaits approval  
+> **Lifecycle**: Approved PRD; Units 1–3 complete; Unit 4 approved and in progress  
 > **Tracker Issue**: [RON-277](https://linear.app/rons-space/issue/RON-277/phase-0-and-2-product-discovery-and-prd-direct-booking-and-fare)  
 > **Parent Project**: [OnTheRoad: Direct Booking & Fare Estimator](https://linear.app/rons-space/project/ontheroad-direct-booking-and-fare-estimator-e09b7af9c69f)  
 > **Author**: Antigravity Pair & Project Owner  
@@ -168,6 +168,10 @@ implementation units for its approval and delivery boundaries:
 - **Unit 3 — Validated rate editing and UI acceptance**: complete in PR #11; JVM tests, lint,
   governance, and Pixel 7 Pro / API 35 UI acceptance passed on merged `dev` revision
   `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
+- **Unit 4 — Configurable profiles and shareable direct receipt**: approved on 2026-09-23;
+  includes `FR-DIR-08`, `FR-DIR-09`, and `FR-DIR-10`; implementation and exact-revision CI are
+  in progress from `dev` tip `7cbb0d3335e5e3dfaaa708a389687265086b7843`; tracked by Linear
+  issue [`RON-385`](https://linear.app/rons-space/issue/RON-385/phase-4-unit-4-direct-pricing-profiles-and-shareable-receipts).
 
 ---
 
@@ -178,7 +182,7 @@ implementation units for its approval and delivery boundaries:
 - [x] **Tracker Linked**: Connected to Linear Issue [RON-277](https://linear.app/rons-space/issue/RON-277/phase-0-and-2-product-discovery-and-prd-direct-booking-and-fare) and Project.
 - [x] **Project Owner Approval**: Explicitly confirmed in the active task on 2026-09-23.
 
-**Next Action**: Units 1–3 are complete. No next implementation unit is approved; obtain explicit
-project-owner approval before defining or starting more feature scope. Repository governance phases
-are project-wide lifecycle gates; feature implementation slices are tracked as units. Promotion to
-`main` is not authorized. GitLab review-mirror cleanup is deferred and is not a delivery gate.
+**Next Action**: Unit 4 is approved and active, with FR-DIR-08/09/10 included. Repository governance
+phases are project-wide lifecycle gates; feature implementation slices are tracked as units.
+Promotion to `main` is not authorized. GitLab review-mirror cleanup is deferred and is not a
+delivery gate.

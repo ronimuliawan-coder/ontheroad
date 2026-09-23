@@ -26,4 +26,18 @@ class RapidCompleteModalTest {
         assertEquals("", metersToInputText(null))
         assertEquals("", metersToInputText(0.0))
     }
+
+    @Test
+    fun `direct customer paid total is the exact sum of transfer and cash`() {
+        assertEquals(10_500L, directCustomerPaidTotalCents("80", "25", hasCash = true))
+        assertEquals(8_000L, directCustomerPaidTotalCents("80", "25", hasCash = false))
+        assertEquals(2_500L, directCustomerPaidTotalCents("", "25", hasCash = true))
+        assertEquals(0L, directCustomerPaidTotalCents("0", "", hasCash = false))
+        assertEquals(null, directCustomerPaidTotalCents("", "", hasCash = false))
+        assertEquals(null, directCustomerPaidTotalCents("80", "", hasCash = true))
+        assertEquals(null, directCustomerPaidTotalCents("92233720368547758", "1", hasCash = true))
+        assertEquals(null, directCustomerPaidTotalCents("invalid", "25", hasCash = true))
+        assertEquals(null, directCustomerPaidTotalCents("-1", "25", hasCash = true))
+        assertEquals(null, directCustomerPaidTotalCents("80", "invalid", hasCash = true))
+    }
 }

@@ -3,6 +3,7 @@ package com.ontheroad.ui.settings
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,11 +18,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ontheroad.R
 import com.ontheroad.core.model.DirectPricingRates
+import com.ontheroad.core.model.DirectPricingProfileSettings
 import com.ontheroad.core.model.ThemeMode
 import com.ontheroad.core.model.isPersistable
 import com.ontheroad.core.ui.theme.CockpitDimens
@@ -54,13 +59,17 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 ) {
     val themeMode by viewModel.themeMode.collectAsState()
-    val directPricingRates by viewModel.directPricingRates.collectAsState()
+    val directPricingProfiles by viewModel.directPricingProfiles.collectAsState()
 
     SettingsScreenContent(
         themeMode = themeMode,
         onThemeModeSelected = { viewModel.setThemeMode(it) },
-        directPricingRates = directPricingRates,
+        directPricingRates = directPricingProfiles.activeProfile.rates,
         onUpdateRates = { viewModel.updateDirectPricingRates(it) },
+        directPricingProfiles = directPricingProfiles,
+        onSelectProfile = viewModel::selectDirectPricingProfile,
+        onCreateProfile = viewModel::createDirectPricingProfile,
+        onDeleteProfile = viewModel::deleteDirectPricingProfile,
         modifier = modifier
     )
 }
@@ -71,6 +80,10 @@ fun SettingsScreenContent(
     onThemeModeSelected: (ThemeMode) -> Unit,
     directPricingRates: DirectPricingRates,
     onUpdateRates: (DirectPricingRates) -> Unit,
+    directPricingProfiles: DirectPricingProfileSettings = DirectPricingProfileSettings(),
+    onSelectProfile: (String) -> Unit = {},
+    onCreateProfile: (String) -> Unit = {},
+    onDeleteProfile: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -101,6 +114,13 @@ fun SettingsScreenContent(
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Bold
+        )
+
+        DirectPricingProfilesCard(
+            profiles = directPricingProfiles,
+            onSelectProfile = onSelectProfile,
+            onCreateProfile = onCreateProfile,
+            onDeleteProfile = onDeleteProfile
         )
 
         DirectPricingRatesCard(
@@ -144,6 +164,140 @@ fun SettingsScreenContent(
 }
 
 @Composable
+private fun DirectPricingProfilesCard(
+    profiles: DirectPricingProfileSettings,
+    onSelectProfile: (String) -> Unit,
+    onCreateProfile: (String) -> Unit,
+    onDeleteProfile: (String) -> Unit
+) {
+    var showCreateDialog by remember { mutableStateOf(false) }
+    var profileName by remember { mutableStateOf("") }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    val activeProfile = profiles.activeProfile
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(CockpitDimens.CardCornerRadius),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(CockpitDimens.SpacingMedium),
+            verticalArrangement = Arrangement.spacedBy(CockpitDimens.SpacingSmall)
+        ) {
+            Text(
+                text = stringResource(R.string.direct_profiles_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = stringResource(R.string.direct_profiles_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = OnSurfaceSecondary
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(CockpitDimens.SpacingSmall)
+            ) {
+                profiles.profiles.forEach { profile ->
+                    FilterChip(
+                        selected = profile.id == profiles.activeProfileId,
+                        onClick = { onSelectProfile(profile.id) },
+                        label = { Text(profile.name) }
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(CockpitDimens.SpacingSmall)
+            ) {
+                Button(
+                    onClick = {
+                        profileName = ""
+                        showCreateDialog = true
+                    },
+                    modifier = Modifier.weight(1f).testTag("direct_profile_add")
+                ) {
+                    Text(stringResource(R.string.direct_profile_add))
+                }
+                TextButton(
+                    onClick = { showDeleteDialog = true },
+                    enabled = profiles.profiles.size > 1,
+                    modifier = Modifier.weight(1f).testTag("direct_profile_delete")
+                ) {
+                    Text(stringResource(R.string.direct_profile_delete))
+                }
+            }
+        }
+    }
+
+    if (showCreateDialog) {
+        val trimmedName = profileName.trim()
+        val duplicateName = profiles.profiles.any { it.name.equals(trimmedName, ignoreCase = true) }
+        AlertDialog(
+            onDismissRequest = { showCreateDialog = false },
+            title = { Text(stringResource(R.string.direct_profile_create_title)) },
+            text = {
+                OutlinedTextField(
+                    value = profileName,
+                    onValueChange = { profileName = it.take(DirectPricingProfileSettings.MAX_PROFILE_NAME_LENGTH) },
+                    label = { Text(stringResource(R.string.direct_profile_name)) },
+                    singleLine = true,
+                    isError = duplicateName,
+                    supportingText = if (duplicateName) {
+                        { Text(stringResource(R.string.direct_profile_name_duplicate)) }
+                    } else null,
+                    modifier = Modifier.testTag("direct_profile_name")
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onCreateProfile(trimmedName)
+                        showCreateDialog = false
+                    },
+                    enabled = trimmedName.isNotEmpty() && !duplicateName,
+                    modifier = Modifier.testTag("direct_profile_create_confirm")
+                ) {
+                    Text(stringResource(R.string.direct_profile_create))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCreateDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text(stringResource(R.string.direct_profile_delete_title)) },
+            text = { Text(stringResource(R.string.direct_profile_delete_message, activeProfile.name)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDeleteProfile(activeProfile.id)
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text(stringResource(R.string.direct_profile_delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+}
+
+@Composable
 private fun DirectPricingRatesCard(
     rates: DirectPricingRates,
     onUpdateRates: (DirectPricingRates) -> Unit
@@ -152,11 +306,13 @@ private fun DirectPricingRatesCard(
     var ratePerKmText by remember(rates) { mutableStateOf((rates.ratePerKmAmountCents / 100).toString()) }
     var minFareText by remember(rates) { mutableStateOf((rates.minimumFareAmountCents / 100).toString()) }
     var includedKmText by remember(rates) { mutableStateOf(rates.includedBaseDistanceKm.toString()) }
+    var detourFactorText by remember(rates) { mutableStateOf(rates.roadDetourMultiplier.toString()) }
     val updatedRates = parseRatesDraft(
         baseFareText = baseFareText,
         ratePerKmText = ratePerKmText,
         minFareText = minFareText,
         includedKmText = includedKmText,
+        detourFactorText = detourFactorText,
         rates = rates
     )
 
@@ -238,6 +394,23 @@ private fun DirectPricingRatesCard(
                 )
             }
 
+            Text(
+                text = stringResource(R.string.direct_rates_advanced),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+            OutlinedTextField(
+                value = detourFactorText,
+                onValueChange = { detourFactorText = it },
+                label = { Text(stringResource(R.string.direct_road_detour_factor)) },
+                supportingText = { Text(stringResource(R.string.direct_road_detour_help)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                modifier = Modifier.fillMaxWidth().testTag("direct_road_detour_factor"),
+                singleLine = true,
+                shape = RoundedCornerShape(CockpitDimens.CardCornerRadius),
+                isError = parseDetourFactor(detourFactorText) == null
+            )
+
             if (updatedRates == null) {
                 Text(
                     text = stringResource(R.string.direct_rates_invalid),
@@ -262,19 +435,26 @@ private fun parseRatesDraft(
     ratePerKmText: String,
     minFareText: String,
     includedKmText: String,
+    detourFactorText: String,
     rates: DirectPricingRates
 ): DirectPricingRates? {
     val baseFareCents = parseAmountCents(baseFareText) ?: return null
     val ratePerKmCents = parseAmountCents(ratePerKmText) ?: return null
     val minimumFareCents = parseAmountCents(minFareText) ?: return null
     val includedBaseDistanceKm = parseIncludedDistance(includedKmText) ?: return null
+    val roadDetourMultiplier = parseDetourFactor(detourFactorText) ?: return null
 
     return rates.copy(
         baseFareAmountCents = baseFareCents,
         ratePerKmAmountCents = ratePerKmCents,
         minimumFareAmountCents = minimumFareCents,
-        includedBaseDistanceKm = includedBaseDistanceKm
+        includedBaseDistanceKm = includedBaseDistanceKm,
+        roadDetourMultiplier = roadDetourMultiplier
     ).takeIf(DirectPricingRates::isPersistable)
+}
+
+private fun parseDetourFactor(text: String): Double? = text.toDoubleOrNull()?.takeIf {
+    it.isFinite() && it >= 0.0 && it.toFloat().isFinite()
 }
 
 private fun parseAmountCents(text: String): Long? {

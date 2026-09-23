@@ -17,7 +17,18 @@ never contain credentials, tokens, or private payloads.
 
 ## Current feature delivery
 
-- Feature: Direct Booking & Fare Estimator, Unit 3 — validated rate editing and UI acceptance.
+- Feature: Direct Booking & Fare Estimator, Unit 4 — configurable detour, multi-vehicle rate
+  profiles, and shareable direct receipt.
+- Status: Approved by the project owner on 2026-09-23; implementation active from GitHub `dev` tip
+  `7cbb0d3335e5e3dfaaa708a389687265086b7843` on `rons/unit-4-direct-rate-profiles-receipts`.
+- Approved requirements: `FR-DIR-08`, `FR-DIR-09`, and `FR-DIR-10`; local settings/profile data,
+  completed-trip fare persistence, and native image sharing only. Promotion to `main` is not part
+  of this unit.
+- Receipt choice: The owner selected an explicitly recorded actual customer-paid total rather than
+  showing the original quote as if it were the final payment. It remains distinct from the quote
+  and internal earnings fields.
+
+- Previously accepted feature delivery: Unit 3 — validated rate editing and UI acceptance.
 - Delivery: PR #11 from `rons/validated-rate-editing-ui`, based on GitHub `dev` at
   `579c14b6ac9b091d3425001aef4eeea7f0f6e724`, head `5533af057e63e97ea8184fc1fa10f3785378647c`,
   merged into `dev` as `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
@@ -33,8 +44,8 @@ never contain credentials, tokens, or private payloads.
 | Boundary | State | Evidence |
 |---|---|---|
 | Read-only discovery and baseline | Approved and complete | User-approved Gate 0/1; baseline entries below |
-| Target design and implementation plan | Approved | User-approved feature PRD/plan and Unit 3 on 2026-09-23 |
-| Local repository edits | Authorized for approved units | User approval for Units 1–3 |
+| Target design and implementation plan | Approved | User-approved feature PRD/plan; Unit 4 scope approved on 2026-09-23 |
+| Local repository edits | Authorized for approved units | User approval for Units 1–4 |
 | Branch, commit, push, PR, and merge | Authorized for non-promotion PRs into GitHub `dev` after CI/review | User authorized continued non-promotion PR delivery; no promotion to `main` |
 | Deploy or production change | Not authorized | No release or deployment approval supplied |
 | Credential or paid-resource changes | Not authorized | No such change is in scope |
@@ -375,6 +386,20 @@ never contain credentials, tokens, or private payloads.
 - Local verification: None; the owner requires verification to run in CI.
 - Rollback/recovery impact: Revert merge commit `a8ba7c87b06f62cb6e3f54525d741c891a65276d` on `dev`; no force-push, production data, release, or credential changes.
 - Next gate: Unit 3 is complete. Await explicit approval before starting another implementation unit; promotion to `main` remains unauthorized.
+
+### 2026-09-23 — Unit 4 approval and implementation start
+
+- Actor: `developer-project-owner` approval / agent implementation.
+- Exact base: GitHub `dev` tip `7cbb0d3335e5e3dfaaa708a389687265086b7843`; latest accepted application-code revision remains PR #11 merge `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
+- Branch: `rons/unit-4-direct-rate-profiles-receipts`.
+- Linear tracking: [RON-385 — Unit 4](https://linear.app/rons-space/issue/RON-385/phase-4-unit-4-direct-pricing-profiles-and-shareable-receipts), created In Progress with the approved scope and acceptance gate.
+- Approval: User directed “let's go then” and explicitly included `FR-DIR-09/10`; subsequently chose to record the actual customer-paid total for receipts.
+- Scope: Implement `FR-DIR-08` configurable detour, `FR-DIR-09` local multi-vehicle rate profiles, and `FR-DIR-10` a customer-shareable direct-trip receipt image.
+- Contract: Each profile owns all existing `DirectPricingRates` fields, including the detour factor; migrate existing scalar rates to a `Default` profile without resetting them; choose the active profile in the direct-booking form. Receipt is available only for completed direct trips, includes date/time, displayed endpoints, actual distance, and a separately persisted total derived from the completion payment entries; it excludes coordinates, route traces, notes, and internal earnings metrics. Use a local PNG, a receipt-scoped cache URI, and Android Sharesheet; no network service or new dependency.
+- Recovery: Preserve existing scalar keys as the active-profile compatibility mirror. Add the customer-paid value via forward Room migration; never destructively downgrade the resulting database. Promotion and deployment remain unauthorized.
+- Verification policy: No local tests, builds, or verification. Exact-revision GitHub CI is the acceptance authority.
+- Result: `IN PROGRESS`; no implementation acceptance evidence exists yet.
+- Next gate: Complete implementation and code review, then require relevant GitHub CI to pass on the exact PR revision before merge to `dev`.
 
 ## Current accepted exceptions
 

@@ -12,6 +12,8 @@ import com.ontheroad.core.domain.usecase.SearchAddressUseCase
 import com.ontheroad.core.domain.usecase.StartTripUseCase
 import com.ontheroad.core.model.AddressSuggestion
 import com.ontheroad.core.model.DirectPricingRates
+import com.ontheroad.core.model.DirectPricingProfile
+import com.ontheroad.core.model.DirectPricingProfileSettings
 import com.ontheroad.core.model.Platform
 import com.ontheroad.core.model.Trip
 import com.ontheroad.core.model.TripStatus
@@ -53,6 +55,8 @@ data class TrackerUiState(
     val isDistanceAutoCalculated: Boolean = false,
     val directCustomFareOverrideText: String = "",
     val directPricingRates: DirectPricingRates = DirectPricingRates(),
+    val directPricingProfiles: List<DirectPricingProfile> = DirectPricingProfileSettings().profiles,
+    val activeDirectPricingProfileId: String = DirectPricingProfileSettings.DEFAULT_PROFILE_ID,
     val directCalculatedFareCents: Long = 15_000_00L
 )
 
@@ -76,25 +80,34 @@ class TrackerViewModel(
 
     init {
         observeActiveTrip()
-        observeDirectPricingRates()
+        observeDirectPricingProfiles()
         acquireCurrentLocation(showFallback = false)
     }
 
-    private fun observeDirectPricingRates() {
-        userPreferencesRepository?.getDirectPricingRates()
-            ?.onEach { rates ->
+    private fun observeDirectPricingProfiles() {
+        userPreferencesRepository?.getDirectPricingProfileSettings()
+            ?.onEach { profileSettings ->
+                val rates = profileSettings.activeProfile.rates
                 _uiState.update { current ->
-                    val distanceKm = current.directEstimatedDistanceKmText.toDoubleOrNull() ?: 0.0
-                    val overrideCents = current.directCustomFareOverrideText.toDoubleOrNull()?.let { (it * 100).toLong() }
-                    val fare = calculateDirectFareUseCase(
-                        distanceKm = distanceKm,
-                        rates = rates,
-                        customFareOverrideCents = overrideCents
-                    )
-                    current.copy(
+                    val updated = current.copy(
                         directPricingRates = rates,
-                        directCalculatedFareCents = fare
+                        directPricingProfiles = profileSettings.profiles,
+                        activeDirectPricingProfileId = profileSettings.activeProfileId
                     )
+                    if (current.isDistanceAutoCalculated) {
+                        recalculateDistanceAndFare(updated)
+                    } else {
+                        val distanceKm = current.directEstimatedDistanceKmText.toDoubleOrNull() ?: 0.0
+                        val overrideCents = current.directCustomFareOverrideText.toDoubleOrNull()
+                            ?.let { (it * 100).toLong() }
+                        updated.copy(
+                            directCalculatedFareCents = calculateDirectFareUseCase(
+                                distanceKm = distanceKm,
+                                rates = rates,
+                                customFareOverrideCents = overrideCents
+                            )
+                        )
+                    }
                 }
             }
             ?.launchIn(viewModelScope)
@@ -161,6 +174,14 @@ class TrackerViewModel(
     fun selectCategory(categoryId: String) {
         if (!_uiState.value.isTracking) {
             _uiState.update { it.copy(selectedCategoryId = categoryId) }
+        }
+    }
+
+    fun selectDirectPricingProfile(profileId: String) {
+        if (!_uiState.value.isTracking) {
+            viewModelScope.launch {
+                userPreferencesRepository?.setActiveDirectPricingProfile(profileId)
+            }
         }
     }
 

@@ -27,7 +27,8 @@ data class TripEntity(
     val cashCollectedAmountCents: Long,
     val tipAmountCents: Long,
     val notes: String,
-    val status: String
+    val status: String,
+    val customerPaidTotalAmountCents: Long? = null
 ) {
     fun toDomain(): Trip = Trip(
         id = id,
@@ -45,6 +46,7 @@ data class TripEntity(
         actualDistanceMeters = actualDistanceMeters,
         quotedDistanceMeters = quotedDistanceMeters,
         quotedFareAmountCents = quotedFareAmountCents,
+        customerPaidTotalAmountCents = customerPaidTotalAmountCents,
         durationSeconds = durationSeconds,
         platformFeeAmountCents = platformFeeAmountCents,
         cashCollectedAmountCents = cashCollectedAmountCents,
@@ -70,6 +72,7 @@ data class TripEntity(
             actualDistanceMeters = trip.actualDistanceMeters,
             quotedDistanceMeters = trip.quotedDistanceMeters,
             quotedFareAmountCents = trip.quotedFareAmountCents,
+            customerPaidTotalAmountCents = trip.customerPaidTotalAmountCents,
             durationSeconds = trip.durationSeconds,
             platformFeeAmountCents = trip.platformFeeAmountCents,
             cashCollectedAmountCents = trip.cashCollectedAmountCents,

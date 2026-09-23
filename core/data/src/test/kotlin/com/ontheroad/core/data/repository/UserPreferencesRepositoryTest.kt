@@ -3,11 +3,15 @@ package com.ontheroad.core.data.repository
 import android.content.SharedPreferences
 import app.cash.turbine.test
 import com.ontheroad.core.model.DirectPricingRates
+import com.ontheroad.core.model.DirectPricingProfile
 import com.ontheroad.core.model.ThemeMode
 import io.mockk.every
+import io.mockk.firstArg
 import io.mockk.mockk
+import io.mockk.secondArg
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.flow.first
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -18,13 +22,40 @@ class UserPreferencesRepositoryTest {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var repository: UserPreferencesRepositoryImpl
+    private val storedValues = mutableMapOf<String, Any?>()
 
     @Before
     fun setUp() {
+        storedValues.clear()
         sharedPreferences = mockk(relaxed = true)
         editor = mockk(relaxed = true)
         every { sharedPreferences.edit() } returns editor
-        every { editor.putString(any(), any()) } returns editor
+        every { sharedPreferences.getString(any(), any()) } answers {
+            storedValues[firstArg<String>()] as? String ?: secondArg<String?>()
+        }
+        every { sharedPreferences.getLong(any(), any()) } answers {
+            (storedValues[firstArg<String>()] as? Number)?.toLong() ?: secondArg()
+        }
+        every { sharedPreferences.getFloat(any(), any()) } answers {
+            (storedValues[firstArg<String>()] as? Number)?.toFloat() ?: secondArg()
+        }
+        every { sharedPreferences.contains(any()) } answers { storedValues.containsKey(firstArg<String>()) }
+        every { editor.putString(any(), any()) } answers {
+            storedValues[firstArg<String>()] = secondArg<String?>()
+            editor
+        }
+        every { editor.putLong(any(), any()) } answers {
+            storedValues[firstArg<String>()] = secondArg<Long>()
+            editor
+        }
+        every { editor.putFloat(any(), any()) } answers {
+            storedValues[firstArg<String>()] = secondArg<Float>()
+            editor
+        }
+        every { editor.remove(any()) } answers {
+            storedValues.remove(firstArg<String>())
+            editor
+        }
     }
 
     @Test
@@ -89,6 +120,8 @@ class UserPreferencesRepositoryTest {
             assertEquals(1.25, rates.roadDetourMultiplier, 0.01)
             cancelAndIgnoreRemainingEvents()
         }
+        assertEquals("default", repository.getDirectPricingProfileSettings().first().activeProfileId)
+        assertEquals("Default", repository.getDirectPricingProfileSettings().first().activeProfile.name)
     }
 
     @Test
@@ -139,8 +172,8 @@ class UserPreferencesRepositoryTest {
         }
 
         assertTrue(rejected)
-        verify(exactly = 0) { editor.putLong(any(), any()) }
-        verify(exactly = 0) { editor.putFloat(any(), any()) }
+        verify(exactly = 0) { editor.putLong(UserPreferencesRepositoryImpl.KEY_BASE_FARE_CENTS, any()) }
+        verify(exactly = 0) { editor.putFloat(UserPreferencesRepositoryImpl.KEY_INCLUDED_BASE_KM, any()) }
     }
 
     @Test
@@ -163,5 +196,118 @@ class UserPreferencesRepositoryTest {
             )
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    @Test
+    fun `saved profile switches active rates and restores after repository recreation`() = runTest {
+        repository = UserPreferencesRepositoryImpl(sharedPreferences)
+        val motorcycleRates = DirectPricingRates(
+            baseFareAmountCents = 20_000L,
+            ratePerKmAmountCents = 3_000L,
+            minimumFareAmountCents = 5_000L,
+            includedBaseDistanceKm = 1.0,
+            roadDetourMultiplier = 1.8
+        )
+        repository.saveDirectPricingProfile(
+            DirectPricingProfile("motorcycle", "Motorcycle / Courier", motorcycleRates)
+        )
+        repository.setActiveDirectPricingProfile("motorcycle")
+        val editedMotorcycleRates = motorcycleRates.copy(roadDetourMultiplier = 2.0)
+        repository.setDirectPricingRates(editedMotorcycleRates)
+
+        assertEquals(editedMotorcycleRates, repository.getDirectPricingRates().first())
+        assertEquals(20_000L, sharedPreferences.getLong(UserPreferencesRepositoryImpl.KEY_BASE_FARE_CENTS, 0L))
+
+        val restoredRepository = UserPreferencesRepositoryImpl(sharedPreferences)
+        val restored = restoredRepository.getDirectPricingProfileSettings().first()
+        assertEquals("motorcycle", restored.activeProfileId)
+        assertEquals(editedMotorcycleRates, restored.activeProfile.rates)
+        assertEquals(2.0, restored.activeProfile.rates.roadDetourMultiplier, 0.001)
+    }
+
+    @Test
+    fun `rejects duplicate names and invalid profile rates`() = runTest {
+        repository = UserPreferencesRepositoryImpl(sharedPreferences)
+        repository.saveDirectPricingProfile(DirectPricingProfile("car", "Car", DirectPricingRates()))
+
+        var duplicateRejected = false
+        try {
+            repository.saveDirectPricingProfile(DirectPricingProfile("suv", "car", DirectPricingRates()))
+        } catch (_: IllegalArgumentException) {
+            duplicateRejected = true
+        }
+        var invalidRatesRejected = false
+        try {
+            repository.saveDirectPricingProfile(
+                DirectPricingProfile("invalid", "Invalid", DirectPricingRates(baseFareAmountCents = -1L))
+            )
+        } catch (_: IllegalArgumentException) {
+            invalidRatesRejected = true
+        }
+
+        assertTrue(duplicateRejected)
+        assertTrue(invalidRatesRejected)
+        assertEquals(2, repository.getDirectPricingProfileSettings().first().profiles.size)
+    }
+
+    @Test
+    fun `first profile migration preserves all existing scalar rates`() = runTest {
+        storedValues[UserPreferencesRepositoryImpl.KEY_BASE_FARE_CENTS] = 120_000L
+        storedValues[UserPreferencesRepositoryImpl.KEY_RATE_PER_KM_CENTS] = 45_000L
+        storedValues[UserPreferencesRepositoryImpl.KEY_MIN_FARE_CENTS] = 150_000L
+        storedValues[UserPreferencesRepositoryImpl.KEY_INCLUDED_BASE_KM] = 1.5f
+        storedValues[UserPreferencesRepositoryImpl.KEY_ROAD_DETOUR_MULTIPLIER] = 1.7f
+
+        repository = UserPreferencesRepositoryImpl(sharedPreferences)
+
+        val profile = repository.getDirectPricingProfileSettings().first().activeProfile
+        assertEquals("Default", profile.name)
+        assertEquals(120_000L, profile.rates.baseFareAmountCents)
+        assertEquals(45_000L, profile.rates.ratePerKmAmountCents)
+        assertEquals(150_000L, profile.rates.minimumFareAmountCents)
+        assertEquals(1.5, profile.rates.includedBaseDistanceKm, 0.001)
+        assertEquals(1.7, profile.rates.roadDetourMultiplier, 0.001)
+    }
+
+    @Test
+    fun `deleting active profile selects remaining profile and preserves one profile minimum`() = runTest {
+        repository = UserPreferencesRepositoryImpl(sharedPreferences)
+        repository.saveDirectPricingProfile(
+            DirectPricingProfile("car", "Car", DirectPricingRates())
+        )
+        repository.setActiveDirectPricingProfile("car")
+        repository.deleteDirectPricingProfile("car")
+
+        val settings = repository.getDirectPricingProfileSettings().first()
+        assertEquals(1, settings.profiles.size)
+        assertEquals("default", settings.activeProfileId)
+
+        var rejected = false
+        try {
+            repository.deleteDirectPricingProfile("default")
+        } catch (_: IllegalArgumentException) {
+            rejected = true
+        }
+        assertTrue(rejected)
+    }
+
+    @Test
+    fun `profile restore keeps rates edited by an older app version`() = runTest {
+        repository = UserPreferencesRepositoryImpl(sharedPreferences)
+        repository.saveDirectPricingProfile(
+            DirectPricingProfile(
+                "motorcycle",
+                "Motorcycle",
+                DirectPricingRates(ratePerKmAmountCents = 3_000L)
+            )
+        )
+        repository.setActiveDirectPricingProfile("motorcycle")
+        storedValues[UserPreferencesRepositoryImpl.KEY_RATE_PER_KM_CENTS] = 4_500L
+
+        val restoredRepository = UserPreferencesRepositoryImpl(sharedPreferences)
+        val settings = restoredRepository.getDirectPricingProfileSettings().first()
+
+        assertEquals(4_500L, settings.activeProfile.rates.ratePerKmAmountCents)
+        assertEquals(3_500_00L, settings.profiles.first().rates.ratePerKmAmountCents)
     }
 }

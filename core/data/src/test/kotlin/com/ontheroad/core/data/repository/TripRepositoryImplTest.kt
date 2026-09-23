@@ -64,6 +64,7 @@ class TripRepositoryImplTest {
             actualDistanceMeters = 4000.0,
             quotedDistanceMeters = 3800.0,
             quotedFareAmountCents = 2_500_00L,
+            customerPaidTotalAmountCents = 2_600L,
             durationSeconds = 1000,
             platformFeeAmountCents = 2000,
             cashCollectedAmountCents = 500,
@@ -82,6 +83,7 @@ class TripRepositoryImplTest {
         assertEquals(2600L, result?.totalEarningsCents) // 2000 + 500 + 100
         assertEquals(4.0, result?.actualDistanceKm ?: 0.0, 0.01)
         assertEquals(2_500_00L, result?.quotedFareAmountCents)
+        assertEquals(2_600L, result?.customerPaidTotalAmountCents)
     }
 
     @Test
