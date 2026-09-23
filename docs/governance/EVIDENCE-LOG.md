@@ -21,6 +21,11 @@ never contain credentials, tokens, or private payloads.
 - Delivery: PR #11 from `rons/validated-rate-editing-ui`, based on GitHub `dev` at
   `579c14b6ac9b091d3425001aef4eeea7f0f6e724`, head `5533af057e63e97ea8184fc1fa10f3785378647c`,
   merged into `dev` as `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
+- Acceptance record: documentation-only PR #12 merged at
+  `6d1a93148d28e45a5c28af36143d793b88201e89`; post-merge governance run
+  [35852056160](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35852056160) and GitLab
+  trusted-ref run [35852056085](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35852056085)
+  passed on that exact documentation revision.
 - Status: Unit 3 accepted; exact post-merge GitHub CI passed. No next implementation unit is active.
 
 ## Authority and approval record

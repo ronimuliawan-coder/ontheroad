@@ -7,9 +7,10 @@
 
 ## 1. Exact baseline
 
-- Remote `origin/dev`: `a8ba7c87b06f62cb6e3f54525d741c891a65276d` (PR #11 merge);
-  the latest accepted feature revision is PR #11 merge `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
-  `origin/main` remains `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`.
+- Latest accepted application revision on GitHub `dev`: PR #11 merge
+  `a8ba7c87b06f62cb6e3f54525d741c891a65276d`. Documentation-only PR #12 subsequently merged at
+  `6d1a93148d28e45a5c28af36143d793b88201e89`; its post-merge governance and GitLab trusted-ref
+  checks passed. `origin/main` remains `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`.
 - Units 1–3 are merged into `dev`. Android JVM tests, Android lint, governance, and Pixel 7 Pro /
   API 35 instrumentation passed on Unit 3's exact merge revision.
 - Earlier `bun test` and `bun run governance:check` results are retained as informational
