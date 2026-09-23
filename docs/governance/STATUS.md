@@ -6,7 +6,7 @@ feature delivery. Durable evidence and approvals are recorded in
 [`GOVERNANCE.md`](GOVERNANCE.md).
 
 - Last verified: `2026-09-23` (Asia/Jakarta; Unit 3 accepted on merged `dev`)
-- Accepted feature revision: PR #11 merge `a8ba7c87b06f62cb6e3f54525d741c891a65276d`; current `dev` baseline is the same revision; `main` baseline `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`
+- Latest accepted application revision: PR #11 merge `a8ba7c87b06f62cb6e3f54525d741c891a65276d`; documentation-only PR #12 later merged at `6d1a93148d28e45a5c28af36143d793b88201e89`; `main` baseline `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`
 - Repository governance lifecycle: Phase 10 complete; active feature delivery is tracked with implementation units
 - Current work item: None; Unit 3 — validated rate editing and UI acceptance — is complete
 - Overall health: `UNITS 1–3 ACCEPTED / AWAITING NEXT UNIT APPROVAL`
@@ -48,7 +48,7 @@ its own explicit approval.
 | Environment | Revision/artifact | Status | Last acceptance evidence | Owner |
 |---|---|---|---|---|
 | GitHub `main` | `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e` | `CURRENT RELEASE BASELINE` | v0.1.0 baseline; Unit 3 promotion is not authorized | `developer-project-owner` |
-| GitHub `dev` | `a8ba7c87b06f62cb6e3f54525d741c891a65276d` | `CURRENT INTEGRATION BASELINE` | PR #11 merge; post-merge Android CI, governance, and GitLab trusted-ref checks passed | `developer-project-owner` |
+| GitHub `dev` | `a8ba7c87b06f62cb6e3f54525d741c891a65276d` | `LATEST ACCEPTED APPLICATION BASELINE` | PR #11 post-merge Android CI passed; docs-only PR #12 merged at `6d1a93148d28e45a5c28af36143d793b88201e89`, with post-merge governance and GitLab trusted-ref checks passed | `developer-project-owner` |
 | Release candidate `v0.1.0` | Existing tagged product release | Historical/current release reference; no deployment requested | Release measurements and hashes in `EVIDENCE-LOG.md` | `developer-project-owner` |
 
 ## Next gate
