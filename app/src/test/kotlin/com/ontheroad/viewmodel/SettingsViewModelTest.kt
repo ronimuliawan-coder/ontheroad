@@ -17,10 +17,13 @@ import org.junit.Before
 import org.junit.Test
 
 import com.ontheroad.core.model.DirectPricingRates
+import com.ontheroad.core.model.DirectPricingProfile
+import com.ontheroad.core.model.DirectPricingProfileSettings
 
 private class SettingsFakeUserPreferencesRepository : UserPreferencesRepository {
     val themeModeFlow = MutableStateFlow(ThemeMode.SYSTEM)
     val directPricingRatesFlow = MutableStateFlow(DirectPricingRates())
+    val directPricingProfilesFlow = MutableStateFlow(DirectPricingProfileSettings())
     var directPricingRatesWriteCount = 0
 
     override fun getThemeMode(): Flow<ThemeMode> = themeModeFlow
@@ -34,6 +37,35 @@ private class SettingsFakeUserPreferencesRepository : UserPreferencesRepository 
     override suspend fun setDirectPricingRates(rates: DirectPricingRates) {
         directPricingRatesWriteCount++
         directPricingRatesFlow.value = rates
+        val settings = directPricingProfilesFlow.value
+        directPricingProfilesFlow.value = settings.copy(
+            profiles = settings.profiles.map { profile ->
+                if (profile.id == settings.activeProfileId) profile.copy(rates = rates) else profile
+            }
+        )
+    }
+
+    override fun getDirectPricingProfileSettings(): Flow<DirectPricingProfileSettings> = directPricingProfilesFlow
+
+    override suspend fun setActiveDirectPricingProfile(profileId: String) {
+        directPricingProfilesFlow.value = directPricingProfilesFlow.value.copy(activeProfileId = profileId)
+        directPricingRatesFlow.value = directPricingProfilesFlow.value.activeProfile.rates
+    }
+
+    override suspend fun saveDirectPricingProfile(profile: DirectPricingProfile) {
+        val settings = directPricingProfilesFlow.value
+        directPricingProfilesFlow.value = settings.copy(
+            profiles = settings.profiles.filterNot { it.id == profile.id } + profile
+        )
+    }
+
+    override suspend fun deleteDirectPricingProfile(profileId: String) {
+        val settings = directPricingProfilesFlow.value
+        val profiles = settings.profiles.filterNot { it.id == profileId }
+        directPricingProfilesFlow.value = DirectPricingProfileSettings(
+            profiles = profiles,
+            activeProfileId = profiles.first().id
+        )
     }
 }
 
@@ -124,5 +156,25 @@ class SettingsViewModelTest {
 
         assertEquals(0, preferencesRepository.directPricingRatesWriteCount)
         assertEquals(originalRates, preferencesRepository.directPricingRatesFlow.value)
+    }
+
+    @Test
+    fun `new profile copies current rates and can be selected`() = runTest(testDispatcher) {
+        viewModel.directPricingProfiles.test {
+            awaitItem()
+            viewModel.createDirectPricingProfile("Motorcycle / Courier")
+            testDispatcher.scheduler.runCurrent()
+
+            val profiles = awaitItem()
+            assertEquals(2, profiles.profiles.size)
+            val motorcycle = profiles.profiles.last()
+            assertEquals("Motorcycle / Courier", motorcycle.name)
+            assertEquals(profiles.profiles.first().rates, motorcycle.rates)
+
+            viewModel.selectDirectPricingProfile(motorcycle.id)
+            testDispatcher.scheduler.runCurrent()
+            assertEquals(motorcycle.id, awaitItem().activeProfileId)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 }

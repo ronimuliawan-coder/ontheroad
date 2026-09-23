@@ -8,6 +8,7 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
@@ -15,6 +16,8 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ontheroad.core.model.DirectPricingRates
+import com.ontheroad.core.model.DirectPricingProfile
+import com.ontheroad.core.model.DirectPricingProfileSettings
 import com.ontheroad.core.model.ThemeMode
 import com.ontheroad.core.ui.theme.OnTheRoadTheme
 import org.junit.Assert.assertEquals
@@ -63,6 +66,10 @@ class SettingsScreenTest {
         includedDistance.performTextReplacement("NaN")
         saveButton.assertIsNotEnabled()
         includedDistance.performTextReplacement("0.0")
+        val detourFactor = composeRule.onNodeWithTag("direct_road_detour_factor").performScrollTo()
+        detourFactor.performTextReplacement("Infinity")
+        saveButton.assertIsNotEnabled()
+        detourFactor.performTextReplacement("1.4")
         saveButton.assertIsEnabled()
         composeRule.runOnIdle { assertEquals(0, writes) }
 
@@ -74,6 +81,46 @@ class SettingsScreenTest {
             assertEquals(12_000_00L, rates.baseFareAmountCents)
             assertEquals(3_500_00L, rates.ratePerKmAmountCents)
             assertEquals(15_000_00L, rates.minimumFareAmountCents)
+            assertEquals(1.4, rates.roadDetourMultiplier, 0.001)
+        }
+    }
+
+    @Test
+    fun profileCanBeCreatedAndSelected() {
+        var profiles by mutableStateOf(DirectPricingProfileSettings())
+
+        composeRule.setContent {
+            OnTheRoadTheme(themeMode = ThemeMode.DARK) {
+                SettingsScreenContent(
+                    themeMode = ThemeMode.DARK,
+                    onThemeModeSelected = {},
+                    directPricingRates = profiles.activeProfile.rates,
+                    onUpdateRates = {},
+                    directPricingProfiles = profiles,
+                    onSelectProfile = { id -> profiles = profiles.copy(activeProfileId = id) },
+                    onCreateProfile = { name ->
+                        profiles = profiles.copy(
+                            profiles = profiles.profiles + DirectPricingProfile(
+                                id = "motorcycle",
+                                name = name,
+                                rates = profiles.activeProfile.rates
+                            )
+                        )
+                    },
+                    onDeleteProfile = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("direct_profile_add").performScrollTo().performClick()
+        composeRule.onNodeWithTag("direct_profile_name").performTextInput("Motorcycle / Courier")
+        composeRule.onNodeWithTag("direct_profile_create_confirm").performClick()
+        composeRule.onNodeWithText("Motorcycle / Courier").performScrollTo().performClick()
+
+        composeRule.runOnIdle {
+            assertEquals(2, profiles.profiles.size)
+            assertEquals("motorcycle", profiles.activeProfileId)
+            assertEquals(profiles.profiles.first().rates, profiles.activeProfile.rates)
         }
     }
 }

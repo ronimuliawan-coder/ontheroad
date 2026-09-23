@@ -26,7 +26,7 @@ import com.ontheroad.core.data.local.entity.TripEntity
         PlatformEntity::class,
         CategoryEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class OnTheRoadDatabase : RoomDatabase() {
@@ -49,7 +49,7 @@ abstract class OnTheRoadDatabase : RoomDatabase() {
                     OnTheRoadDatabase::class.java,
                     DATABASE_NAME
                 )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .addCallback(PrepopulateDataCallback())
                     .build()
                     .also { instance = it }
@@ -59,6 +59,20 @@ abstract class OnTheRoadDatabase : RoomDatabase() {
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE trips ADD COLUMN quotedFareAmountCents INTEGER")
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE trips ADD COLUMN customerPaidTotalAmountCents INTEGER")
+                db.execSQL(
+                    """
+                    UPDATE trips
+                    SET customerPaidTotalAmountCents =
+                        platformFeeAmountCents + cashCollectedAmountCents + tipAmountCents
+                    WHERE platformId = 'direct' AND status = 'COMPLETED'
+                    """.trimIndent()
+                )
             }
         }
     }

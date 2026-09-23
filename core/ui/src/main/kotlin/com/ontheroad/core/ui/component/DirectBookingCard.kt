@@ -3,6 +3,7 @@ package com.ontheroad.core.ui.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -29,6 +31,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,10 +46,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ontheroad.core.model.AddressSuggestion
+import com.ontheroad.core.model.DirectPricingProfile
 import com.ontheroad.core.model.DirectPricingRates
+import com.ontheroad.core.ui.R
 import com.ontheroad.core.ui.theme.CockpitDimens
 import com.ontheroad.core.ui.theme.DirectBlue
 import com.ontheroad.core.ui.theme.GreenProfit
@@ -76,6 +82,9 @@ fun DirectBookingCard(
     isDistanceAutoCalculated: Boolean = false,
     estimatedFareCents: Long,
     rates: DirectPricingRates,
+    pricingProfiles: List<DirectPricingProfile> = emptyList(),
+    activePricingProfileId: String = "default",
+    onSelectPricingProfile: (String) -> Unit = {},
     customFareOverrideText: String,
     onCustomFareOverrideChange: (String) -> Unit,
     onStartDirectRun: () -> Unit,
@@ -148,6 +157,29 @@ fun DirectBookingCard(
             }
 
             Spacer(modifier = Modifier.height(CockpitDimens.SpacingMedium))
+
+            if (pricingProfiles.isNotEmpty()) {
+                Text(
+                    text = stringResource(R.string.direct_rate_profile_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = OnSurfaceSecondary
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(CockpitDimens.SpacingSmall)
+                ) {
+                    pricingProfiles.forEach { profile ->
+                        FilterChip(
+                            selected = profile.id == activePricingProfileId,
+                            onClick = { onSelectPricingProfile(profile.id) },
+                            label = { Text(profile.name) }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(CockpitDimens.SpacingSmall))
+            }
 
             // 1. Pickup Address Field with GPS Fix Button
             Column(modifier = Modifier.fillMaxWidth()) {
