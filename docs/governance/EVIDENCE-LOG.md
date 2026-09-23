@@ -409,6 +409,7 @@ never contain credentials, tokens, or private payloads.
 - Local verification: None; all build and test acceptance was performed by GitHub CI, per the owner's standing direction.
 - Post-merge observation: No workflow run was returned for merge SHA `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78` when checked. The approved Unit 4 acceptance gate is exact PR-revision CI, which passed before merge.
 - Linear tracking: [RON-385](https://linear.app/rons-space/issue/RON-385/phase-4-unit-4-direct-pricing-profiles-and-shareable-receipts) marked Done with the PR and CI links attached.
+- Governance status/evidence refresh: documentation-only PR #15 merged into `dev` at `8e26aef6590bcd82e64a9739e10f49abeac94094`; its [Governance run 35867231582](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35867231582) passed on PR head `1477042a90628886c1c4b953027591235e1b1900`.
 - Rollback/recovery impact: Revert merge commit `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78` on `dev`; do not rewrite shared history. No production data, release, or credentials changed. `main` remains unchanged and promotion unauthorized.
 - Next gate: Unit 4 is complete. Await explicit approval for any next implementation unit or separately scoped promotion.
 

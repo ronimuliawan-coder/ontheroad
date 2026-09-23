@@ -48,7 +48,7 @@ separate explicit approval.
 | Environment | Revision/artifact | Status | Last acceptance evidence | Owner |
 |---|---|---|---|---|
 | GitHub `main` | `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e` | `CURRENT RELEASE BASELINE` | v0.1.0 baseline; Unit 4 remains on `dev`; promotion has not been authorized | `developer-project-owner` |
-| GitHub `dev` | `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78` | `CURRENT INTEGRATION TIP / UNIT 4 ACCEPTED` | PR #14 exact-revision Governance and Android CI passed before merge | `developer-project-owner` |
+| GitHub `dev` (latest accepted application revision) | `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78` | `UNIT 4 ACCEPTED; CURRENT DEV DESCENDS FROM THIS MERGE` | PR #14 exact-revision Governance and Android CI passed before merge; docs-only PR #15 later refreshed the status/evidence records | `developer-project-owner` |
 | Release candidate `v0.1.0` | Existing tagged product release | Historical/current release reference; no deployment requested | Release measurements and hashes in `EVIDENCE-LOG.md` | `developer-project-owner` |
 
 ## Next gate
