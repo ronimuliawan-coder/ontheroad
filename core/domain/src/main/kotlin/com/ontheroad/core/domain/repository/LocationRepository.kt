@@ -11,11 +11,13 @@ interface LocationRepository {
 
     /**
      * Obtains the current device GPS position and reverse-geocodes it into a readable address.
+     * Returns null when permission, the device provider, or address lookup is unavailable.
      */
     suspend fun getCurrentLocation(): AddressSuggestion?
 
     /**
-     * Searches for address suggestions matching [query], optionally biased around [biasLatitude], [biasLongitude].
+     * Best-effort search for address suggestions matching [query]. Results may be empty when the
+     * device geocoder is unavailable or cannot resolve the query.
      */
     suspend fun searchAddresses(
         query: String,

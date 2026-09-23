@@ -316,6 +316,18 @@ never contain credentials, tokens, or private payloads.
   trigger CI. No commit, push, pull request, merge, or release action was performed by this
   decision.
 
+### 2026-09-23 — Unit 1 CI acceptance and merge
+
+- Exact revision: PR #8 merged into GitHub `dev` at `93a2b189ec426de018f0d138d9469d1de2e2d01e`.
+- Acceptance evidence: Android JVM unit tests, Android lint, repository governance CI, and
+  CodeRabbit completed successfully on the PR revision.
+- Review-mirror exception: the GitLab replica close-cleanup job returned HTTP 401 because
+  `GITLAB_REPLICA_API_TOKEN` is not currently usable. The project owner explicitly deferred
+  GitLab repair; it is not an application delivery gate.
+- Current gate: Unit 1 is complete. Unit 2 — permission and address fallback — is authorized and
+  in progress on a new branch from the merged `dev` tip. No local test, build, or verification
+  run is being performed.
+
 ## Accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |

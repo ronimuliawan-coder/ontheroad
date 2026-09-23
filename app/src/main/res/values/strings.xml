@@ -7,4 +7,6 @@
     <string name="start_trip">Start Trip</string>
     <string name="end_trip">Complete Trip</string>
     <string name="discrepancy_title">Odometer vs. Platform</string>
+    <string name="location_permission_required">Location permission is required for GPS tracking. You can still enter the quote manually.</string>
+    <string name="address_lookup_fallback">Address lookup is unavailable or found no match. Enter the address and distance manually.</string>
 </resources>

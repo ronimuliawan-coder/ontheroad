@@ -1,13 +1,13 @@
 # OnTheRoad: Direct Booking & Fare Estimator (PRD)
 
 > **Document Status**: Approved Target (user-confirmed 2026-09-23)  
-> **Lifecycle Phase**: Phase 3 plan complete; Unit 1 implementation in progress  
+> **Lifecycle**: Approved PRD; Unit 2 implementation in progress  
 > **Tracker Issue**: [RON-277](https://linear.app/rons-space/issue/RON-277/phase-0-and-2-product-discovery-and-prd-direct-booking-and-fare)  
 > **Parent Project**: [OnTheRoad: Direct Booking & Fare Estimator](https://linear.app/rons-space/project/ontheroad-direct-booking-and-fare-estimator-e09b7af9c69f)  
 > **Author**: Antigravity Pair & Project Owner  
 > **Date**: 2026-09-01  
 > **Target Platform**: Android (Kotlin + Jetpack Compose)  
-> **Target Milestone**: v0.2.0 (Phase 3 through Phase 9)  
+> **Target Milestone**: v0.2.0  
 
 ---
 
@@ -155,16 +155,18 @@ sequenceDiagram
 
 ---
 
-## 9. Provisional Phase Breakdown
+## 9. Delivery map
 
-- **Phase 0**: Intake, authority, and tracking setup (`COMPLETE` / Tracked in [RON-277](https://linear.app/rons-space/issue/RON-277/phase-0-and-2-product-discovery-and-prd-direct-booking-and-fare)).
-- **Phase 1**: Baseline inventory and documentation disposition (next gate; not started).
-- **Phase 2**: PRD approval and domain entity contracts (`COMPLETE`, user-confirmed 2026-09-23).
-- **Phase 3**: Toolchain & Architecture implementation plan (`COMPLETE`, plan recorded in [11-direct-booking-and-fare-estimator.plan.md](../plans/11-direct-booking-and-fare-estimator.plan.md)).
-- **Phase 4**: Domain use-cases, pricing engine, and repository persistence (`IN PROGRESS`, Unit 1 quote contract).
-- **Phase 5**: UI components (Direct Booking Card, Rate Settings, Cockpit integration) (not accepted as phase evidence).
-- **Phase 6**: JVM unit test coverage (pricing engine, edge cases, repository) (not accepted as phase evidence).
-- **Phase 7**: Quality verification, living docs update, and release candidate hand-off (not started).
+The repository-wide governance phases are defined once in
+[`docs/governance/GOVERNANCE.md`](../../../docs/governance/GOVERNANCE.md). This feature uses
+implementation units for its approval and delivery boundaries:
+
+- **Unit 1 — Quote contract and completion handoff**: `COMPLETE` in PR #8; GitHub Android CI,
+  governance CI, and CodeRabbit passed on the merged revision.
+- **Unit 2 — Permission and address fallback**: `IN PROGRESS`; runtime permission gating,
+  best-effort address lookup, and manual address/distance fallback.
+- **Unit 3 — Validated rate editing and UI acceptance**: not started; requires separate approval
+  after Unit 2.
 
 ---
 
@@ -175,4 +177,5 @@ sequenceDiagram
 - [x] **Tracker Linked**: Connected to Linear Issue [RON-277](https://linear.app/rons-space/issue/RON-277/phase-0-and-2-product-discovery-and-prd-direct-booking-and-fare) and Project.
 - [x] **Project Owner Approval**: Explicitly confirmed in the active task on 2026-09-23.
 
-**Next Action**: Complete exact-tree validation for Unit 1. Existing local feature files remain unaccepted until the implementation unit is verified on an exact revision.
+**Next Action**: Complete Unit 2 implementation and submit its exact branch revision to GitHub
+CI and review. GitLab review-mirror cleanup is deferred and is not a delivery gate.

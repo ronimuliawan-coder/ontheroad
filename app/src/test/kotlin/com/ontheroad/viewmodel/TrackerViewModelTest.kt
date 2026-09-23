@@ -78,7 +78,7 @@ private class TrackerFakeLocationRepository : LocationRepository {
         longitude = 106.823056
     )
 
-    val searchResults = listOf(
+    var searchResults = listOf(
         AddressSuggestion(
             title = "Soekarno-Hatta Airport",
             fullAddress = "Soekarno-Hatta Airport, Tangerang",
@@ -301,6 +301,20 @@ class TrackerViewModelTest {
         testDispatcher.scheduler.runCurrent()
 
         assertEquals(100_000_00L, viewModel.uiState.value.directCalculatedFareCents)
+        viewModel.stopDurationTimer()
+    }
+
+    @Test
+    fun emptyAddressSearchKeepsManualDistanceFallbackAvailable() = runTest(testDispatcher) {
+        locationRepository.searchResults = emptyList()
+        viewModel.selectPlatform("direct")
+
+        viewModel.updateDirectDestinationAddress("Unknown destination")
+        testDispatcher.scheduler.advanceTimeBy(400L)
+        testDispatcher.scheduler.runCurrent()
+
+        assertTrue(viewModel.uiState.value.addressLookupUnavailable)
+        assertFalse(viewModel.uiState.value.isDistanceAutoCalculated)
         viewModel.stopDurationTimer()
     }
 }
