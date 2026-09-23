@@ -1,17 +1,17 @@
 # Implementation Plan: Direct Booking & Fare Estimator
 
-> **Document Status**: Approved plan; Unit 2 complete, Unit 3 implementation in progress  
+> **Document Status**: Approved plan; Units 1–3 complete  
 > **Product authority**: [Direct Booking & Fare Estimator PRD](../prds/direct-booking-and-fare-estimator.prd.md)  
 > **Planning approval**: Project owner approved the baseline/reconciliation and architecture-plan gates on 2026-09-23  
 > **Target**: `v0.2.0`, feature delivery into GitHub `dev`  
 
 ## 1. Exact baseline
 
-- Remote `origin/dev`: `579c14b6ac9b091d3425001aef4eeea7f0f6e724` (PR #10 documentation-only merge);
-  the latest accepted feature revision is PR #9 merge `685c530c090672ec6f55ba5221e6c4f5fd304727`.
+- Remote `origin/dev`: `a8ba7c87b06f62cb6e3f54525d741c891a65276d` (PR #11 merge);
+  the latest accepted feature revision is PR #11 merge `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
   `origin/main` remains `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`.
-- Units 1 and 2 are merged into `dev`. Android JVM tests, Android lint, and governance CI passed
-  on Unit 2's exact merge revision. Unit 3 is approved and in progress.
+- Units 1–3 are merged into `dev`. Android JVM tests, Android lint, governance, and Pixel 7 Pro /
+  API 35 instrumentation passed on Unit 3's exact merge revision.
 - Earlier `bun test` and `bun run governance:check` results are retained as informational
   observations only; they are not acceptance evidence for the current implementation.
 - Local Gradle test/build verification is intentionally skipped by explicit project-owner
@@ -130,7 +130,8 @@ usable without lookup, and the foreground service starts only after the required
 
 ### Unit 3 — Validated rate editing and UI acceptance
 
-**Status:** In progress; project-owner approval recorded on 2026-09-23.
+**Status:** Complete in PR #11; Android JVM tests, lint, governance, and Pixel 7 Pro / API 35
+instrumentation passed on merge revision `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
 
 - Keep transient text local while editing and persist only non-negative, finite, bounded rates.
 - Bounds are representation-based: fare inputs must convert exactly to non-negative `Long` cents;
@@ -155,7 +156,7 @@ on the declared Android device profile, with exact-revision GitHub CI passing.
 | Offline behavior | Calculation/persistence with no network; address lookup failure falls back to manual input |
 | Architecture | No Android imports in `core:model`/`core:domain`; one owner per state/data responsibility |
 | Repository gates | GitHub CI: governance checks, Gradle JVM tests, lint, and Pixel 7 Pro / API 35 instrumentation for Unit 3 |
-| Review/delivery | Exact branch head, GitHub checks, available review feedback, no unresolved valid findings |
+| Review/delivery | PR #11 merged into `dev`; all required PR and post-merge checks passed. CodeRabbit skipped because `dev` is not the default branch and the Codex review bot was rate-limited; no automated review findings were available, and the owner authorized the merge. |
 
 Local Android verification is intentionally out of scope by project-owner decision. GitHub CI is
 the acceptance authority; Unit 3 requires JVM tests, lint, and the declared instrumentation flow
@@ -180,5 +181,6 @@ signing surface.
 Repository governance uses **phases** for project-wide lifecycle gates; this feature uses
 **implementation units** for approved slices. “Stage” is not used as a tracking term.
 
-The active gate is **Unit 3 implementation: validated rate editing and UI acceptance**. It is
-approved and in progress. All verification runs in GitHub CI; no local test/build run is required.
+Unit 3 — **validated rate editing and UI acceptance** — is complete. No further implementation
+unit is active; a new unit requires explicit project-owner approval. All verification runs in
+GitHub CI; no local test/build run is required. Promotion to `main` remains unauthorized.
