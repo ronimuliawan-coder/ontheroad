@@ -21,6 +21,7 @@ import com.ontheroad.core.model.DirectPricingRates
 private class SettingsFakeUserPreferencesRepository : UserPreferencesRepository {
     val themeModeFlow = MutableStateFlow(ThemeMode.SYSTEM)
     val directPricingRatesFlow = MutableStateFlow(DirectPricingRates())
+    var directPricingRatesWriteCount = 0
 
     override fun getThemeMode(): Flow<ThemeMode> = themeModeFlow
 
@@ -31,6 +32,7 @@ private class SettingsFakeUserPreferencesRepository : UserPreferencesRepository 
     override fun getDirectPricingRates(): Flow<DirectPricingRates> = directPricingRatesFlow
 
     override suspend fun setDirectPricingRates(rates: DirectPricingRates) {
+        directPricingRatesWriteCount++
         directPricingRatesFlow.value = rates
     }
 }
@@ -101,5 +103,26 @@ class SettingsViewModelTest {
 
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    @Test
+    fun `invalid rates are not persisted`() = runTest(testDispatcher) {
+        val originalRates = preferencesRepository.directPricingRatesFlow.value
+        val invalidRates = listOf(
+            originalRates.copy(baseFareAmountCents = -1L),
+            originalRates.copy(ratePerKmAmountCents = -1L),
+            originalRates.copy(minimumFareAmountCents = -1L),
+            originalRates.copy(includedBaseDistanceKm = Double.NaN),
+            originalRates.copy(roadDetourMultiplier = Double.POSITIVE_INFINITY),
+            originalRates.copy(includedBaseDistanceKm = Double.MAX_VALUE)
+        )
+
+        invalidRates.forEach { rates ->
+            viewModel.updateDirectPricingRates(rates)
+            testDispatcher.scheduler.runCurrent()
+        }
+
+        assertEquals(0, preferencesRepository.directPricingRatesWriteCount)
+        assertEquals(originalRates, preferencesRepository.directPricingRatesFlow.value)
     }
 }

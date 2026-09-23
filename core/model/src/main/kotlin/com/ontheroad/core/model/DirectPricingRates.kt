@@ -20,3 +20,14 @@ data class DirectPricingRates(
     val minimumFareFormatted: Double
         get() = minimumFareAmountCents / 100.0
 }
+
+/** True when every rate can be safely stored by the current preferences representation. */
+fun DirectPricingRates.isPersistable(): Boolean =
+    baseFareAmountCents >= 0L &&
+        ratePerKmAmountCents >= 0L &&
+        minimumFareAmountCents >= 0L &&
+        includedBaseDistanceKm.isPersistablePreferenceValue() &&
+        roadDetourMultiplier.isPersistablePreferenceValue()
+
+private fun Double.isPersistablePreferenceValue(): Boolean =
+    isFinite() && this >= 0.0 && toFloat().isFinite()

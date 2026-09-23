@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ontheroad.core.domain.repository.UserPreferencesRepository
 import com.ontheroad.core.model.DirectPricingRates
 import com.ontheroad.core.model.ThemeMode
+import com.ontheroad.core.model.isPersistable
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -37,6 +38,7 @@ class SettingsViewModel(
     }
 
     fun updateDirectPricingRates(rates: DirectPricingRates) {
+        if (!rates.isPersistable()) return
         viewModelScope.launch {
             userPreferencesRepository.setDirectPricingRates(rates)
         }
@@ -62,4 +64,3 @@ class SettingsViewModel(
         updateDirectPricingRates(current.copy(includedBaseDistanceKm = km))
     }
 }
-

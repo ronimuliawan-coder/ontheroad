@@ -2,12 +2,14 @@ package com.ontheroad.core.data.repository
 
 import android.content.SharedPreferences
 import app.cash.turbine.test
+import com.ontheroad.core.model.DirectPricingRates
 import com.ontheroad.core.model.ThemeMode
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -123,5 +125,43 @@ class UserPreferencesRepositoryTest {
         verify { editor.putLong(UserPreferencesRepositoryImpl.KEY_MIN_FARE_CENTS, 20_000_00L) }
         verify { editor.putFloat(UserPreferencesRepositoryImpl.KEY_INCLUDED_BASE_KM, 1.5f) }
         verify { editor.putFloat(UserPreferencesRepositoryImpl.KEY_ROAD_DETOUR_MULTIPLIER, 1.3f) }
+    }
+
+    @Test
+    fun `rejects invalid rates without writing preferences`() = runTest {
+        repository = UserPreferencesRepositoryImpl(sharedPreferences)
+
+        var rejected = false
+        try {
+            repository.setDirectPricingRates(DirectPricingRates(baseFareAmountCents = -1L))
+        } catch (_: IllegalArgumentException) {
+            rejected = true
+        }
+
+        assertTrue(rejected)
+        verify(exactly = 0) { editor.putLong(any(), any()) }
+        verify(exactly = 0) { editor.putFloat(any(), any()) }
+    }
+
+    @Test
+    fun `replaces invalid saved rates with defaults`() = runTest {
+        every { sharedPreferences.getLong(UserPreferencesRepositoryImpl.KEY_BASE_FARE_CENTS, any()) } returns -1L
+        every { sharedPreferences.getLong(UserPreferencesRepositoryImpl.KEY_RATE_PER_KM_CENTS, any()) } returns 8_000_00L
+        every { sharedPreferences.getLong(UserPreferencesRepositoryImpl.KEY_MIN_FARE_CENTS, any()) } returns 20_000_00L
+        every { sharedPreferences.getFloat(UserPreferencesRepositoryImpl.KEY_INCLUDED_BASE_KM, any()) } returns Float.NaN
+        every { sharedPreferences.getFloat(UserPreferencesRepositoryImpl.KEY_ROAD_DETOUR_MULTIPLIER, any()) } returns 1.25f
+
+        repository = UserPreferencesRepositoryImpl(sharedPreferences)
+
+        repository.getDirectPricingRates().test {
+            assertEquals(
+                DirectPricingRates(
+                    ratePerKmAmountCents = 8_000_00L,
+                    minimumFareAmountCents = 20_000_00L
+                ),
+                awaitItem()
+            )
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 }
