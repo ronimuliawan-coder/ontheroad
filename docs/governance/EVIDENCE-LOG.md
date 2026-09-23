@@ -401,12 +401,28 @@ never contain credentials, tokens, or private payloads.
 - Result: `IN PROGRESS`; no implementation acceptance evidence exists yet.
 - Next gate: Complete implementation and code review, then require relevant GitHub CI to pass on the exact PR revision before merge to `dev`.
 
+### 2026-09-23 — Unit 4 CI acceptance and merge
+
+- Exact PR revision: PR #14 head `c4d844f9331da67fe97f384f76fab5208916e944`; merged into GitHub `dev` at `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78`.
+- Acceptance evidence: [Governance run 35865267091](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35865267091) and [Android CI run 35865267102](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35865267102) passed on the exact PR revision. Android CI passed JVM Unit Tests, Android Lint, and Android UI Acceptance (Pixel 7 Pro / API 35) on Namespace runners.
+- Review state: CodeRabbit skipped review because `dev` is not the repository default branch; no review comments were present. Manual source review completed. The owner authorized merging non-promotion PRs after required CI passes; PR #14 was merged with a merge commit.
+- Local verification: None; all build and test acceptance was performed by GitHub CI, per the owner's standing direction.
+- Post-merge observation: No workflow run was returned for merge SHA `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78` when checked. The approved Unit 4 acceptance gate is exact PR-revision CI, which passed before merge.
+- Linear tracking: [RON-385](https://linear.app/rons-space/issue/RON-385/phase-4-unit-4-direct-pricing-profiles-and-shareable-receipts) marked Done with the PR and CI links attached.
+- Rollback/recovery impact: Revert merge commit `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78` on `dev`; do not rewrite shared history. No production data, release, or credentials changed. `main` remains unchanged and promotion unauthorized.
+- Next gate: Unit 4 is complete. Await explicit approval for any next implementation unit or separately scoped promotion.
+
 ## Current accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |
 |---|---|---|---|---|---|---|
-| External Linear tracking unavailable | Connected workspace has no matching `OnTheRoad` project or issue | Progress is not mirrored to the declared external tracker | This local evidence log records objective, approvals, exact revisions, evidence, deviations, and rollback impact | `developer-project-owner` | Revisit when the canonical Linear project is available | User approved local fallback on 2026-08-31 |
-| Local test/build/verification disabled | Project owner directed that all verification run in CI | No local verification evidence is produced | Require exact-revision GitHub CI, including JVM tests, lint, governance, and applicable UI acceptance for each approved unit; Unit 3 passed on its merge revision above | `developer-project-owner` | Revisit only if the owner changes the CI-only direction | Explicit user direction on 2026-09-23 |
+| Local test/build/verification disabled | Project owner directed that all verification run in CI | No local verification evidence is produced | Require exact-revision GitHub CI, including JVM tests, lint, governance, and applicable UI acceptance for each approved unit; Unit 4 CI acceptance is recorded above | `developer-project-owner` | Revisit only if the owner changes the CI-only direction | Explicit user direction on 2026-09-23 |
+
+## Resolved exceptions
+
+| Exception | Original reason | Resolution | Approval |
+|---|---|---|---|
+| External Linear tracking unavailable | At the original governance uplift, no matching `OnTheRoad` project or issue was visible in the connected workspace | Resolved 2026-09-23: created and completed Unit 4 issue [RON-385](https://linear.app/rons-space/issue/RON-385/phase-4-unit-4-direct-pricing-profiles-and-shareable-receipts); future work is tracked in the connected project | User approved the local fallback on 2026-08-31, then explicitly approved Linear tracking for Unit 4 |
 
 ## Historical evidence matrix — 2026-08-31 governance uplift
 
