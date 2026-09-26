@@ -449,7 +449,7 @@ never contain credentials, tokens, or private payloads.
 
 ### 2026-09-26 — QA fix batch CI acceptance (pre-merge)
 
-- Exact PR revision: PR #19 head `4b0675c` (branch `rons/qa-defect-batch`, base `dev`).
+- Exact PR revision: PR #19 head (branch `rons/qa-defect-batch`, base `dev`; implementation `4b0675c` plus this evidence entry).
 - Fixes: D-004 shift bootstrap in `StartTripUseCase` (explicit shiftId preserved); D-005/D-006/D-007 app-scoped singleton repositories in `OnTheRoadApplication` + `ViewModelFactory`; D-002 POST_NOTIFICATIONS ride-along with location-only gating (also closes a latent any-grant bug); D-001 toggle-off clears the stale fare override. Regression tests: 3 shift-bootstrap cases + 1 TrackerViewModel shift-attachment case; D-001 covered by targeted device retest (no fitting JVM seam in `core:ui`).
 - Acceptance evidence: [Android CI run 36275343717](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/36275343717) (JVM tests, lint, Pixel 7 Pro / API 35 UI acceptance all pass), [governance run 36275343728](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/36275343728), GitLab trusted-ref run 36275341499 pass. CodeRabbit skipped (`dev` base). One compile miss (`StartTripUseCase` call site in factory) failed the first cycle and was corrected without unrelated changes; the green cycle above is the accepted revision.
 - Local verification: `bun run governance:check` pass; `git diff --check` clean; full diff reviewed (production: 5 files; tests: 4 files).
