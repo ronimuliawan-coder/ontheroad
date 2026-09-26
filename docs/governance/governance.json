@@ -1094,6 +1094,86 @@
       "reason": "Canonical high-assurance standard audit coverage map"
     },
     {
+      "path": ".agents/skills/human-journey-testing/SKILL.md",
+      "kind": "skill",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "User-authored human journey UI QA skill"
+    },
+    {
+      "path": ".agents/skills/human-journey-testing/assets/templates/FINAL-REPORT.md",
+      "kind": "template",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "User-authored QA report template"
+    },
+    {
+      "path": ".agents/skills/human-journey-testing/assets/templates/RUN-LEDGER.md",
+      "kind": "template",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "User-authored QA run ledger template"
+    },
+    {
+      "path": ".agents/skills/human-journey-testing/references/ACCOUNTS-AND-SESSIONS.md",
+      "kind": "reference",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "User-authored QA accounts and sessions reference"
+    },
+    {
+      "path": ".agents/skills/human-journey-testing/references/COVERAGE-DISCOVERY.md",
+      "kind": "reference",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "User-authored QA coverage discovery reference"
+    },
+    {
+      "path": ".agents/skills/human-journey-testing/references/ENGINEERING-INTEGRATION.md",
+      "kind": "reference",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "User-authored QA engineering integration reference"
+    },
+    {
+      "path": ".agents/skills/human-journey-testing/references/LEDGER-VALIDATION.md",
+      "kind": "reference",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "User-authored QA ledger validation reference"
+    },
+    {
+      "path": ".agents/skills/human-journey-testing/references/ORCHESTRATION.md",
+      "kind": "reference",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "User-authored QA orchestration reference"
+    },
+    {
+      "path": ".agents/skills/human-journey-testing/references/PERSONA-LENSES.md",
+      "kind": "reference",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "User-authored QA persona lenses reference"
+    },
+    {
+      "path": ".agents/skills/human-journey-testing/references/RUN-POLICY.md",
+      "kind": "reference",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "User-authored QA run policy reference"
+    },
+    {
       "path": ".agents/skills/intent-driven-development/SKILL.md",
       "kind": "skill",
       "disposition": "active",
@@ -1380,6 +1460,14 @@
       "ownerPhase": 1,
       "authority": "ecc",
       "reason": "Agent task and delivery workflow"
+    },
+    {
+      "path": ".agents/workflows/human-journey-testing.md",
+      "kind": "workflow",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "User-authored QA workflow entry point"
     },
     {
       "path": ".agents/workflows/instinct-export.md",

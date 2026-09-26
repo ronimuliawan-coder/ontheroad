@@ -1,0 +1,4 @@
+interface:
+  display_name: "Human Journey Testing"
+  short_description: "UI-only role journeys with auditable feature coverage"
+  default_prompt: "Use $human-journey-testing to inventory this project's human-facing features, test customer and staff journeys through the visible UI, and reconcile coverage from a QA perspective."

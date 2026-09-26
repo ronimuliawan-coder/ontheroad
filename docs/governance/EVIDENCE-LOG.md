@@ -430,6 +430,15 @@ never contain credentials, tokens, or private payloads.
 - Rollback/recovery impact: Revert the PR merge commit on `dev` if merged; no force-push, production data, release, or credential changes. `main` unchanged; promotion unauthorized.
 - Next gate: Explicit merge approval; Linear updates still held for separate confirmation.
 
+### 2026-09-26 — Adopt user-authored human-journey-testing skill
+
+- Actor: Agent implementing the project owner's explicit approval to register the skill and restore a green governance check.
+- Scope: Register 11 user-authored `.md` files (skill, 2 templates, 7 references, 1 workflow) in `governance.json` as `active`, owner phase 1, `project-owned`. Non-governed support files (`agents/openai.yaml`, `scripts/check_ledger.py`, `tests/test_check_ledger.py`, `assets/templates/ledger-index.json`) need no registration per the manifest's extension rules. Skill content itself is the owner's work; it was adopted as-is.
+- Validation: `jq empty docs/governance/governance.json`; `bun run governance:check` → pass (sort order, local links, credential scan, env drift all clean). Skill's own `check_ledger.py` validates the QA prep ledger index (`49 NOT_RUN`, counts reconcile, zero errors).
+- Related prep work (same day, separate approved request): whole-app QA run ledger at `.claude/PRPs/reports/human-journey-qa-2026-09-26/` (governance-excluded path, local only, execution BLOCKED on build + device per B-001).
+- Rollback/recovery impact: Revert the adoption commit on its branch; remove the 11 manifest rows to restore the prior inventory. No product, data, release, or credential changes.
+- Next gate: PR to `dev`, exact-revision CI green, then explicit merge approval.
+
 ## Current accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |
