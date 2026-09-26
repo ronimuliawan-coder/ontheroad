@@ -447,6 +447,15 @@ never contain credentials, tokens, or private payloads.
 - Observations deferred (no fix authorized): OBS-04 currency-symbol inconsistency (design decision), OBS-05 versionName 0.1.0 vs in-app 0.2.0 card, OBS-06 platform modal discards drafts, OBS-07 silent GPS no-op after denial, OBS-08 history residue on test device.
 - Next gate: owner-approved fix batch for all 6 defects, then targeted retest of affected scenarios. No release approval implied.
 
+### 2026-09-26 — QA fix batch CI acceptance (pre-merge)
+
+- Exact PR revision: PR #19 head `4b0675c` (branch `rons/qa-defect-batch`, base `dev`).
+- Fixes: D-004 shift bootstrap in `StartTripUseCase` (explicit shiftId preserved); D-005/D-006/D-007 app-scoped singleton repositories in `OnTheRoadApplication` + `ViewModelFactory`; D-002 POST_NOTIFICATIONS ride-along with location-only gating (also closes a latent any-grant bug); D-001 toggle-off clears the stale fare override. Regression tests: 3 shift-bootstrap cases + 1 TrackerViewModel shift-attachment case; D-001 covered by targeted device retest (no fitting JVM seam in `core:ui`).
+- Acceptance evidence: [Android CI run 36275343717](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/36275343717) (JVM tests, lint, Pixel 7 Pro / API 35 UI acceptance all pass), [governance run 36275343728](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/36275343728), GitLab trusted-ref run 36275341499 pass. CodeRabbit skipped (`dev` base). One compile miss (`StartTripUseCase` call site in factory) failed the first cycle and was corrected without unrelated changes; the green cycle above is the accepted revision.
+- Local verification: `bun run governance:check` pass; `git diff --check` clean; full diff reviewed (production: 5 files; tests: 4 files).
+- Rollback/recovery impact: Revert the PR merge commit on `dev`; no force-push, production data, release, or credential changes. OBS-04..08 remain deferred by explicit scope decision.
+- Next gate: Explicit merge approval, then targeted device retest (S-004/S-013/S-014/S-019/S-022/S-030/S-031/S-036, J-01/J-02) on a fresh build.
+
 ## Current accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |
