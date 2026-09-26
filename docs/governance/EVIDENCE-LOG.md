@@ -11,7 +11,7 @@ never contain credentials, tokens, or private payloads.
 - Task mode: `EXISTING_UPLIFT`
 - Local workspace: `/home/ron/Projects/ontheroad`
 - Canonical repository: `https://github.com/ronimuliawan/ontheroad.git`; project governance declares GitHub as the write and merge authority.
-- Tracker: Local fallback; Linear workspace search found no `OnTheRoad` project or issue.
+- Tracker: Linear project `OnTheRoad: Direct Booking & Fare Estimator` (`RON-277`, `RON-278`, `RON-279`, `RON-280`, `RON-282`, `RON-385` — all Done); this log is retained as fallback detail.
 - Approval owner: `developer-project-owner` (user approval in this task)
 - Risk profile: `STANDARD`; completed Unit 3 scope covered rate editing/persistence and CI instrumentation. No production data, credential, release, or deployment changes were made.
 
@@ -412,6 +412,23 @@ never contain credentials, tokens, or private payloads.
 - Governance status/evidence refresh: documentation-only PR #15 merged into `dev` at `8e26aef6590bcd82e64a9739e10f49abeac94094`; its [Governance run 35867231582](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35867231582) passed on PR head `1477042a90628886c1c4b953027591235e1b1900`.
 - Rollback/recovery impact: Revert merge commit `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78` on `dev`; do not rewrite shared history. No production data, release, or credentials changed. `main` remains unchanged and promotion unauthorized.
 - Next gate: Unit 4 is complete. Await explicit approval for any next implementation unit or separately scoped promotion.
+
+### 2026-09-26 — Verification follow-up batch (F1–F4, F6) implementation start
+
+- Actor: Agent implementing the project owner's explicit 2026-09-26 approval of the resume-audit "not started" items (detour-label correction, PRD/plan/evidence currency, branch hygiene). Next-unit and promotion scope are explicitly excluded; Linear writes and merge remain held for separate confirmation.
+- Exact base: GitHub `origin/dev` `5bd5b031c72de32a6451a1088bf227f7154aa490`; branch `rons/verification-followups`.
+- Scope: F1 replaces the hardcoded "1.30x" detour claim in `DirectBookingCard` with neutral wording (the factor is per-profile configurable, default 1.25); F2–F4 record Unit 4 completion in the PRD, plan 11, and evidence-log header plus the newly authorized batch in `STATUS.md`; F6 fast-forwards stale local `dev` and deletes local branches already merged into `origin/dev`.
+- Verification policy: No local tests/builds; `bun run governance:check` locally plus exact-revision GitHub CI on the PR. The 2026-09-01 log entry citing "1.30x" is retained untouched as historical evidence.
+- Rollback/recovery impact: Revert the PR merge commit on `dev`; no force-push, production data, release, or credential changes. Remote `origin/rons/*` branches are left untouched.
+- Next gate: PR to `dev`, exact-revision CI green, then explicit merge approval.
+
+### 2026-09-26 — Verification follow-up batch (F1–F4, F6) CI acceptance (pre-merge)
+
+- Exact PR revision: PR #17 head (branch `rons/verification-followups`, base `dev`; implementation commit `d52a7d0` plus this evidence entry).
+- Acceptance evidence: Governance, GitLab trusted-ref, JVM Unit Tests, Android Lint, and Android UI Acceptance (Pixel 7 Pro / API 35) all passed on the exact PR revision. CodeRabbit skipped (reviews disabled for non-default base `dev`); no review comments. No local tests/builds ran, per the owner's standing CI-only direction.
+- Local verification: `bun run governance:check` passed; `git diff --check` reports only the two restored Markdown hard-break double-spaces in the PRD/plan headers, matching those files' pre-existing style.
+- Rollback/recovery impact: Revert the PR merge commit on `dev` if merged; no force-push, production data, release, or credential changes. `main` unchanged; promotion unauthorized.
+- Next gate: Explicit merge approval; Linear updates still held for separate confirmation.
 
 ## Current accepted exceptions
 

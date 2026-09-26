@@ -350,7 +350,7 @@ fun DirectBookingCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "⚡ Auto-calculated distance (1.30x road curvature detour applied)",
+                            text = "⚡ Auto-calculated distance (road detour applied)",
                             style = MaterialTheme.typography.labelSmall,
                             color = GreenProfit,
                             fontWeight = FontWeight.Medium

@@ -8,7 +8,7 @@ feature delivery. Durable evidence and approvals are recorded in
 - Last verified: `2026-09-23` (Asia/Jakarta; Unit 4 merged to `dev` after exact-revision CI passed)
 - Latest accepted application revision: PR #14 merge `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78`; `main` baseline `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`
 - Repository governance lifecycle: Phase 10 complete; active feature delivery is tracked with implementation units
-- Current work item: Unit 4 complete (Linear `RON-385`); no next implementation unit is authorized yet
+- Current work item: Verification follow-up batch authorized 2026-09-26 (detour-label correction F1, PRD/plan/evidence currency F2–F4, branch hygiene F6); no further unit beyond this batch is authorized
 - Overall health: `UNITS 1–4 ACCEPTED / NEXT UNIT AWAITS EXPLICIT APPROVAL`
 - Tracker/project: Linear Project `OnTheRoad: Direct Booking & Fare Estimator` (`RON-277`, `RON-278`, `RON-279`, `RON-280`, `RON-282`, `RON-385`)
 
@@ -35,7 +35,7 @@ separate explicit approval.
 
 | Risk/blocker | Impact | Evidence | Owner | Resolution trigger |
 |---|---|---|---|---|
-| Next implementation unit is not yet approved | No additional feature scope may start | Unit 4 is complete and the approval boundary is recorded in `EVIDENCE-LOG.md` | `developer-project-owner` | Explicit approval of the next unit |
+| Scope beyond the authorized verification follow-up batch | No feature scope outside F1–F4/F6 may start | Unit 4 is complete; follow-up batch boundary is recorded in `EVIDENCE-LOG.md` | `developer-project-owner` | Explicit approval of any further unit |
 
 ## Intentional-removal delete-zone
 
