@@ -3,6 +3,7 @@ package com.ontheroad.ui.tracker
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.horizontalScroll
@@ -107,7 +108,9 @@ fun TrackerScreen(
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val granted = hasLocationPermission(context) || permissions.values.any { it }
+        // Gate on location only: a notification grant must never start tracking alone.
+        val granted = hasLocationPermission(context) ||
+            locationPermissions.any { permissions[it] == true }
         val action = pendingLocationAction
         pendingLocationAction = null
         if (granted && action != null) {
@@ -123,7 +126,14 @@ fun TrackerScreen(
             executePendingLocationAction(action)
         } else {
             pendingLocationAction = action
-            locationPermissionLauncher.launch(locationPermissions)
+            // POST_NOTIFICATIONS (API 33+) rides along so the foreground-service
+            // notification is actually visible; it never gates tracking by itself.
+            val request = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                locationPermissions + Manifest.permission.POST_NOTIFICATIONS
+            } else {
+                locationPermissions
+            }
+            locationPermissionLauncher.launch(request)
         }
     }
 

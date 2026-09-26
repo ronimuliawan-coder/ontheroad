@@ -1,13 +1,8 @@
 package com.ontheroad.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ontheroad.OnTheRoadApplication
-import com.ontheroad.core.data.repository.LocationRepositoryImpl
-import com.ontheroad.core.data.repository.ShiftRepositoryImpl
-import com.ontheroad.core.data.repository.TripRepositoryImpl
-import com.ontheroad.core.data.repository.UserPreferencesRepositoryImpl
 import com.ontheroad.core.domain.usecase.CalculateDirectFareUseCase
 import com.ontheroad.core.domain.usecase.CompleteTripUseCase
 import com.ontheroad.core.domain.usecase.EstimateDistanceUseCase
@@ -23,15 +18,10 @@ class ViewModelFactory(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val database = application.database
-        val tripRepository = TripRepositoryImpl(database.tripDao())
-        val shiftRepository = ShiftRepositoryImpl(database.shiftDao())
-        val sharedPreferences = application.getSharedPreferences(
-            UserPreferencesRepositoryImpl.PREFS_NAME,
-            Context.MODE_PRIVATE
-        )
-        val userPreferencesRepository = UserPreferencesRepositoryImpl(sharedPreferences)
-        val locationRepository = LocationRepositoryImpl(application)
+        val tripRepository = application.tripRepository
+        val shiftRepository = application.shiftRepository
+        val userPreferencesRepository = application.userPreferencesRepository
+        val locationRepository = application.locationRepository
 
         return when {
             modelClass.isAssignableFrom(TrackerViewModel::class.java) -> {

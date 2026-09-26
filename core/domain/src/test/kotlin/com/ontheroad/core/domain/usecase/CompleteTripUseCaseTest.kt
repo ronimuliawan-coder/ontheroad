@@ -1,5 +1,6 @@
 package com.ontheroad.core.domain.usecase
 
+import com.ontheroad.core.domain.repository.FakeShiftRepository
 import com.ontheroad.core.domain.repository.FakeTripRepository
 import com.ontheroad.core.model.TripStatus
 import kotlinx.coroutines.test.runTest
@@ -19,7 +20,7 @@ class CompleteTripUseCaseTest {
     @Before
     fun setUp() {
         tripRepository = FakeTripRepository()
-        startTripUseCase = StartTripUseCase(tripRepository)
+        startTripUseCase = StartTripUseCase(tripRepository, FakeShiftRepository())
         completeTripUseCase = CompleteTripUseCase(tripRepository)
     }
 

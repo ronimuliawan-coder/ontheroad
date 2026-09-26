@@ -439,6 +439,14 @@ never contain credentials, tokens, or private payloads.
 - Rollback/recovery impact: Revert the adoption commit on its branch; remove the 11 manifest rows to restore the prior inventory. No product, data, release, or credential changes.
 - Next gate: PR to `dev`, exact-revision CI green, then explicit merge approval.
 
+### 2026-09-26 — Human-journey QA campaign `otr-qa-2026-09-26` executed (coordinator review VERIFIED)
+
+- Execution: Namespace devbox (M, linux/amd64, /dev/kvm), emulator Pixel 7 Pro / API 35; APK built from `origin/dev` @ `d93388d` (app code identical to prep baseline). Ledger + 129 screenshots on transport branch `origin/qa-ledger` (never to merge): `.claude/PRPs/reports/human-journey-qa-2026-09-26/`.
+- Result: 38 PASS / 6 FAIL / 2 BLOCKED / 1 INCONCLUSIVE / 1 NOT_APPLICABLE / 1 NOT_RUN (T=49, A=48, E/A=44/48). REC-02 no-new-item pass. Ledger checker zero errors; counts reconcile. Two FAIL exhibits spot-checked by coordinator (Shift zeros, empty shade).
+- Defects (all UI-observed): D-004 High — Shift aggregates stay zero after completed trips; D-002 Medium — no foreground-service notification while tracking; D-006 Medium — profile selection doesn't reach booking form; D-007 Medium — quotes use stale rates until restart; D-001 Medium — custom-fare toggle-off keeps stale override; D-005 Low-medium — theme needs force-stop to apply. S-013/S-042 BLOCKED on D-006/D-002; S-043 INCONCLUSIVE (failure not inducible); S-045 justified N/A (portrait-locked); S-046 conditional NOT_RUN.
+- Observations deferred (no fix authorized): OBS-04 currency-symbol inconsistency (design decision), OBS-05 versionName 0.1.0 vs in-app 0.2.0 card, OBS-06 platform modal discards drafts, OBS-07 silent GPS no-op after denial, OBS-08 history residue on test device.
+- Next gate: owner-approved fix batch for all 6 defects, then targeted retest of affected scenarios. No release approval implied.
+
 ## Current accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |
