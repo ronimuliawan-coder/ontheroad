@@ -1,0 +1,894 @@
+{
+  "schema_version": 1,
+  "context_id": "otr-qa-2026-09-26",
+  "discovery_reconciled": true,
+  "no_new_items_sweep": false,
+  "features": [
+    {
+      "id": "F-001",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-001",
+        "S-044"
+      ]
+    },
+    {
+      "id": "F-002",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-002",
+        "S-040",
+        "S-043",
+        "S-045",
+        "S-048"
+      ]
+    },
+    {
+      "id": "F-003",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-003"
+      ]
+    },
+    {
+      "id": "F-004",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-005",
+        "S-045"
+      ]
+    },
+    {
+      "id": "F-005",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-006"
+      ]
+    },
+    {
+      "id": "F-006",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-007",
+        "S-008"
+      ]
+    },
+    {
+      "id": "F-007",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-009",
+        "S-010"
+      ]
+    },
+    {
+      "id": "F-008",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-011"
+      ]
+    },
+    {
+      "id": "F-009",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-012"
+      ]
+    },
+    {
+      "id": "F-010",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-013"
+      ]
+    },
+    {
+      "id": "F-011",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-014"
+      ]
+    },
+    {
+      "id": "F-012",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-015",
+        "S-040",
+        "S-043",
+        "S-048"
+      ]
+    },
+    {
+      "id": "F-013",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-016",
+        "S-047"
+      ]
+    },
+    {
+      "id": "F-014",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-017"
+      ]
+    },
+    {
+      "id": "F-015",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-018",
+        "S-019"
+      ]
+    },
+    {
+      "id": "F-016",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-019"
+      ]
+    },
+    {
+      "id": "F-017",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-020"
+      ]
+    },
+    {
+      "id": "F-018",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-021"
+      ]
+    },
+    {
+      "id": "F-019",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-004",
+        "S-042"
+      ]
+    },
+    {
+      "id": "F-020",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-022"
+      ]
+    },
+    {
+      "id": "F-021",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-023"
+      ]
+    },
+    {
+      "id": "F-022",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-024"
+      ]
+    },
+    {
+      "id": "F-023",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-025"
+      ]
+    },
+    {
+      "id": "F-024",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-026"
+      ]
+    },
+    {
+      "id": "F-025",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-027"
+      ]
+    },
+    {
+      "id": "F-026",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-029"
+      ]
+    },
+    {
+      "id": "F-027",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-028"
+      ]
+    },
+    {
+      "id": "F-028",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-046"
+      ]
+    },
+    {
+      "id": "F-029",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-030"
+      ]
+    },
+    {
+      "id": "F-030",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-031"
+      ]
+    },
+    {
+      "id": "F-031",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-032",
+        "S-033"
+      ]
+    },
+    {
+      "id": "F-032",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-034"
+      ]
+    },
+    {
+      "id": "F-033",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-035"
+      ]
+    },
+    {
+      "id": "F-034",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-036"
+      ]
+    },
+    {
+      "id": "F-035",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-037"
+      ]
+    },
+    {
+      "id": "F-036",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-038"
+      ]
+    },
+    {
+      "id": "F-037",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-039",
+        "S-049"
+      ]
+    },
+    {
+      "id": "F-038",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-041"
+      ]
+    },
+    {
+      "id": "F-039",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-039",
+        "S-040"
+      ]
+    },
+    {
+      "id": "F-040",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-021",
+        "S-041"
+      ]
+    },
+    {
+      "id": "F-041",
+      "disposition": "CURRENT",
+      "scenario_ids": [
+        "S-042"
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-001",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-001"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-002",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-002"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-003",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-003"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-004",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-019"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-005",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-004"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-006",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-005"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-007",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-006"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-008",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-006"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-009",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-007"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-010",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-007"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-011",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-008"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-012",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-009"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-013",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-010"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-014",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-011"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-015",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-012"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-016",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-013"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-017",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-014"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-018",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-015"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-019",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-015",
+        "F-016"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-020",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-017"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-021",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-018",
+        "F-040"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-022",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-020"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-023",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-021"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-024",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-022"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-025",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-023"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-026",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-024"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-027",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-025"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-028",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-027"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-029",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-026"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-030",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-029"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-031",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-030"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-032",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-031"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-033",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-031"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-034",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-032"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-035",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-033"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-036",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-034"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-037",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-035"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-038",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-036"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-039",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-037",
+        "F-039"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-040",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-002",
+        "F-012",
+        "F-039"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-041",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-038",
+        "F-040"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-042",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-019",
+        "F-041"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-043",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-002",
+        "F-012"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-044",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-001"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-045",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-002",
+        "F-004"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-046",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-028"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-047",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-013"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-048",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-002",
+        "F-012"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    },
+    {
+      "id": "S-049",
+      "status": "NOT_RUN",
+      "role": "driver",
+      "context_id": "otr-qa-2026-09-26",
+      "feature_ids": [
+        "F-037"
+      ],
+      "evidence_ids": [],
+      "defect_ids": []
+    }
+  ],
+  "evidence": [],
+  "defects": [
+    {
+      "id": "B-001",
+      "description": "No JDK/SDK/device in prep environment; execution BLOCKED until build + UI capability exist."
+    },
+    {
+      "id": "OBS-01",
+      "description": "Start-failure surfacing unconfirmed in source (S-043)."
+    },
+    {
+      "id": "OBS-02",
+      "description": "Platform-tap-while-tracking guard untraced (S-044)."
+    },
+    {
+      "id": "OBS-03",
+      "description": "Notes parameter passed but no field rendered (S-047)."
+    }
+  ],
+  "counts": {
+    "NOT_RUN": 49,
+    "PASS": 0,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "INCONCLUSIVE": 0,
+    "NOT_APPLICABLE": 0,
+    "applicable": 49,
+    "exercised": 0,
+    "passed": 0
+  }
+}
