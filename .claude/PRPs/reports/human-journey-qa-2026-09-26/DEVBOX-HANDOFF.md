@@ -16,6 +16,10 @@ git checkout origin/qa-ledger -- .claude/PRPs/reports/human-journey-qa-2026-09-2
 
 All 49 scenarios are `NOT_RUN`. Never merge `qa-ledger`.
 
+Also read `.agents/skills/human-journey-testing/SKILL.md` and its `references/` files
+for the full method (persona lenses, run policy, orchestration, coverage discovery).
+This brief is the execution order; the skill is the authority on disputed points.
+
 ## 1. One-time environment setup (M Linux devbox, repo root)
 
 ```bash
