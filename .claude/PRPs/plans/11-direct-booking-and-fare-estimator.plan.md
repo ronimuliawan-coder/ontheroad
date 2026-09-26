@@ -1,18 +1,18 @@
 # Implementation Plan: Direct Booking & Fare Estimator
 
-> **Document Status**: Approved plan; Units 1–3 complete; Unit 4 approved and in progress  
+> **Document Status**: Approved plan; Units 1–4 complete (Unit 4 merged in PR #14); no next unit authorized  
 > **Product authority**: [Direct Booking & Fare Estimator PRD](../prds/direct-booking-and-fare-estimator.prd.md)  
 > **Planning approval**: Project owner approved the baseline/reconciliation and architecture-plan gates on 2026-09-23  
 > **Target**: `v0.2.0`, feature delivery into GitHub `dev`  
 
 ## 1. Exact baseline
 
-- Latest accepted application revision on GitHub `dev`: PR #11 merge
-  `a8ba7c87b06f62cb6e3f54525d741c891a65276d`. Documentation-only PRs #12 and #13 subsequently
-  advanced `dev` to `7cbb0d3335e5e3dfaaa708a389687265086b7843`; `origin/main` remains
-  `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`.
-- Units 1–3 are merged into `dev`. Android JVM tests, Android lint, governance, and Pixel 7 Pro /
-  API 35 instrumentation passed on Unit 3's exact merge revision.
+- Latest accepted application revision on GitHub `dev`: PR #14 merge
+  `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78` (Units 1–4). Documentation-only PRs #15 and #16
+  subsequently advanced `dev` to `5bd5b031c72de32a6451a1088bf227f7154aa490`; `origin/main`
+  remains `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`.
+- Units 1–4 are merged into `dev`. Android JVM tests, Android lint, governance, and Pixel 7 Pro /
+  API 35 instrumentation passed on Unit 4's exact PR revision before merge.
 - Earlier `bun test` and `bun run governance:check` results are retained as informational
   observations only; they are not acceptance evidence for the current implementation.
 - Local Gradle test/build verification is intentionally skipped by explicit project-owner
@@ -148,10 +148,11 @@ on the declared Android device profile, with exact-revision GitHub CI passing.
 
 ### Unit 4 — Configurable profiles and shareable direct receipt
 
-**Status:** Approved by the project owner on 2026-09-23; implementation in progress from
-`dev` tip `7cbb0d3335e5e3dfaaa708a389687265086b7843` on branch
-`rons/unit-4-direct-rate-profiles-receipts`; tracked in Linear issue
-[`RON-385`](https://linear.app/rons-space/issue/RON-385/phase-4-unit-4-direct-pricing-profiles-and-shareable-receipts).
+**Status:** Complete in PR #14 (merged into `dev` at
+`26882bbae0fe93b9b6d303d241b8b86dc1ca3c78`); exact-revision Governance and Android CI passed
+before merge; tracked in Linear issue
+[`RON-385`](https://linear.app/rons-space/issue/RON-385/phase-4-unit-4-direct-pricing-profiles-and-shareable-receipts)
+(Done).
 
 - Implement `FR-DIR-08/09/10` together. Each named local profile owns all five
   `DirectPricingRates` values, including `roadDetourMultiplier`; the Settings profile editor
@@ -222,6 +223,6 @@ signing surface.
 Repository governance uses **phases** for project-wide lifecycle gates; this feature uses
 **implementation units** for approved slices. “Stage” is not used as a tracking term.
 
-Unit 4 — **configurable profiles and shareable direct receipt** — is active. Its completion gate is
-exact-revision GitHub CI for the documented acceptance criteria. No local test/build/verification
-is run. Promotion to `main` remains unauthorized.
+Unit 4 — **configurable profiles and shareable direct receipt** — is complete. No next
+implementation unit is authorized; a separately scoped approval is required before any further
+feature work. Promotion to `main` remains unauthorized.
