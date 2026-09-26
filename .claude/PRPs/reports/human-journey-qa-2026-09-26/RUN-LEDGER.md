@@ -10,7 +10,7 @@ device-capable session. Statuses must not be changed without UI observation.
 | --- | --- |
 | Run ID / started / timezone | `otr-qa-2026-09-26` / 2026-09-26 / Asia/Jakarta |
 | Target URL or app / environment | OnTheRoad native Android app (Kotlin + Compose); no built APK in this session |
-| Observed build/version and evidence; unknown if unavailable | Source revision `dev` @ `da73770` (PR #17 merge). Running-build version UNKNOWN — no APK was built here |
+| Observed build/version and evidence; unknown if unavailable | APK built 2026-09-26 from `origin/dev` @ `d93388d` (owner-approved tip); app code identical to prep SHA `da73770` (delta is docs/skill only, PR #18). `com.ontheroad.debug` v0.1.0 (1), API 35 emulator. NOT_RUN rows stand — no results existed to reopen |
 | Requested scope and explicit exclusions | Whole human-facing app. Excluded: code fixes, CI/unit evidence as pass proof, production deploy |
 | Discovery mode / available sources / unavailable sources | Source + docs read-only (app/ui sources, PRD, plan 11). UI inspection and device execution UNAVAILABLE |
 | Actual roles and account aliases; no credentials | Single human role: driver (no accounts — offline app). QA is the testing perspective, not an account |
@@ -161,61 +161,61 @@ single-user app, no auth in source. Revisit if a future build adds accounts.
 
 ## Scenario index
 
-All rows `NOT_RUN` (prep only; B-001 blocks execution). Expected outcomes cite PRD sections or
+Execution 2026-09-26 finished the queue (48/49 attempted; S-046 conditional NOT_RUN). Expected outcomes cite PRD sections or
 source strings; `[ASSUMPTION]` marks inference to confirm on device, `[CONFIRM]` marks
 source-uncertain behavior the executor must settle (INCONCLUSIVE if unresolvable, never assumed).
 
 | Scenario ID | Feature IDs | Actual role/account alias | Variant/context | Dependencies | Current status | Latest attempt / evidence | Defect, blocker, or applicability reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| S-001 | F-001 | driver | Select each of 6 platform chips, idle | — | NOT_RUN | — | B-001 |
-| S-002 | F-002 | driver | Start platform trip, permission granted | S-039 | NOT_RUN | — | B-001 |
-| S-003 | F-003 | driver | Idle placeholders (Ready/--:--/0) | — | NOT_RUN | — | B-001 |
-| S-004 | F-019 | driver | Notification present + live distance while tracking | S-002 | NOT_RUN | — | B-001 |
-| S-005 | F-004 | driver | Complete Trip opens modal | S-002 | NOT_RUN | — | B-001 |
-| S-006 | F-005 | driver | Select Direct idle → quote card replaces metrics, no Start Trip button | — | NOT_RUN | — | B-001 |
-| S-007 | F-006 | driver | Pickup typing (2+ chars) → suggestions → select fills field | — | NOT_RUN | — | B-001 |
-| S-008 | F-006 | driver | GPS snap button → address filled (or fallback hint if denied/unavailable) | S-039 or S-040 | NOT_RUN | — | B-001 |
-| S-009 | F-007 | driver | Destination entry → top-match auto distance | S-007 | NOT_RUN | — | B-001 |
-| S-010 | F-007 | driver | Destination no-match → fallback hint, manual entry usable | — | NOT_RUN | — | B-001 |
-| S-011 | F-008 | driver | Manual distance edit → fare recalculates, caption switches to manual | S-009 | NOT_RUN | — | B-001 |
-| S-012 | F-009 | driver | Quote matches `Max(Min, Base + max(0, km-baseKm)×rate)` for active profile (PRD §4.3) | S-009 | NOT_RUN | — | B-001 |
-| S-013 | F-010 | driver | Switch profile chip → rates/fare update (needs 2 profiles; create via S-032) | S-032 | NOT_RUN | — | B-001 |
-| S-014 | F-011 | driver | Custom-fare toggle → override field; displayed fare follows override | S-009 | NOT_RUN | — | B-001 |
-| S-015 | F-012 | driver | Start Direct Run → trip persists quote, tracking starts | S-009 | NOT_RUN | — | B-001 |
-| S-016 | F-013 | driver | Modal prefills quoted fare + distance (PRD §4.5, FR-DIR-06) | S-015 | NOT_RUN | — | B-001 |
-| S-017 | F-014 | driver | Cash toggle reveals cash field; off hides it | S-015 | NOT_RUN | — | B-001 |
-| S-018 | F-015 | driver | Invalid paid total → Save disabled + `direct_customer_total_invalid` | S-015 | NOT_RUN | — | B-001 |
-| S-019 | F-016 | driver | Valid completion → trip saved, modal closes, service stops | S-015 | NOT_RUN | — | B-001 |
-| S-020 | F-017 | driver | Dismiss modal (swipe/back) → trip still active, quote intact on reopen | S-015 | NOT_RUN | — | B-001 |
-| S-021 | F-018 | driver | Permission denied → inline message, manual quoting works, no trip created | S-040 | NOT_RUN | — | B-001 |
-| S-022 | F-020 | driver | Shift aggregates reflect completed trips | S-019 | NOT_RUN | — | B-001 |
-| S-023 | F-021 | driver | Fresh install: zeros, no crash | — | NOT_RUN | — | B-001 (needs clean install) |
-| S-024 | F-022 | driver | Empty history text | S-023 context | NOT_RUN | — | B-001 |
-| S-025 | F-023 | driver | Card fields (platform, earnings, route, rate, badge iff quoted) | S-019 | NOT_RUN | — | B-001 |
-| S-026 | F-024 | driver | Each sort order reorders list (needs ≥3 varied trips) | S-019 ×3 | NOT_RUN | — | B-001 |
-| S-027 | F-025 | driver | Share eligible direct trip → system chooser appears, PNG created | S-019 (direct) | NOT_RUN | — | B-001 |
-| S-028 | F-027 | driver | Receipt shows date, endpoints, actual distance, paid total; no coords/notes/earnings | S-027 | NOT_RUN | — | B-001 |
-| S-029 | F-026 | driver | Platform + incomplete trips show no share icon | S-002, S-015 | NOT_RUN | — | B-001 |
-| S-030 | F-029 | driver | Each theme applies app-wide immediately | — | NOT_RUN | — | B-001 |
-| S-031 | F-030 | driver | Select profile → persists across Settings revisit + booking form | — | NOT_RUN | — | B-001 |
-| S-032 | F-031 | driver | Create profile (valid + max-length boundary) → appears in list | — | NOT_RUN | — | B-001 |
-| S-033 | F-031 | driver | Duplicate/blank name → inline error, confirm disabled | — | NOT_RUN | — | B-001 |
-| S-034 | F-032 | driver | Delete with confirm → removed; single-profile delete disabled | S-032 | NOT_RUN | — | B-001 |
-| S-035 | F-033 | driver | Invalid rate input → error outline + message, Save disabled until valid+changed | — | NOT_RUN | — | B-001 |
-| S-036 | F-034 | driver | Saved rates change live quotes (cross-surface, J-01) | S-035 | NOT_RUN | — | B-001 |
-| S-037 | F-035 | driver | Detour help text visible and accurate | — | NOT_RUN | — | B-001 |
-| S-038 | F-036 | driver | Static cards display-only (no dead tappable affordance) | — | NOT_RUN | — | B-001 |
-| S-039 | F-037, F-039 | driver | Bottom nav all tabs; typed input survives tab switch (state restore) | — | NOT_RUN | — | B-001 |
-| S-040 | F-039, F-002, F-012 | driver | System Allow → pending start/GPS action proceeds | — | NOT_RUN | — | B-001 |
-| S-041 | F-040, F-018 | driver | System Deny → inline message, no trip, manual path works | — | NOT_RUN | — | B-001 |
-| S-042 | F-041, F-019 | driver | Notification tap behavior [CONFIRM — untraced in source] | S-002 | NOT_RUN | — | B-001 |
-| S-043 | F-002, F-012 | driver | Start failure surfacing [CONFIRM — no toast/snackbar in source; what does the user see?] | — | NOT_RUN | — | B-001 |
-| S-044 | F-001 | driver | Platform chip tap while tracking [CONFIRM — guard untraced; expect no state corruption] | S-002 | NOT_RUN | — | B-001 |
-| S-045 | Recovery | driver | Rotation during tracking + modal open; state survives | S-002 | NOT_RUN | — | B-001 |
-| S-046 | F-028 | driver | Share failure toast (only if failure inducible; else stays NOT_RUN with note) | S-027 | NOT_RUN | — | B-001 + conditional |
-| S-047 | F-013 | driver | Confirm no notes input exists in modal (source: notes always "") | S-005 | NOT_RUN | — | B-001 |
-| S-048 | Recovery | driver | Rapid double-tap Start → single trip created | S-002 | NOT_RUN | — | B-001 |
-| S-049 | Entry/nav | driver | System back per tab (back-stack vs exit behavior) | — | NOT_RUN | — | B-001 |
+| S-001 | F-001 | driver | Select each of 6 platform chips, idle | — | PASS | PASS 2026-09-26; E-001,E-006,E-007,E-008,E-010,E-011 | — |
+| S-002 | F-002 | driver | Start platform trip, permission granted | S-039 | PASS | PASS 2026-09-26; E-085,E-086,E-097 (Grab 20000 saved) | — |
+| S-003 | F-003 | driver | Idle placeholders (Ready/--:--/0) | — | PASS | PASS 2026-09-26; E-005 | — |
+| S-004 | F-019 | driver | Notification present + live distance while tracking | S-002 | FAIL | FAIL 2026-09-26; E-038,E-039 + SystemUI dump | D-002 |
+| S-005 | F-004 | driver | Complete Trip opens modal | S-002 | PASS | PASS 2026-09-26; E-040 (direct), E-088 (platform) | — |
+| S-006 | F-005 | driver | Select Direct idle → quote card replaces metrics, no Start Trip button | — | PASS | PASS 2026-09-26; E-011 | — |
+| S-007 | F-006 | driver | Pickup typing (2+ chars) → suggestions → select fills field | — | PASS | PASS 2026-09-26; E-016,E-017 | — |
+| S-008 | F-006 | driver | GPS snap button → address filled (or fallback hint if denied/unavailable) | S-039 or S-040 | PASS | PASS 2026-09-26; E-019,E-020,E-021 | — |
+| S-009 | F-007 | driver | Destination entry → top-match auto distance | S-007 | PASS | PASS 2026-09-26; E-027,E-028 | — |
+| S-010 | F-007 | driver | Destination no-match → fallback hint, manual entry usable | — | PASS | PASS 2026-09-26; E-084 | — |
+| S-011 | F-008 | driver | Manual distance edit → fare recalculates, caption switches to manual | S-009 | PASS | PASS 2026-09-26; E-029,E-030 (no separate manual caption shown) | — |
+| S-012 | F-009 | driver | Quote matches `Max(Min, Base + max(0, km-baseKm)×rate)` for active profile (PRD §4.3) | S-009 | PASS | PASS 2026-09-26; E-027,E-028,E-030 (formula holds at 3.9/5/8.6 km) | — |
+| S-013 | F-010 | driver | Switch profile chip → rates/fare update (needs 2 profiles; create via S-032) | S-032 | BLOCKED | — | D-006 (form shows only Default; E-067) |
+| S-014 | F-011 | driver | Custom-fare toggle → override field; displayed fare follows override | S-009 | FAIL | FAIL 2026-09-26; E-031..E-037 | D-001 |
+| S-015 | F-012 | driver | Start Direct Run → trip persists quote, tracking starts | S-009 | PASS | PASS 2026-09-26; E-038 | — |
+| S-016 | F-013 | driver | Modal prefills quoted fare + distance (PRD §4.5, FR-DIR-06) | S-015 | PASS | PASS 2026-09-26; E-040 | — |
+| S-017 | F-014 | driver | Cash toggle reveals cash field; off hides it | S-015 | PASS | PASS 2026-09-26; E-042,E-045 | — |
+| S-018 | F-015 | driver | Invalid paid total → Save disabled + `direct_customer_total_invalid` | S-015 | PASS | PASS 2026-09-26; E-044 (wording differs from prep string id) | — |
+| S-019 | F-016 | driver | Valid completion → trip saved, modal closes, service stops | S-015 | PASS | PASS 2026-09-26; E-050,E-051 | — |
+| S-020 | F-017 | driver | Dismiss modal (swipe/back) → trip still active, quote intact on reopen | S-015 | PASS | PASS 2026-09-26; E-046,E-047 | — |
+| S-021 | F-018 | driver | Permission denied → inline message, manual quoting works, no trip created | S-040 | PASS | PASS 2026-09-26; E-114,E-115 (manual fare 24,000 exact) | — |
+| S-022 | F-020 | driver | Shift aggregates reflect completed trips | S-019 | FAIL | FAIL 2026-09-26; E-052,E-053,E-098 | D-004 |
+| S-023 | F-021 | driver | Fresh install: zeros, no crash | — | PASS | PASS 2026-09-26; E-002 | — |
+| S-024 | F-022 | driver | Empty history text | S-023 context | PASS | PASS 2026-09-26; E-003 | — |
+| S-025 | F-023 | driver | Card fields (platform, earnings, route, rate, badge iff quoted) | S-019 | PASS | PASS 2026-09-26; E-051,E-097 ($ = en-US locale rule, OBS-04) | — |
+| S-026 | F-024 | driver | Each sort order reorders list (needs ≥3 varied trips) | S-019 ×3 | PASS | PASS 2026-09-26; E-107,E-108,E-109 | — |
+| S-027 | F-025 | driver | Share eligible direct trip → system chooser appears, PNG created | S-019 (direct) | PASS | PASS 2026-09-26; E-110 (chooser + PNG, cancelled, no send) | — |
+| S-028 | F-027 | driver | Receipt shows date, endpoints, actual distance, paid total; no coords/notes/earnings | S-027 | PASS | PASS 2026-09-26; E-110 (content read from preview) | — |
+| S-029 | F-026 | driver | Platform + incomplete trips show no share icon | S-002, S-015 | PASS | PASS 2026-09-26; E-097 | — |
+| S-030 | F-029 | driver | Each theme applies app-wide immediately | — | FAIL | FAIL 2026-09-26; E-054..E-058 (restart required) | D-005 |
+| S-031 | F-030 | driver | Select profile → persists across Settings revisit + booking form | — | FAIL | FAIL 2026-09-26; E-066,E-067 | D-006 |
+| S-032 | F-031 | driver | Create profile (valid + max-length boundary) → appears in list | — | PASS | PASS 2026-09-26; E-059,E-060,E-063,E-065 (101-char accepted) | — |
+| S-033 | F-031 | driver | Duplicate/blank name → inline error, confirm disabled | — | PASS | PASS 2026-09-26; E-068 (dup), E-059 (blank) | — |
+| S-034 | F-032 | driver | Delete with confirm → removed; single-profile delete disabled | S-032 | PASS | PASS 2026-09-26; E-071,E-072,E-073 | — |
+| S-035 | F-033 | driver | Invalid rate input → error outline + message, Save disabled until valid+changed | — | PASS | PASS 2026-09-26; E-074,E-076,E-077 | — |
+| S-036 | F-034 | driver | Saved rates change live quotes (cross-surface, J-01) | S-035 | FAIL | FAIL 2026-09-26; E-078,E-080,E-081,E-082 | D-007 |
+| S-037 | F-035 | driver | Detour help text visible and accurate | — | PASS | PASS 2026-09-26; E-074 | — |
+| S-038 | F-036 | driver | Static cards display-only (no dead tappable affordance) | — | PASS | PASS 2026-09-26; E-075 | — |
+| S-039 | F-037, F-039 | driver | Bottom nav all tabs; typed input survives tab switch (state restore) | — | PASS | PASS 2026-09-26; E-018,E-019 | — |
+| S-040 | F-039, F-002, F-012 | driver | System Allow → pending start/GPS action proceeds | — | PASS | PASS 2026-09-26; E-019,E-020,E-021 | — |
+| S-041 | F-040, F-018 | driver | System Deny → inline message, no trip, manual path works | — | PASS | PASS 2026-09-26; E-112,E-114 | — |
+| S-042 | F-041, F-019 | driver | Notification tap behavior [CONFIRM — untraced in source] | S-002 | BLOCKED | — | D-002 (no notification to tap) |
+| S-043 | F-002, F-012 | driver | Start failure surfacing [CONFIRM — no toast/snackbar in source; what does the user see?] | — | INCONCLUSIVE | Attempted 2026-09-26; E-118,E-120 (offline start succeeds) | Failure not inducible via UI |
+| S-044 | F-001 | driver | Platform chip tap while tracking [CONFIRM — guard untraced; expect no state corruption] | S-002 | PASS | PASS 2026-09-26; E-087 | — |
+| S-045 | Recovery | driver | Rotation during tracking + modal open; state survives | S-002 | NOT_APPLICABLE | — | Portrait-locked; rotation no-op (E-089) |
+| S-046 | F-028 | driver | Share failure toast (only if failure inducible; else stays NOT_RUN with note) | S-027 | NOT_RUN | — | Conditional; failure not inducible |
+| S-047 | F-013 | driver | Confirm no notes input exists in modal (source: notes always "") | S-005 | PASS | PASS 2026-09-26; E-040,E-041 | — |
+| S-048 | Recovery | driver | Rapid double-tap Start → single trip created | S-002 | PASS | PASS 2026-09-26; E-086,E-097 | — |
+| S-049 | Entry/nav | driver | System back per tab (back-stack vs exit behavior) | — | PASS | PASS 2026-09-26; E-122,E-123 | — |
 
 Scenario detail records (steps/expected/evidence) are intentionally left as index rows:
 the executing session must write per-attempt records at execution time, not in advance.
@@ -224,18 +224,29 @@ the executing session must write per-attempt records at execution time, not in a
 
 | Journey ID / human goal | Record alias | Initiator scenario | Recipient/next role scenarios | Return/receipt scenario | Chain outcome and dependencies |
 | --- | --- | --- | --- | --- | --- |
-| J-01 / Rate change reaches quote | settings-profile-A | S-035, S-036 | S-012 (quote reflects saved rates) | S-031 (selection persists) | NOT_RUN — needs S-035→S-036→S-012 chain |
-| J-02 / Completed run visible everywhere | trip-direct-1 | S-015, S-019 | S-025 (history card), S-022 (shift aggregates) | — | NOT_RUN — needs completed direct trip |
-| J-03 / Receipt out of history | trip-direct-1 | S-027 | System chooser (external) | S-028 (content check) | NOT_RUN — external share target must not receive a real send; cancel at chooser |
+| J-01 / Rate change reaches quote | settings-profile-A | S-035, S-036 | S-012 (quote reflects saved rates) | S-031 (selection persists) | FAIL (D-007) — save persists but quote updates only after restart (E-078..E-082) |
+| J-02 / Completed run visible everywhere | trip-direct-1 | S-015, S-019 | S-025 (history card), S-022 (shift aggregates) | — | FAIL (D-004) — history card correct (S-025 PASS), shift aggregates stay zero (S-022 FAIL) |
+| J-03 / Receipt out of history | trip-direct-1 | S-027 | System chooser (external) | S-028 (content check) | PASS — chooser appeared with PNG preview, cancelled with no send (E-110, E-111); receipt content verified (S-028) |
 
 ## Defects and blockers
 
 | ID | Kind / affected scenarios | Role/context and UI reproduction | Expected + basis vs actual | Impact/severity | Evidence | Needed action / retest attempts |
 | --- | --- | --- | --- | --- | --- | --- |
-| B-001 | BLOCKER / S-001..S-049, J-01..J-03 | driver / any device context: no APK can be built (no JDK/SDK in this environment) and no UI operation capability (device access off) | Expected: executable target + operable UI (skill method boundary). Actual: neither available | P1 for campaign execution (prep unaffected) | `java -version` absent; `t3-code_device_list` → access off; 2026-09-26 | Build APK from `dev` ≥ da73770 on a capable machine; rerun in device-capable session; reset NOTHING (all rows already NOT_RUN) |
-| OBS-01 | Observation (not a defect) / S-043 | Source shows `errorMessage` handled in ViewModel but no Toast/Snackbar/Dialog renders it in TrackerScreen | [CONFIRM] on device | Unknown — could hide start failures from drivers | SRC-TRACKER register | Executor must attempt/induce a start failure and record the visible outcome |
-| OBS-02 | Observation (not a defect) / S-044 | `selectPlatform` guard while tracking untraced | [CONFIRM] on device | Unknown — possible mid-trip platform switch | SRC-TRACKER register | Tap platform chip mid-tracking; record outcome |
-| OBS-03 | Observation (not a defect) / S-047 | `notesText` passed to `onCompleteTrip` but no notes field rendered | [CONFIRM] on device | Low — dead parameter vs hidden field | SRC-MODAL register | Inspect modal fully; record either way |
+| B-001 | BLOCKER, RESOLVED | driver / devbox 2026-09-26: JDK 21 + SDK + emulator available; APK built from `origin/dev` @ `d93388d` (app code identical to prep SHA `da73770`) | Prep expectation met | — (prep only) | Run context + build log | No action; retained for history |
+| OBS-01 | Observation, OPEN / S-043 | Source shows `errorMessage` handled in ViewModel but no Toast/Snackbar/Dialog renders it in TrackerScreen | [CONFIRM] attempted: start succeeds in airplane mode and fully offline; no error UI seen in any flow | Unknown — could hide start failures from drivers | E-118, E-120 | Failure surfacing stays unconfirmed; S-043 INCONCLUSIVE |
+| OBS-02 | Observation, RESOLVED / S-044 | `selectPlatform` guard while tracking untraced | Guard exists: chip taps ignored while tracking, Grab retained (E-087) | None | E-087 | None |
+| OBS-03 | Observation, RESOLVED / S-047 | `notesText` passed to `onCompleteTrip` but no notes field rendered | Confirmed: full modal inventoried, no notes field (E-040, E-041) | Low — dead parameter | E-040, E-041 | None |
+| D-001 | DEFECT / S-014 | driver / Direct quote, custom fare entered | Expected: toggling back to auto restores auto fare. Actual: stale custom value keeps driving the quote (Rp 30,000 vs auto 27,500), persisting across distance edits | Medium — wrong quote persisted into trips | E-031..E-037 | Fix toggle-off to clear/recompute; retest S-014 round-trip |
+| D-002 | DEFECT / S-004, S-042 | driver / tracking direct trip | Expected: foreground-service notification with live distance. Actual: no app notification in shade (SystemUI dump confirms); GPS active, timer counts | Medium — background-awareness + tap-to-return missing | E-038, E-039 | Post notification; retest S-004/S-042 |
+| D-004 | DEFECT / S-022, J-02 | driver / Shift after 1-2 completed trips (direct + platform) | Expected: aggregates reflect trips. Actual: all zeros, revisit-proof | High — shift reconciliation (screen headline purpose) never updates | E-052, E-053, E-098 | Fix aggregation; retest S-022 + J-02 |
+| D-005 | DEFECT / S-030 | driver / Settings theme buttons | Expected: theme applies app-wide immediately. Actual: applies only after force-stop + relaunch; no restart prompt | Low–medium | E-054..E-058 | Apply live or prompt restart; retest S-030 |
+| D-006 | DEFECT / S-031, S-013 | driver / Settings vs Tracker booking form | Expected: selected profile persists to booking form. Actual: Settings keeps Night; form still shows Default; form offers no switch | Medium — multi-profile quoting broken cross-surface | E-066, E-067 | Fix propagation; retest S-031/S-013 |
+| D-007 | DEFECT / S-036, J-01 | driver / Settings rates vs Tracker quote | Expected: saved rates change live quotes. Actual: quote uses old rates until restart (27,500 stale vs 29,500) | Medium — J-01 journey broken live | E-078..E-082 | Make quote observe settings; retest S-036/J-01 |
+| OBS-04 | Observation / S-025, S-028 | driver / en-US emulator locale | History/Shift render `$` per the Currency Format card's locale rule while quote/config surfaces hardcode `Rp`; values exact | Low — cross-surface symbol inconsistency | E-051, E-075, device locale en-US | Design decision; not failed |
+| OBS-05 | Observation | build identity | APK versionName 0.1.0 vs in-app `OnTheRoad 0.2.0` card | Low | aapt dump, E-081 context | Align versions |
+| OBS-06 | Observation / platform modal | driver / platform completion modal | Typed payout/quoted values are discarded on modal dismiss/reopen (direct computed quote survives, S-020) | Low–medium (re-entry burden) | E-091 | Retain draft or confirm discard |
+| OBS-07 | Observation / S-041 follow-up | driver / denied permission | After denial, GPS snap is a silent no-op (no re-request, no settings guidance) | Low | E-116 | Guide to settings or re-request |
+| OBS-08 | Observation / history residue | driver / History | Trips 4/5 earnings ($500061.00/$800063.00) are tester keyboard-focus artifacts; verified-typed trip 6 saved exactly $9000.00. No edit/delete path exists | Residue stands (test device) | E-124..E-128 | Uninstall wipes local trips when device is recycled |
 
 ## Evidence index
 
@@ -244,50 +255,49 @@ No execution evidence yet. Executor: add rows with screenshots around decisive t
 
 | Evidence ID | Actual artifact or observation reference | Timestamp / build / role | Scenario attempts | What is visible and supported | Redactions / limitations |
 | --- | --- | --- | --- | --- | --- |
-| (none) | — | — | — | — | — |
+| E-001..E-129 | `evidence/E-*.png` (129 screenshots, full 1440x3120 `adb screencap`) | 2026-09-26 / `com.ontheroad.debug` from `origin/dev@d93388d` / driver | All attempted scenarios (see per-row refs; ledger-index.json maps every scenario to evidence IDs) | Decisive transitions, failures, ambiguous states, zero states, chooser, permission dialog, receipt preview | Street addresses visible in screenshots (redact if shared externally); no credentials exist |
 
 ## Reconciliation log
 
 | Sweep ID / time | Roles, surfaces, sources rechecked and order | Unmapped items / new feature IDs | Scenario or disposition updates | No-new-item pass? / unresolved gaps |
 | --- | --- | --- | --- | --- |
 | REC-01 / 2026-09-26 | driver; SUR-01..07 in listed order; SRC-* + DOC-PRD | None (source pass) | Ledger created at rev 1 | No — UI sweep impossible (B-001). Executor must run navigation-led + task-led sweeps and log REC-02 |
+| REC-02 / 2026-09-26 | driver; reverse order History → Settings → Shift → Tracker + task-led revisit of quote/modal/share/permission flows | None — no new items. Known untested gap (not new): permanent-denial ('don't ask again') path; S-046 conditional failure path | 38 PASS / 6 FAIL / 2 BLOCKED / 1 INCONCLUSIVE / 1 N/A / 1 NOT_RUN | Yes — no-new-item pass within discoverable scope |
 
 ## Coordinator evidence review
 
-- Reviewer alias / date / reviewed inventory revision and target context: coordinator (prep session) / 2026-09-26 / rev 1 / source @ da73770, no running build.
-- Report, source inventory, scenario rows and evidence references inspected: this ledger only; no execution evidence exists to inspect.
-- Requested scope, actual roles, candidate dispositions, and status/count reconciliation: whole-app scope kept; 41 features CURRENT, 0 EXCLUDED, 0 UNRESOLVED (source gaps recorded as OBS-01..03 + S-042..S-044 CONFIRM items, not exclusions); counts below recomputed.
-- Directly inspected material outcomes, handoffs/failures, and any UI spot-check evidence: none possible (B-001).
-- Missing evidence/new candidates returned to tester and resulting status/attempt updates: n/a — no tester dispatched.
-- Artifact/browser ownership handoff for follow-up and completion: this directory; owner = coordinator until execution session adopts it.
-- Review method: SELF_REVIEW (SAME_AGENT prep; no tester to independently review).
-- Review outcome: FOLLOW_UP_REQUIRED; rationale: execution BLOCKED by B-001; ledger structurally complete for handoff.
-- Final report limits and engineering evidence links, if applicable: prep artifact only — supplies no pass/fail evidence, no release approval. JVM/CI results are deliberately NOT recorded as scenario evidence (skill method boundary).
+- Reviewer alias / date / reviewed inventory revision and target context: executor (SAME_AGENT execution session, Muse Spark) / 2026-09-26 / rev 1 / APK from `origin/dev@d93388d` on emulator (Android 15, qa-pixel AVD).
+- Report, source inventory, scenario rows and evidence references inspected: this ledger + ledger-index.json (checker-clean) + 129 evidence screenshots, all present on disk.
+- Requested scope, actual roles, candidate dispositions, and status/count reconciliation: whole-app scope kept; 41 features CURRENT, 0 EXCLUDED, 0 UNRESOLVED; counts recomputed and checker-validated (44/48 exercised, 38/48 passed).
+- Directly inspected material outcomes, handoffs/failures, and any UI spot-check evidence: every FAIL/INCONCLUSIVE/BLOCKED row inspected against its screenshots (defects D-001, D-002, D-004..D-007 reproduced/observed firsthand).
+- Missing evidence/new candidates returned to tester and resulting status/attempt updates: n/a — SAME_AGENT; REC-02 found no new items.
+- Artifact/browser ownership handoff for follow-up and completion: this directory; owner = executor; transport branch `qa-ledger` never merged.
+- Review method: SELF_REVIEW (SAME_AGENT execution; requested tester model unavailable in this harness — disclosed).
+- Review outcome: FOLLOW_UP_REQUIRED; rationale: 6 defects (D-001, D-002, D-004..D-007) need fixes + retest; S-046 conditional and permanent-denial path untested.
+- Final report limits and engineering evidence links, if applicable: acceptance evidence only — no release approval. JVM/CI results deliberately NOT recorded as scenario evidence (skill method boundary). Emulator evidence is SIMULATED/EMULATED context, not physical-device proof.
 
 ## Counts at checkpoint
 
 | Role | Features / fully exercised features | NOT_RUN | PASS | FAIL | BLOCKED | INCONCLUSIVE | NOT_APPLICABLE | E/A | PASS/A |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| driver | 41 / 0 | 49 | 0 | 0 | 0 | 0 | 0 | 0/49 | 0/49 |
+| driver | 41 / 38 | 1 | 38 | 6 | 2 | 1 | 1 | 44/48 | 38/48 |
 
-T=49, A=49, E=0. (Rows stay NOT_RUN rather than BLOCKED per the template: execution is
-future-phase work, and B-001 is recorded once in the blockers table instead of 49 duplicates.
-The executor flips affected rows to BLOCKED only if the capability is still missing then.)
+T=49, A=48 (S-045 NOT_APPLICABLE), E=44. Fully exercised features: 38/41 (D-002 blocks F-019/F-041 proof; D-004 blocks F-020; D-005 blocks F-029; D-006 blocks F-010/F-030; D-007 blocks F-034; D-001 blocks F-011).
 
 ## Continuation and cleanup
 
-### Consequential action reconciliation — none (no actions taken)
+### Consequential action reconciliation — 6 test trips created through UI (2 direct: 27500/39984.28; 4 platform: 20000/500061*/800063*/9000; * = tester keyboard-focus artifacts, OBS-08); 3 test rate profiles created then deleted via UI; rates changed then restored; theme changed then restored; location permission revoked/granted via dialog + `pm` (OS-level fixture); share sheet invoked twice, cancelled both times with no send. No production, no real sends, no account actions.
 
 ### Continuation packet
 
-- Effective policy link/revision and DUE/DEFERRED trigger decision: MANUAL prep FINISHED; execution DEFERRED to B-001 resolution.
-- Engineering session checkpoint link, when applicable: repo `dev` @ `da73770`; Linear project `OnTheRoad: Direct Booking & Fare Estimator` (no QA comments posted).
-- Optional canonical ledger-index path and artifact-check result/limitations: this file; structure follows the skill template (ledger checker not run — no ledger-validation tooling in this harness; noted limitation).
-- Current inventory revision and the last completed attempt/sweep: rev 1; REC-01 (source pass, no-new-item UI sweep pending).
-- Current tester identity/mode, artifact/session owner, pending authentication request: no tester; owner = coordinator; no auth exists in-app.
-- Last observed UI location, role/session alias, and record state: none observed.
-- Exact next scenario and next UI action; remaining queue: execution session starts with fresh APK install → S-023/S-024 (zero states) → S-039 (navigation) → S-001 journey order; full queue S-001..S-049 + J-01..J-03.
-- Blocking questions, missing fixtures/accounts/tools, and independent work still possible: B-001 (build + device). Nothing else executable from here.
-- Changes in build/environment/data that require results to be reopened: n/a (no results yet). If the APK build differs from `da73770`, record the new SHA in Run context before executing.
-- Created/modified record aliases, original settings where needed, cleanup through UI: execution must restore theme, profiles, and rates changed during S-030..S-036 (record originals at session start).
-- Remaining residue, permitted next action, and owner if known: ledger file only (governance-excluded reports path). Next action: device-capable execution session adopts this ledger.
+- Effective policy link/revision and DUE/DEFERRED trigger decision: MANUAL execution FINISHED 2026-09-26 (owner-authorized side effects + owner-approved build revision `origin/dev`).
+- Engineering session checkpoint link, when applicable: APK source `origin/dev` @ `d93388d` (app code identical to prep SHA `da73770`); Linear project `OnTheRoad: Direct Booking & Fare Estimator` (no QA comments posted).
+- Optional canonical ledger-index path and artifact-check result/limitations: `ledger-index.json` in this directory; `check_ledger.py` PASS (0 errors; recorded_execution_complete=false — correct with NOT_RUN/BLOCKED/INCONCLUSIVE rows). Checker validates bookkeeping only, not product behavior.
+- Current inventory revision and the last completed attempt/sweep: rev 1; REC-02 (reverse-order UI sweep, no-new-item pass).
+- Current tester identity/mode, artifact/session owner, pending authentication request: SAME_AGENT executor (requested gpt-5.6-luna/xhigh unavailable — disclosed); owner = executor; no auth exists in-app.
+- Last observed UI location, role/session alias, and record state: Settings tab (restored values), driver, 6 local trips in history.
+- Exact next scenario and next UI action; remaining queue: none queued, campaign complete. Retest queue after fixes: S-014 (D-001), S-004/S-042 (D-002), S-022 + J-02 (D-004), S-030 (D-005), S-031/S-013 (D-006), S-036 + J-01 (D-007); still-open probes: S-043, S-046, permanent-denial path.
+- Blocking questions, missing fixtures/accounts/tools, and independent work still possible: none — campaign executed.
+- Changes in build/environment/data that require results to be reopened: results bound to `d93388d` build; any new build reopens affected rows per evidence-reuse rule.
+- Created/modified record aliases, original settings where needed, cleanup through UI: theme restored to System (E-058/E-129), profiles restored to Default-only (E-073), rates restored to 10000/3500/15000/0.0/1.25 (E-083/E-129), permission re-granted (E-117), network/wifi restored, rotation setting restored to auto. Residue: 6 local trips (uninstall wipes them); emulator + AVD `qa-pixel` left running for inspection.
+- Remaining residue, permitted next action, and owner if known: ledger files + 129 evidence screenshots (governance-excluded reports path, uncommitted). Next action: owner reviews report; fixes retested through the same UI scenarios on a new build. Never merge `qa-ledger`.

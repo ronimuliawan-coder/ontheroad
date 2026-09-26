@@ -2,7 +2,7 @@
   "schema_version": 1,
   "context_id": "otr-qa-2026-09-26",
   "discovery_reconciled": true,
-  "no_new_items_sweep": false,
+  "no_new_items_sweep": true,
   "features": [
     {
       "id": "F-001",
@@ -313,439 +313,849 @@
   "scenarios": [
     {
       "id": "S-001",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-001"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-001",
+        "E-006",
+        "E-007",
+        "E-008",
+        "E-010",
+        "E-011"
+      ],
+      "defect_ids": [],
+      "expected": "Each of the 6 platform chips selectable while idle; selection visible.",
+      "actual": "All 6 chips selected in turn (Grab default; Gojek/Uber/Lyft direct taps; ShopeeFood/Direct after horizontal scroll).",
+      "steps": [
+        "Launch app to Tracker idle (Grab selected)",
+        "Tap Gojek, Uber, Lyft chips",
+        "Swipe chip row left",
+        "Tap ShopeeFood, Direct chips",
+        "Screenshot each selection"
+      ]
     },
     {
       "id": "S-002",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-002"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-085",
+        "E-086",
+        "E-097"
+      ],
+      "defect_ids": [],
+      "expected": "Start platform trip with permission granted starts GPS tracking.",
+      "actual": "Grab trip started immediately (no dialog; permission already granted), tracked, completed via modal, saved as history trip $20000.",
+      "steps": [
+        "Select Grab idle",
+        "Tap Start Trip",
+        "Observe tracking",
+        "Complete Trip, fill payout 20000/quoted 2",
+        "Save, verify history card"
+      ]
     },
     {
       "id": "S-003",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-003"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-005"
+      ],
+      "defect_ids": [],
+      "expected": "Idle placeholders shown (0.00 km / --:-- / 0 km/h).",
+      "actual": "Tracker idle shows 0.00 km, --:-- duration, 0 km/h.",
+      "steps": [
+        "Launch app, view Tracker idle"
+      ]
     },
     {
       "id": "S-004",
-      "status": "NOT_RUN",
+      "status": "FAIL",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-019"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-038",
+        "E-039"
+      ],
+      "defect_ids": [
+        "D-002"
+      ],
+      "expected": "Foreground-service notification present with live distance while tracking.",
+      "actual": "No OnTheRoad notification in shade during active tracking (SystemUI dump: only Android System entries); GPS icon active, timer counts.",
+      "steps": [
+        "Start direct trip",
+        "Open notification shade",
+        "Screenshot shade",
+        "Dump SystemUI hierarchy, grep for app notification"
+      ]
     },
     {
       "id": "S-005",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-004"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-040",
+        "E-088"
+      ],
+      "defect_ids": [],
+      "expected": "Complete Trip opens the completion modal.",
+      "actual": "Bottom-sheet modal opened for direct trip and for platform (Grab) trip.",
+      "steps": [
+        "Start trip",
+        "Tap Complete Trip",
+        "Screenshot modal (direct + platform)"
+      ]
     },
     {
       "id": "S-006",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-005"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-011"
+      ],
+      "defect_ids": [],
+      "expected": "Selecting Direct idle swaps cockpit to quote card; no platform Start Trip button.",
+      "actual": "DIRECT QUOTE / MANUAL FALLBACK card shown (profile chip, pickup, destination, distance, fare Rp 15,000, Start Direct Run); no Start Trip button.",
+      "steps": [
+        "Tap Direct chip idle",
+        "Screenshot quote card"
+      ]
     },
     {
       "id": "S-007",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-006"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-016",
+        "E-017"
+      ],
+      "defect_ids": [],
+      "expected": "Pickup typing (2+ chars) shows suggestions; selecting fills the field.",
+      "actual": "Typing 'monas' showed 'Merdeka Square' suggestion; tapping it filled the full address; dropdown dismissed.",
+      "steps": [
+        "Focus pickup, clear field",
+        "Type 'monas', wait",
+        "Tap suggestion row",
+        "Verify field filled"
+      ]
     },
     {
       "id": "S-008",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-006"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-019",
+        "E-020",
+        "E-021"
+      ],
+      "defect_ids": [],
+      "expected": "GPS snap fills pickup with reverse-geocoded address (or fallback hint if unavailable).",
+      "actual": "First tap raised system permission dialog; after Allow, re-tap filled 'Jl. Minangkabau Barat No.2f ...' (emulator Jakarta fix).",
+      "steps": [
+        "Set emulator geo fix Jakarta",
+        "Tap GPS snap",
+        "Allow permission",
+        "Re-tap snap, observe filled address"
+      ]
     },
     {
       "id": "S-009",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-007"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-027",
+        "E-028"
+      ],
+      "defect_ids": [],
+      "expected": "Destination selection auto-fills distance with auto caption.",
+      "actual": "Selecting 'Jl. MH Thamrin No.1' auto-set distance 3.9 with auto-calculated caption; fare Rp 23,820.",
+      "steps": [
+        "Type destination query",
+        "Dismiss keyboard, tap top-match suggestion",
+        "Observe distance/fare"
+      ]
     },
     {
       "id": "S-010",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-007"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-084"
+      ],
+      "defect_ids": [],
+      "expected": "No-match destination shows fallback hint; manual entry usable.",
+      "actual": "Gibberish 'xqzqzx' showed no suggestions + hint 'Address lookup is unavailable or found no match. Enter the address and distance manually.'; text retained, distance editable.",
+      "steps": [
+        "Type 'xqzqzx' in destination",
+        "Dismiss keyboard",
+        "Observe hint + editable fields"
+      ]
     },
     {
       "id": "S-011",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-008"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-029",
+        "E-030"
+      ],
+      "defect_ids": [],
+      "expected": "Manual distance edit recalculates fare and leaves auto mode.",
+      "actual": "Distance 3.9 -> 5 recalculated fare to exactly Rp 27,500 (10000+5x3500); auto-caption removed (no separate manual caption is shown).",
+      "steps": [
+        "Edit distance field to 5",
+        "Dismiss keyboard",
+        "Read fare + caption"
+      ]
     },
     {
       "id": "S-012",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-009"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-027",
+        "E-028",
+        "E-030"
+      ],
+      "defect_ids": [],
+      "expected": "Quote matches Max(Min, Base + max(0, km-baseKm) x rate) for active profile.",
+      "actual": "Rp 23,820 at auto 3.9 (precise 3.9486 km); exactly Rp 27,500 at manual 5 km; Rp 39,984 at auto 8.6. Formula holds throughout.",
+      "steps": [
+        "Read fare at auto 3.9",
+        "Set manual 5, read fare",
+        "Second route auto 8.6, read fare"
+      ]
     },
     {
       "id": "S-013",
-      "status": "NOT_RUN",
+      "status": "BLOCKED",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-010"
       ],
       "evidence_ids": [],
-      "defect_ids": []
+      "defect_ids": [
+        "D-006"
+      ],
+      "reason": "Booking form shows only the Default profile chip (E-067) so on-form profile switching is impossible; Settings-side selection does not propagate (D-006)."
     },
     {
       "id": "S-014",
-      "status": "NOT_RUN",
+      "status": "FAIL",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-011"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-031",
+        "E-032",
+        "E-033",
+        "E-034",
+        "E-035",
+        "E-036",
+        "E-037"
+      ],
+      "defect_ids": [
+        "D-001"
+      ],
+      "expected": "Custom toggle reveals override field; fare follows override; toggling back restores auto fare.",
+      "actual": "Forward direction works (field revealed, fare follows 30000). Toggling back to auto leaves the stale custom value driving the quote (Rp 30,000 vs auto 27,500), persisting across distance edits, until the override field is cleared first.",
+      "steps": [
+        "Toggle Custom Price on",
+        "Enter 30000, verify fare",
+        "Toggle back to auto",
+        "Wait, re-screenshot; retype distance",
+        "Clear override, toggle off, verify 27,500"
+      ]
     },
     {
       "id": "S-015",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-012"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-038"
+      ],
+      "defect_ids": [],
+      "expected": "Start Direct Run begins tracking and persists the quote.",
+      "actual": "Tracking started (ACTUAL DISTANCE 0.00, counting duration, Complete Trip button) with 'Matches quote' badge referencing the 5 km quote.",
+      "steps": [
+        "Fill quote (pickup/dest/5 km, fare 27,500)",
+        "Tap Start Direct Run",
+        "Observe tracking UI"
+      ]
     },
     {
       "id": "S-016",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-013"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-040"
+      ],
+      "defect_ids": [],
+      "expected": "Completion modal prefills quoted fare and distance.",
+      "actual": "Direct modal prefilled drop-off address, Direct Transfer Amount 27500, App Quoted Distance 5, total Rp 27500.",
+      "steps": [
+        "Open modal on direct trip",
+        "Read prefilled fields"
+      ]
     },
     {
       "id": "S-017",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-014"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-042",
+        "E-045"
+      ],
+      "defect_ids": [],
+      "expected": "Cash toggle reveals the cash field; off hides it.",
+      "actual": "Toggle on revealed 'Cash Amount Collected'; toggle off hid it and restored transfer-only total with Save enabled.",
+      "steps": [
+        "Toggle cash on",
+        "Observe field",
+        "Toggle off",
+        "Observe field gone"
+      ]
     },
     {
       "id": "S-018",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-015"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-044"
+      ],
+      "defect_ids": [],
+      "expected": "Invalid paid total disables Save with a readable error.",
+      "actual": "Cash on + empty cash amount shows red 'Enter the amount paid; if cash is selected, enter its amount too.' and Save disabled. (Wording differs from the prep source string id; behavior verified.)",
+      "steps": [
+        "Toggle cash on, leave cash empty",
+        "Observe message + Save state"
+      ]
     },
     {
       "id": "S-019",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-015",
         "F-016"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-050",
+        "E-051"
+      ],
+      "defect_ids": [],
+      "expected": "Valid completion saves the trip, closes the modal, stops the service.",
+      "actual": "Save & Finish Run closed modal, restored idle quote card, GPS status icon gone; trip present in history.",
+      "steps": [
+        "Tap Save & Finish Run",
+        "Observe idle tracker",
+        "Verify history card"
+      ]
     },
     {
       "id": "S-020",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-017"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-046",
+        "E-047"
+      ],
+      "defect_ids": [],
+      "expected": "Dismissing the modal keeps the trip active with quote intact.",
+      "actual": "Back dismissed modal; trip still tracking (timer running, Complete Trip present); reopen showed drop-off/27500/5 intact.",
+      "steps": [
+        "Open modal",
+        "Press Back",
+        "Verify tracking",
+        "Reopen modal, verify values"
+      ]
     },
     {
       "id": "S-021",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-018",
         "F-040"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-114",
+        "E-115"
+      ],
+      "defect_ids": [],
+      "expected": "Denied permission shows inline message; manual quoting works; no trip created.",
+      "actual": "Red inline message shown; manual dest 'Manual Plaza' + distance 4 computed exact fare Rp 24,000; Start not pressed, no trip created.",
+      "steps": [
+        "Revoke location permission",
+        "Start attempt denied path",
+        "Enter manual dest + distance on Direct form",
+        "Read fare"
+      ]
     },
     {
       "id": "S-022",
-      "status": "NOT_RUN",
+      "status": "FAIL",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-020"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-052",
+        "E-053",
+        "E-098"
+      ],
+      "defect_ids": [
+        "D-004"
+      ],
+      "expected": "Shift aggregates reflect completed trips.",
+      "actual": "Shift shows all zeros ($0.00 / 0.0 km) with 1 completed direct trip and still zeros after 2 completed trips (direct + platform).",
+      "steps": [
+        "Complete direct trip, open Shift",
+        "Revisit Shift",
+        "Complete platform trip, open Shift"
+      ]
     },
     {
       "id": "S-023",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-021"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-002"
+      ],
+      "defect_ids": [],
+      "expected": "Fresh install Shift shows zeros with no crash.",
+      "actual": "Revenue/balances $0.00, odometer 0.0 km, rates $0.00; no crash on launch or tab visit.",
+      "steps": [
+        "Fresh install, launch",
+        "Open Shift tab"
+      ]
     },
     {
       "id": "S-024",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-022"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-003"
+      ],
+      "defect_ids": [],
+      "expected": "Empty history text shown.",
+      "actual": "'No trips logged yet. Complete a run to see your discrepancy stats!' with sort chips visible.",
+      "steps": [
+        "Open History on fresh install"
+      ]
     },
     {
       "id": "S-025",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-023"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-051",
+        "E-097"
+      ],
+      "defect_ids": [],
+      "expected": "History card shows platform, earnings, route, rate, and quoted badge.",
+      "actual": "Direct card: badge, $27500.00, full pickup->destination route, 1.33 km, $20731.05/km, '-3.7 km saved' badge. '$' follows the en-US device-locale rule (see OBS-04); values exact.",
+      "steps": [
+        "Complete direct trip",
+        "Open History",
+        "Read card fields"
+      ]
     },
     {
       "id": "S-026",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-024"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-107",
+        "E-108",
+        "E-109"
+      ],
+      "defect_ids": [],
+      "expected": "Each sort order reorders the list.",
+      "actual": "Recent: newest-first. Most Profitable: 24113 > 20731 > 0. Longest: 1.66 > 1.33 > 0.00. All correct with 3+ varied trips.",
+      "steps": [
+        "Build 3 varied trips",
+        "Tap Recent / Most Profitable / Longest",
+        "Screenshot each order"
+      ]
     },
     {
       "id": "S-027",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-025"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-110"
+      ],
+      "defect_ids": [],
+      "expected": "Sharing an eligible direct trip opens the system chooser with a generated PNG.",
+      "actual": "Share icon opened 'Sharing image' sheet with rendered receipt preview and targets (Quick Share, Print, Drive, Maps, Messages).",
+      "steps": [
+        "Open History",
+        "Tap share icon on direct trip",
+        "Observe chooser + preview"
+      ]
     },
     {
       "id": "S-028",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-027"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-110"
+      ],
+      "defect_ids": [],
+      "expected": "Receipt shows date, endpoints, actual distance, paid total; no coords/notes/earnings.",
+      "actual": "Preview shows 'Sep 26, 2026 4:52 PM', full pickup/drop-off, 1.66 km, $39,984.28, 'Generated by OnTheRoad'. No coordinates, notes, or earnings.",
+      "steps": [
+        "Open share sheet",
+        "Read receipt preview content"
+      ]
     },
     {
       "id": "S-029",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-026"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-097"
+      ],
+      "defect_ids": [],
+      "expected": "Platform trips show no share icon.",
+      "actual": "Grab trip cards show no share icon; both direct trips show one. (No incomplete trip exists in history by design.)",
+      "steps": [
+        "Complete platform trip",
+        "Open History",
+        "Check icons"
+      ]
     },
     {
       "id": "S-030",
-      "status": "NOT_RUN",
+      "status": "FAIL",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-029"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-054",
+        "E-055",
+        "E-056",
+        "E-057",
+        "E-058"
+      ],
+      "defect_ids": [
+        "D-005"
+      ],
+      "expected": "Each theme applies app-wide immediately.",
+      "actual": "Selection persists (button state) but neither Dark OLED nor Light applied until app force-stop + relaunch; after restart each applies correctly. No restart prompt shown.",
+      "steps": [
+        "Select Dark OLED, visit Settings + Tracker",
+        "Force-stop, relaunch, verify dark",
+        "Repeat for Light",
+        "Restore System + restart"
+      ]
     },
     {
       "id": "S-031",
-      "status": "NOT_RUN",
+      "status": "FAIL",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-030"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-066",
+        "E-067"
+      ],
+      "defect_ids": [
+        "D-006"
+      ],
+      "expected": "Profile selection persists across Settings revisit and booking form.",
+      "actual": "Night stayed selected across Settings revisit, but the Tracker booking form still showed Default.",
+      "steps": [
+        "Create Night",
+        "Select Night",
+        "Revisit Settings",
+        "Open Direct form, read profile chip"
+      ]
     },
     {
       "id": "S-032",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-031"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-059",
+        "E-060",
+        "E-063",
+        "E-065"
+      ],
+      "defect_ids": [],
+      "expected": "Valid profile creation works; boundary probed.",
+      "actual": "'Night' created and listed. 101-char name accepted without complaint (chip renders it overflowing the row); no max-length error observed.",
+      "steps": [
+        "Add profile 'Night'",
+        "Add 101-char profile",
+        "Read chip list"
+      ]
     },
     {
       "id": "S-033",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-031"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-068",
+        "E-059"
+      ],
+      "defect_ids": [],
+      "expected": "Duplicate/blank names are rejected with inline error and disabled confirm.",
+      "actual": "Duplicate 'Night' shows red outline + 'Choose a name not already in use.' with Create disabled; blank name keeps Create disabled.",
+      "steps": [
+        "Add profile, type 'Night'",
+        "Observe error + Create state",
+        "Observe blank-state Create disabled"
+      ]
     },
     {
       "id": "S-034",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-032"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-071",
+        "E-072",
+        "E-073"
+      ],
+      "defect_ids": [],
+      "expected": "Delete with confirm removes the profile; single-profile delete disabled.",
+      "actual": "Night deleted via confirm dialog (selection fell back to Default); long profile deleted the same way; with only Default left, Delete selected is disabled.",
+      "steps": [
+        "Delete Night with confirm",
+        "Delete long profile with confirm",
+        "Observe single-profile Delete state"
+      ]
     },
     {
       "id": "S-035",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-033"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-074",
+        "E-076",
+        "E-077"
+      ],
+      "defect_ids": [],
+      "expected": "Invalid rate input shows error and disables Save until valid and changed.",
+      "actual": "'abc' in Base Fare shows red outline + range message with Save disabled; unchanged values keep Save disabled; 12000 enables Save.",
+      "steps": [
+        "Enter 'abc'",
+        "Observe error + Save",
+        "Enter 12000",
+        "Observe Save enabled"
+      ]
     },
     {
       "id": "S-036",
-      "status": "NOT_RUN",
+      "status": "FAIL",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-034"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-078",
+        "E-080",
+        "E-081",
+        "E-082"
+      ],
+      "defect_ids": [
+        "D-007"
+      ],
+      "expected": "Saved rates change live quotes (J-01).",
+      "actual": "Base 12000 saved and retained in Settings, but the Tracker quote kept using base 10000 (fare 27,500 for 5 km instead of 29,500) until app restart; after restart the quote used 12000 (29,500).",
+      "steps": [
+        "Save base 12000",
+        "Enter 5 km on Tracker, read fare",
+        "Revisit Settings",
+        "Restart app, re-read quote"
+      ]
     },
     {
       "id": "S-037",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-035"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-074"
+      ],
+      "defect_ids": [],
+      "expected": "Detour help text visible and accurate.",
+      "actual": "'Estimated road distance = straight-line distance x factor. Default: 1.25.' shown under the detour factor field (value 1.25).",
+      "steps": [
+        "Scroll Settings to Advanced section",
+        "Read help text"
+      ]
     },
     {
       "id": "S-038",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-036"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-075"
+      ],
+      "defect_ids": [],
+      "expected": "Static preference cards are display-only.",
+      "actual": "Tapping Distance Unit / Currency Format / Privacy cards causes no navigation, dialog, or state change.",
+      "steps": [
+        "Tap preference cards",
+        "Observe no-op"
+      ]
     },
     {
       "id": "S-039",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-037",
         "F-039"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-018",
+        "E-019"
+      ],
+      "defect_ids": [],
+      "expected": "Bottom nav reaches all tabs; typed input survives tab switch; first-ask permission proceeds.",
+      "actual": "Tracker/Shift/History/Settings visited; pickup text survived Shift round-trip; first GPS action raised the system Allow dialog and Allow proceeded.",
+      "steps": [
+        "Visit all tabs",
+        "Type pickup, switch tabs, return",
+        "GPS snap, Allow"
+      ]
     },
     {
       "id": "S-040",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
@@ -753,24 +1163,45 @@
         "F-012",
         "F-039"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-019",
+        "E-020",
+        "E-021"
+      ],
+      "defect_ids": [],
+      "expected": "System Allow lets the pending action proceed.",
+      "actual": "Tapping 'While using the app' dismissed the dialog and the pending GPS snap completed (address filled on re-tap).",
+      "steps": [
+        "Trigger permission dialog",
+        "Tap 'While using the app'",
+        "Verify GPS action completes"
+      ]
     },
     {
       "id": "S-041",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-038",
         "F-040"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-112",
+        "E-114"
+      ],
+      "defect_ids": [],
+      "expected": "System Deny shows inline message; no trip starts; manual path works.",
+      "actual": "'Don't allow' produced red inline message with idle Start Trip intact; manual Direct quote computed exactly (see S-021). Tab transitions observed smooth throughout (F-038, no glitches in 129 screenshots).",
+      "steps": [
+        "Start Trip with revoked permission",
+        "Tap 'Don't allow'",
+        "Observe inline message + idle state"
+      ]
     },
     {
       "id": "S-042",
-      "status": "NOT_RUN",
+      "status": "BLOCKED",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
@@ -778,11 +1209,14 @@
         "F-041"
       ],
       "evidence_ids": [],
-      "defect_ids": []
+      "defect_ids": [
+        "D-002"
+      ],
+      "reason": "No foreground-service notification exists during tracking, so there is nothing to tap."
     },
     {
       "id": "S-043",
-      "status": "NOT_RUN",
+      "status": "INCONCLUSIVE",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
@@ -790,22 +1224,32 @@
         "F-012"
       ],
       "evidence_ids": [],
-      "defect_ids": []
+      "defect_ids": [],
+      "reason": "No start failure inducible via UI: platform start succeeds in airplane mode and with wifi+data disabled (offline-first); no toast/snackbar/error observed in any flow, so failure surfacing stays unconfirmed."
     },
     {
       "id": "S-044",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-001"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-087"
+      ],
+      "defect_ids": [],
+      "expected": "Platform chip tap while tracking causes no state corruption.",
+      "actual": "Tapping Gojek mid-Grab-trip left Grab selected with the trip still counting; chip taps are ignored while tracking.",
+      "steps": [
+        "Start Grab trip",
+        "Tap Gojek chip",
+        "Verify platform + tracking intact"
+      ]
     },
     {
       "id": "S-045",
-      "status": "NOT_RUN",
+      "status": "NOT_APPLICABLE",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
@@ -813,7 +1257,8 @@
         "F-004"
       ],
       "evidence_ids": [],
-      "defect_ids": []
+      "defect_ids": [],
+      "reason": "App locks portrait orientation (setting user_rotation=1 produced no configuration change); rotation cannot occur, so rotation-survival is vacuous. Trip + open modal remained intact."
     },
     {
       "id": "S-046",
@@ -824,71 +1269,1049 @@
         "F-028"
       ],
       "evidence_ids": [],
-      "defect_ids": []
+      "defect_ids": [],
+      "reason": "Receipt generation succeeded on every attempt (2/2); no UI path induces a share failure, so this conditional scenario was not attempted."
     },
     {
       "id": "S-047",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-013"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-040",
+        "E-041"
+      ],
+      "defect_ids": [],
+      "expected": "Modal contains no notes input.",
+      "actual": "Full direct modal inventoried (drop-off, transfer, cash toggle, total, quoted distance, odometer badge, Save); scrolling revealed no further fields.",
+      "steps": [
+        "Open direct modal",
+        "Swipe up inside modal",
+        "Inventory all fields"
+      ]
     },
     {
       "id": "S-048",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-002",
         "F-012"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-086",
+        "E-097"
+      ],
+      "defect_ids": [],
+      "expected": "Rapid double-tap Start creates a single trip.",
+      "actual": "Two rapid Start taps produced one tracking session; history shows exactly one new Grab trip.",
+      "steps": [
+        "Double-tap Start Trip rapidly",
+        "Verify single tracking session",
+        "Verify one new history trip"
+      ]
     },
     {
       "id": "S-049",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-037"
       ],
-      "evidence_ids": [],
-      "defect_ids": []
+      "evidence_ids": [
+        "E-122",
+        "E-123"
+      ],
+      "defect_ids": [],
+      "expected": "Back-stack behavior is consistent per tab.",
+      "actual": "Back on History/Shift/Settings returns to Tracker (start destination); Back on Tracker exits to launcher.",
+      "steps": [
+        "Back on each tab",
+        "Observe destination or exit"
+      ]
     }
   ],
-  "evidence": [],
+  "evidence": [
+    {
+      "id": "E-001",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "App cold-launch: Tracker idle, Grab selected, zeroed metrics.",
+      "path": "evidence/E-001-launch.png"
+    },
+    {
+      "id": "E-002",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Shift zero state on fresh install: all $0.00 / 0.0 km, no crash.",
+      "path": "evidence/E-002-shift-zero.png"
+    },
+    {
+      "id": "E-003",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "History empty state text with sort chips.",
+      "path": "evidence/E-003-history-empty.png"
+    },
+    {
+      "id": "E-004",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Settings top with original values (System, Default, 10000/3500/15000/0.0).",
+      "path": "evidence/E-004-settings-top.png"
+    },
+    {
+      "id": "E-005",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Tracker idle placeholders 0.00 km / --:-- / 0 km/h.",
+      "path": "evidence/E-005-tracker-idle.png"
+    },
+    {
+      "id": "E-006",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Gojek chip selected.",
+      "path": "evidence/E-006-chip-gojek.png"
+    },
+    {
+      "id": "E-007",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Uber chip selected.",
+      "path": "evidence/E-007-chip-uber.png"
+    },
+    {
+      "id": "E-008",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Lyft chip selected (missed-tap attempt then success).",
+      "path": "evidence/E-008-chip-lyft.png"
+    },
+    {
+      "id": "E-009",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Chip row scrolled left; ShopeeFood + Direct visible.",
+      "path": "evidence/E-009-chips-scrolled.png"
+    },
+    {
+      "id": "E-010",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "ShopeeFood chip selected.",
+      "path": "evidence/E-010-chip-shopee.png"
+    },
+    {
+      "id": "E-011",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Direct quote card (MANUAL FALLBACK, Default, fare Rp 15,000, Start Direct Run).",
+      "path": "evidence/E-011-direct-card.png"
+    },
+    {
+      "id": "E-012",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Pickup field focused with keyboard.",
+      "path": "evidence/E-012-pickup-focus.png"
+    },
+    {
+      "id": "E-013",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Appended typing polluted existing text (tester error).",
+      "path": "evidence/E-013-pickup-suggest.png"
+    },
+    {
+      "id": "E-014",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Field partially cleared.",
+      "path": "evidence/E-014-pickup-cleared.png"
+    },
+    {
+      "id": "E-015",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Query with residue text.",
+      "path": "evidence/E-015-pickup-query.png"
+    },
+    {
+      "id": "E-016",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "'monas' query with 'Merdeka Square' suggestion.",
+      "path": "evidence/E-016-pickup-monas.png"
+    },
+    {
+      "id": "E-017",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Pickup filled with full selected address.",
+      "path": "evidence/E-017-pickup-selected.png"
+    },
+    {
+      "id": "E-018",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Pickup text survived tab switch round-trip.",
+      "path": "evidence/E-018-tabswitch-restore.png"
+    },
+    {
+      "id": "E-019",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "System location permission dialog on GPS snap.",
+      "path": "evidence/E-019-gps-snap.png"
+    },
+    {
+      "id": "E-020",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Permission granted; dialog dismissed.",
+      "path": "evidence/E-020-gps-allowed.png"
+    },
+    {
+      "id": "E-021",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "GPS snap filled reverse-geocoded Jakarta address.",
+      "path": "evidence/E-021-gps-retry.png"
+    },
+    {
+      "id": "E-022",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Destination typing began (focus error polluted pickup).",
+      "path": "evidence/E-022-dest-query.png"
+    },
+    {
+      "id": "E-023",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Pickup restored via GPS snap.",
+      "path": "evidence/E-023-pickup-restored.png"
+    },
+    {
+      "id": "E-024",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Destination field focused.",
+      "path": "evidence/E-024-dest-focus.png"
+    },
+    {
+      "id": "E-025",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Destination query typed; stale pickup dropdown visible.",
+      "path": "evidence/E-025-dest-query.png"
+    },
+    {
+      "id": "E-026",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Destination query after wait.",
+      "path": "evidence/E-026-dest-query2.png"
+    },
+    {
+      "id": "E-027",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Destination suggestion + auto distance 3.9 + fare Rp 23,820.",
+      "path": "evidence/E-027-dest-dropdown.png"
+    },
+    {
+      "id": "E-028",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Destination selected; address filled.",
+      "path": "evidence/E-028-dest-selected.png"
+    },
+    {
+      "id": "E-029",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Manual distance 5 entered.",
+      "path": "evidence/E-029-manual-distance.png"
+    },
+    {
+      "id": "E-030",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Manual fare Rp 27,500; auto-caption removed.",
+      "path": "evidence/E-030-manual-fare.png"
+    },
+    {
+      "id": "E-031",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Custom Price toggle revealed override field.",
+      "path": "evidence/E-031-custom-toggle.png"
+    },
+    {
+      "id": "E-032",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Override 30000 drives fare Rp 30,000.",
+      "path": "evidence/E-032-custom-fare.png"
+    },
+    {
+      "id": "E-033",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Toggle reverted to auto but fare stuck at 30,000.",
+      "path": "evidence/E-033-auto-restored.png"
+    },
+    {
+      "id": "E-034",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Stale fare persists after wait.",
+      "path": "evidence/E-034-fare-after-revert.png"
+    },
+    {
+      "id": "E-035",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Stale fare persists after distance-field interaction.",
+      "path": "evidence/E-035-fare-stale-probe.png"
+    },
+    {
+      "id": "E-036",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Stale fare persists after distance retype.",
+      "path": "evidence/E-036-distance-retype.png"
+    },
+    {
+      "id": "E-037",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Override cleared; auto fare Rp 27,500 restored.",
+      "path": "evidence/E-037-override-cleared.png"
+    },
+    {
+      "id": "E-038",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Direct trip tracking with Matches-quote badge.",
+      "path": "evidence/E-038-trip-started.png"
+    },
+    {
+      "id": "E-039",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Notification shade: no app notification.",
+      "path": "evidence/E-039-shade.png"
+    },
+    {
+      "id": "E-040",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Direct completion modal with prefill (27500/5).",
+      "path": "evidence/E-040-modal-open.png"
+    },
+    {
+      "id": "E-041",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Modal fully scrolled; no further fields.",
+      "path": "evidence/E-041-modal-scrolled.png"
+    },
+    {
+      "id": "E-042",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Cash toggle on reveals cash field; Save disabled with hint.",
+      "path": "evidence/E-042-cash-on.png"
+    },
+    {
+      "id": "E-043",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Mixed payment total Rp 37,500; Save enabled.",
+      "path": "evidence/E-043-cash-mixed.png"
+    },
+    {
+      "id": "E-044",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Cash on + empty cash: error message + Save disabled.",
+      "path": "evidence/E-044-cash-empty.png"
+    },
+    {
+      "id": "E-045",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Cash toggle off hides field; total Rp 27,500.",
+      "path": "evidence/E-045-cash-off.png"
+    },
+    {
+      "id": "E-046",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Modal dismissed; trip still active.",
+      "path": "evidence/E-046-dismissed.png"
+    },
+    {
+      "id": "E-047",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Reopened modal intact (27500/5).",
+      "path": "evidence/E-047-reopened.png"
+    },
+    {
+      "id": "E-048",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Simulated drive: actual still 0.00 km.",
+      "path": "evidence/E-048-simulated-drive.png"
+    },
+    {
+      "id": "E-049",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "After 1 km geo jump: actual 1.22 km.",
+      "path": "evidence/E-049-big-jump.png"
+    },
+    {
+      "id": "E-050",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip saved; idle quote card restored.",
+      "path": "evidence/E-050-trip-saved.png"
+    },
+    {
+      "id": "E-051",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "History card for direct trip (27500/1.33 km/badge).",
+      "path": "evidence/E-051-history-1trip.png"
+    },
+    {
+      "id": "E-052",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Shift still zeros after 1 completed trip.",
+      "path": "evidence/E-052-shift-populated.png"
+    },
+    {
+      "id": "E-053",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Shift still zeros after revisit.",
+      "path": "evidence/E-053-shift-revisit.png"
+    },
+    {
+      "id": "E-054",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Dark OLED selected; UI still light.",
+      "path": "evidence/E-054-theme-dark.png"
+    },
+    {
+      "id": "E-055",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Tracker still light with Dark OLED selected.",
+      "path": "evidence/E-055-theme-dark-tracker.png"
+    },
+    {
+      "id": "E-056",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Dark theme applied after restart.",
+      "path": "evidence/E-056-theme-restart.png"
+    },
+    {
+      "id": "E-057",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Light theme applied after restart.",
+      "path": "evidence/E-057-theme-light.png"
+    },
+    {
+      "id": "E-058",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "System theme restored.",
+      "path": "evidence/E-058-theme-system.png"
+    },
+    {
+      "id": "E-059",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Create-profile dialog; Create disabled when blank.",
+      "path": "evidence/E-059-add-profile.png"
+    },
+    {
+      "id": "E-060",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Profile name 'Night' typed; Create enabled.",
+      "path": "evidence/E-060-profile-name.png"
+    },
+    {
+      "id": "E-061",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Stale list before successful create (tester tap error).",
+      "path": "evidence/E-061-profile-created.png"
+    },
+    {
+      "id": "E-062",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "List still single-profile after missed tap.",
+      "path": "evidence/E-062-profiles-revisit.png"
+    },
+    {
+      "id": "E-063",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "'Night' chip created.",
+      "path": "evidence/E-063-profile-night.png"
+    },
+    {
+      "id": "E-064",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "101-char profile name entered.",
+      "path": "evidence/E-064-long-name.png"
+    },
+    {
+      "id": "E-065",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Long-name chip accepted and listed.",
+      "path": "evidence/E-065-long-profile.png"
+    },
+    {
+      "id": "E-066",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Night selected and persisted across revisit.",
+      "path": "evidence/E-066-profile-night-selected.png"
+    },
+    {
+      "id": "E-067",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Booking form still shows Default (propagation failure).",
+      "path": "evidence/E-067-night-on-form.png"
+    },
+    {
+      "id": "E-068",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Duplicate name error + Create disabled.",
+      "path": "evidence/E-068-duplicate-name.png"
+    },
+    {
+      "id": "E-069",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Dialog still open after Back (keyboard only dismissed).",
+      "path": "evidence/E-069-after-cancel.png"
+    },
+    {
+      "id": "E-070",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Dialog cancelled; three profiles listed.",
+      "path": "evidence/E-070-dialog-cancelled.png"
+    },
+    {
+      "id": "E-071",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Delete confirm dialog for Night.",
+      "path": "evidence/E-071-delete-confirm.png"
+    },
+    {
+      "id": "E-072",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Night deleted; selection fell back to Default.",
+      "path": "evidence/E-072-night-deleted.png"
+    },
+    {
+      "id": "E-073",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Only Default remains; Delete disabled.",
+      "path": "evidence/E-073-long-deleted.png"
+    },
+    {
+      "id": "E-074",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Detour help text + disabled Save with unchanged values.",
+      "path": "evidence/E-074-settings-lower.png"
+    },
+    {
+      "id": "E-075",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Static card tap is a no-op.",
+      "path": "evidence/E-075-static-card-tap.png"
+    },
+    {
+      "id": "E-076",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Invalid rate 'abc' with error + disabled Save.",
+      "path": "evidence/E-076-invalid-rate.png"
+    },
+    {
+      "id": "E-077",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Valid change 12000 enables Save.",
+      "path": "evidence/E-077-valid-changed.png"
+    },
+    {
+      "id": "E-078",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Rates saved; Save disabled.",
+      "path": "evidence/E-078-rates-saved.png"
+    },
+    {
+      "id": "E-079",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Quote still uses old base 10000.",
+      "path": "evidence/E-079-quote-new-rates.png"
+    },
+    {
+      "id": "E-080",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "5 km probe fare 27,500 (old rates).",
+      "path": "evidence/E-080-quote-probe.png"
+    },
+    {
+      "id": "E-081",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Settings retained base 12000.",
+      "path": "evidence/E-081-rates-revisit.png"
+    },
+    {
+      "id": "E-082",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Quote uses base 12000 after restart (29,500).",
+      "path": "evidence/E-082-quote-after-restart.png"
+    },
+    {
+      "id": "E-083",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Rates restored to originals; Save disabled.",
+      "path": "evidence/E-083-rates-restored.png"
+    },
+    {
+      "id": "E-084",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "No-match query with fallback hint.",
+      "path": "evidence/E-084-no-match.png"
+    },
+    {
+      "id": "E-085",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Grab idle with Start Trip.",
+      "path": "evidence/E-085-grab-idle.png"
+    },
+    {
+      "id": "E-086",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Double-tap started single tracking session.",
+      "path": "evidence/E-086-double-tap.png"
+    },
+    {
+      "id": "E-087",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Gojek tap ignored while Grab tracking.",
+      "path": "evidence/E-087-chip-while-tracking.png"
+    },
+    {
+      "id": "E-088",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Platform completion modal opened.",
+      "path": "evidence/E-088-platform-modal.png"
+    },
+    {
+      "id": "E-089",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Rotation requested; app stayed portrait.",
+      "path": "evidence/E-089-rotated.png"
+    },
+    {
+      "id": "E-090",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Platform modal mistyped state (tester focus errors).",
+      "path": "evidence/E-090-platform-filled.png"
+    },
+    {
+      "id": "E-091",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Modal reopened with empty fields (typed input discarded).",
+      "path": "evidence/E-091-platform-reopen.png"
+    },
+    {
+      "id": "E-092",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Drop-off fix corrupted payout (tester focus error).",
+      "path": "evidence/E-092-platform-refill.png"
+    },
+    {
+      "id": "E-093",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Drop-off corrected to Terminal Blok M.",
+      "path": "evidence/E-093-dropoff-fixed.png"
+    },
+    {
+      "id": "E-094",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Payout over-typed again (tester focus error).",
+      "path": "evidence/E-094-platform-refill2.png"
+    },
+    {
+      "id": "E-095",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Modal correctly filled (20000/2).",
+      "path": "evidence/E-095-platform-ready.png"
+    },
+    {
+      "id": "E-096",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Platform trip saved; idle restored.",
+      "path": "evidence/E-096-platform-saved.png"
+    },
+    {
+      "id": "E-097",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "History with direct + Grab trips; Grab has no share icon.",
+      "path": "evidence/E-097-history-2trips.png"
+    },
+    {
+      "id": "E-098",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Shift still zeros with 2 completed trips.",
+      "path": "evidence/E-098-shift-2trips.png"
+    },
+    {
+      "id": "E-099",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip-3 quote forming (typo in dest field).",
+      "path": "evidence/E-099-trip3-quote.png"
+    },
+    {
+      "id": "E-100",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip-3 destination suggestion available.",
+      "path": "evidence/E-100-trip3-dest.png"
+    },
+    {
+      "id": "E-101",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip-3 destination selected (8.6 km auto).",
+      "path": "evidence/E-101-trip3-ready.png"
+    },
+    {
+      "id": "E-102",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip-3 tracking started.",
+      "path": "evidence/E-102-trip3-started.png"
+    },
+    {
+      "id": "E-103",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip-3 actual still 0.00 after fixes.",
+      "path": "evidence/E-103-trip3-drive.png"
+    },
+    {
+      "id": "E-104",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip-3 actual still 0.00 after longer wait.",
+      "path": "evidence/E-104-trip3-drive2.png"
+    },
+    {
+      "id": "E-105",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip-3 actual 1.66 km registered.",
+      "path": "evidence/E-105-trip3-drive3.png"
+    },
+    {
+      "id": "E-106",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip-3 modal prefill (39984.28/8.6).",
+      "path": "evidence/E-106-trip3-modal.png"
+    },
+    {
+      "id": "E-107",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "History Recent order with 3 trips.",
+      "path": "evidence/E-107-history-3trips.png"
+    },
+    {
+      "id": "E-108",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Most Profitable order correct.",
+      "path": "evidence/E-108-sort-profit.png"
+    },
+    {
+      "id": "E-109",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Longest order correct.",
+      "path": "evidence/E-109-sort-longest.png"
+    },
+    {
+      "id": "E-110",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "System share sheet with receipt PNG preview.",
+      "path": "evidence/E-110-share-chooser.png"
+    },
+    {
+      "id": "E-111",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Share sheet cancelled; History intact.",
+      "path": "evidence/E-111-share-cancelled.png"
+    },
+    {
+      "id": "E-112",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "System permission dialog re-asked after revoke.",
+      "path": "evidence/E-112-deny-start.png"
+    },
+    {
+      "id": "E-113",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Calendar wrong-app detour; back in OnTheRoad idle.",
+      "path": "evidence/E-113-back-to-app.png"
+    },
+    {
+      "id": "E-114",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Deny path inline message; no trip started.",
+      "path": "evidence/E-114-deny-inline.png"
+    },
+    {
+      "id": "E-115",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Manual quote Rp 24,000 works while denied.",
+      "path": "evidence/E-115-manual-denied.png"
+    },
+    {
+      "id": "E-116",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "GPS snap tap with permission denied (no dialog).",
+      "path": "evidence/E-116-reask.png"
+    },
+    {
+      "id": "E-117",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Permission re-granted; inline message gone.",
+      "path": "evidence/E-117-regranted.png"
+    },
+    {
+      "id": "E-118",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Airplane-mode start: trip started (network was still up).",
+      "path": "evidence/E-118-airplane-start.png"
+    },
+    {
+      "id": "E-119",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip 4 saved (unverified blind inputs).",
+      "path": "evidence/E-119-trip4-saved.png"
+    },
+    {
+      "id": "E-120",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Fully offline start: trip started anyway.",
+      "path": "evidence/E-120-offline-start.png"
+    },
+    {
+      "id": "E-121",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip 5 saved (unverified blind inputs).",
+      "path": "evidence/E-121-trip5-saved.png"
+    },
+    {
+      "id": "E-122",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Back on Tracker exits to launcher (dumpsys).",
+      "path": "evidence/E-122-back-tracker.png"
+    },
+    {
+      "id": "E-123",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Back on Settings returns to Tracker.",
+      "path": "evidence/E-123-back-settings.png"
+    },
+    {
+      "id": "E-124",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "REC-02: history with tester-artifact trips (500061/800063).",
+      "path": "evidence/E-124-rec-history.png"
+    },
+    {
+      "id": "E-125",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip-6 payout over-typed to 900064 (keyboard-tap artifact).",
+      "path": "evidence/E-125-trip6-verify.png"
+    },
+    {
+      "id": "E-126",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Modal dismissed; trip still active.",
+      "path": "evidence/E-126-trip6-state.png"
+    },
+    {
+      "id": "E-127",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Trip-6 modal verified (9000/4).",
+      "path": "evidence/E-127-trip6-fixed.png"
+    },
+    {
+      "id": "E-128",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "History shows verified $9000.00 trip.",
+      "path": "evidence/E-128-history-verify.png"
+    },
+    {
+      "id": "E-129",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "REC-02: settings restored (System/Default/original rates).",
+      "path": "evidence/E-129-rec-settings.png"
+    }
+  ],
   "defects": [
     {
       "id": "B-001",
-      "description": "No JDK/SDK/device in prep environment; execution BLOCKED until build + UI capability exist."
+      "description": "RESOLVED during execution 2026-09-26: JDK 21, SDK, and emulator were available; APK built from origin/dev@d93388d; 48/49 scenarios exercised."
     },
     {
       "id": "OBS-01",
-      "description": "Start-failure surfacing unconfirmed in source (S-043)."
+      "description": "OPEN: start-failure surfacing still unconfirmed (S-043 INCONCLUSIVE); no error UI observed in any flow."
     },
     {
       "id": "OBS-02",
-      "description": "Platform-tap-while-tracking guard untraced (S-044)."
+      "description": "RESOLVED by S-044: platform-tap-while-tracking guard exists; taps ignored."
     },
     {
       "id": "OBS-03",
-      "description": "Notes parameter passed but no field rendered (S-047)."
+      "description": "RESOLVED by S-047: confirmed no notes field in completion modal."
+    },
+    {
+      "id": "OBS-04",
+      "description": "History/Shift render '$' per en-US device-locale rule (Currency Format card: 'Formatted based on driver locale'); quote/config surfaces hardcode 'Rp'. Noted inconsistency; not failed."
+    },
+    {
+      "id": "OBS-05",
+      "description": "Version identity: APK versionName 0.1.0 vs in-app 'OnTheRoad 0.2.0' card."
+    },
+    {
+      "id": "OBS-06",
+      "description": "Platform completion modal discards typed payout/quoted values on dismiss/reopen; direct modal quote (computed) survives (S-020)."
+    },
+    {
+      "id": "OBS-07",
+      "description": "After permission denial, GPS snap is a silent no-op (no system re-request, no settings guidance)."
+    },
+    {
+      "id": "OBS-08",
+      "description": "Trips 4/5 earnings ($500061.00/$800063.00) are tester keyboard-focus artifacts (verified: exactly-typed trip 6 saved $9000.00); history has no edit/delete path, so residue stands."
+    },
+    {
+      "id": "D-001",
+      "description": "S-014: toggling custom fare back to auto leaves the stale override value driving the quote (persists across distance edits) until the override field is cleared first."
+    },
+    {
+      "id": "D-002",
+      "description": "S-004/S-042: no foreground-service notification is posted while tracking (shade + SystemUI dump); GPS icon active, timer counts."
+    },
+    {
+      "id": "D-004",
+      "description": "S-022/J-02: Shift aggregates stay all-zeros with completed direct and platform trips."
+    },
+    {
+      "id": "D-005",
+      "description": "S-030: theme selection applies only after app force-stop + relaunch; no restart prompt."
+    },
+    {
+      "id": "D-006",
+      "description": "S-031/S-013: Settings profile selection does not propagate to the Tracker booking form (still Default)."
+    },
+    {
+      "id": "D-007",
+      "description": "S-036/J-01: saved rates do not change live quotes; restart required (verified 27,500 stale vs 29,500 after restart)."
     }
   ],
   "counts": {
-    "NOT_RUN": 49,
-    "PASS": 0,
-    "FAIL": 0,
-    "BLOCKED": 0,
-    "INCONCLUSIVE": 0,
-    "NOT_APPLICABLE": 0,
-    "applicable": 49,
-    "exercised": 0,
-    "passed": 0
+    "NOT_RUN": 1,
+    "PASS": 38,
+    "FAIL": 6,
+    "BLOCKED": 2,
+    "INCONCLUSIVE": 1,
+    "NOT_APPLICABLE": 1,
+    "applicable": 48,
+    "exercised": 44,
+    "passed": 38
   }
 }
