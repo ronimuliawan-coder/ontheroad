@@ -25,7 +25,7 @@ class ViewModelFactory(
 
         return when {
             modelClass.isAssignableFrom(TrackerViewModel::class.java) -> {
-                val startTripUseCase = StartTripUseCase(tripRepository)
+                val startTripUseCase = StartTripUseCase(tripRepository, shiftRepository)
                 val completeTripUseCase = CompleteTripUseCase(tripRepository)
                 val searchAddressUseCase = SearchAddressUseCase(locationRepository)
                 val getCurrentLocationUseCase = GetCurrentLocationUseCase(locationRepository)
