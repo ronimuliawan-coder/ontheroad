@@ -422,6 +422,14 @@ never contain credentials, tokens, or private payloads.
 - Rollback/recovery impact: Revert the PR merge commit on `dev`; no force-push, production data, release, or credential changes. Remote `origin/rons/*` branches are left untouched.
 - Next gate: PR to `dev`, exact-revision CI green, then explicit merge approval.
 
+### 2026-09-26 — Verification follow-up batch (F1–F4, F6) CI acceptance (pre-merge)
+
+- Exact PR revision: PR #17 head `d52a7d0` (branch `rons/verification-followups`, base `dev`).
+- Acceptance evidence: Governance, GitLab trusted-ref, JVM Unit Tests, Android Lint, and Android UI Acceptance (Pixel 7 Pro / API 35) all passed on the exact PR revision. CodeRabbit skipped (reviews disabled for non-default base `dev`); no review comments. No local tests/builds ran, per the owner's standing CI-only direction.
+- Local verification: `bun run governance:check` passed; `git diff --check` reports only the two restored Markdown hard-break double-spaces in the PRD/plan headers, matching those files' pre-existing style.
+- Rollback/recovery impact: Revert the PR merge commit on `dev` if merged; no force-push, production data, release, or credential changes. `main` unchanged; promotion unauthorized.
+- Next gate: Explicit merge approval; Linear updates still held for separate confirmation.
+
 ## Current accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |
