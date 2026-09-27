@@ -395,19 +395,25 @@
         "E-168",
         "E-172",
         "E-173",
-        "E-189"
+        "E-189",
+        "E-190",
+        "E-192",
+        "E-193",
+        "E-194",
+        "E-196"
       ],
       "defect_ids": [
         "D-002"
       ],
       "expected": "Foreground-service notification present with live distance while tracking.",
-      "actual": "No OnTheRoad notification in shade during active tracking (SystemUI dump: only Android System entries); GPS icon active, timer counts. 2026-09-27 (85f053b): `OnTheRoad: Active Run / Recording GPS breadcrumbs...` in shade while tracking (dumpsys: FOREGROUND_SERVICE ongoing + contentIntent); tap returns to app. Body text is static (no live km) \u2014 see OBS-09.",
+      "actual": "No OnTheRoad notification in shade during active tracking (SystemUI dump: only Android System entries); GPS icon active, timer counts. 2026-09-27 (85f053b): `OnTheRoad: Active Run / Recording GPS breadcrumbs...` in shade while tracking (dumpsys: FOREGROUND_SERVICE ongoing + contentIntent); tap returns to app. Body text is static (no live km) \u2014 see OBS-09. Movement probe 2026-09-27 (85f053b, same install lineage, fresh zero state): 41 geo fixes lon 106.8271->106.8285 lat -6.1754 over ~2 min; Tracker ACTUAL DISTANCE 0.16 km, shade body `Tracking: 0.16 km` (E-193,E-194) \u2014 live km confirmed, OBS-09 resolved.",
       "steps": [
         "Start direct trip",
         "Open notification shade",
         "Screenshot shade",
         "Dump SystemUI hierarchy, grep for app notification",
-        "Start Direct Run (6 km) -> grant location+notifications -> geo drive -> shade screenshot -> tap notification -> verify return [2026-09-27 (85f053b)]"
+        "Start Direct Run (6 km) -> grant location+notifications -> geo drive -> shade screenshot -> tap notification -> verify return [2026-09-27 (85f053b)]",
+        "Movement probe: fresh direct trip (2 km manual quote) -> 41 geo fixes ~3s apart -> Tracker + shade screenshots [2026-09-27 (85f053b)]"
       ]
     },
     {
@@ -1255,16 +1261,18 @@
       ],
       "evidence_ids": [
         "E-168",
-        "E-173"
+        "E-173",
+        "E-194"
       ],
       "defect_ids": [
         "D-002"
       ],
       "reason": "No foreground-service notification exists during tracking, so there is nothing to tap.",
       "expected": "Tapping the tracking notification returns to the app.",
-      "actual": "2026-09-27 (85f053b): tapping `OnTheRoad: Active Run` returns to Tracker with trip active (duration 03:23 counting).",
+      "actual": "2026-09-27 (85f053b): tapping `OnTheRoad: Active Run` returns to Tracker with trip active (duration 03:23 counting). Movement probe 2026-09-27: notification present with live km (E-194); tap not re-exercised, prior 85f053b PASS (tap returns to Tracker) stands.",
       "steps": [
-        "Open shade during tracking -> tap notification body -> verify Tracker resumed [2026-09-27 (85f053b)]"
+        "Open shade during tracking -> tap notification body -> verify Tracker resumed [2026-09-27 (85f053b)]",
+        "Movement probe: shade opened during walked trip, live-km body observed; no re-tap [2026-09-27 (85f053b)]"
       ]
     },
     {
@@ -2530,6 +2538,55 @@
       "context_id": "otr-qa-2026-09-26",
       "observation": "Foreground-service notification record present while tracking (ongoing, tap intent set).",
       "reference": "adb shell dumpsys notification on emulator-5554 during tracking (2026-09-27, build 85f053b): NotificationRecord pkg=com.ontheroad.debug id=1001 channel=ontheroad_tracking_channel flags=ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE, contentIntent=PendingIntent(startActivity com.ontheroad.debug). Recorded in executor shell transcript; no screenshot text beyond E-168."
+    },
+    {
+      "id": "E-190",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Fresh zero-state launch: Tracker idle, Grab, 0.00 km.",
+      "path": "evidence/E-190-fresh-launch.png"
+    },
+    {
+      "id": "E-191",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Direct quote card: manual distance 2 km, fare Rp 17,000.",
+      "path": "evidence/E-191-direct-quote-2km.png"
+    },
+    {
+      "id": "E-192",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Tracking started: duration 00:02 counting, 0.00 km, Matches quote.",
+      "path": "evidence/E-192-tracking-started.png"
+    },
+    {
+      "id": "E-193",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Tracker after ~2 min walk: ACTUAL DISTANCE 0.16 km, duration 03:09.",
+      "path": "evidence/E-193-tracker-0p16km.png"
+    },
+    {
+      "id": "E-194",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Shade during walked trip: `OnTheRoad: Active Run` body `Tracking: 0.16 km`.",
+      "path": "evidence/E-194-shade-live-km.png"
+    },
+    {
+      "id": "E-195",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Settings untouched at probe end: System theme, Default-only, 10000/3500/15000/0.0.",
+      "path": "evidence/E-195-settings-defaults.png"
+    },
+    {
+      "id": "E-196",
+      "kind": "OBSERVATION",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "FGS notification record while walked trip active (ongoing, FOREGROUND_SERVICE).",
+      "reference": "adb shell dumpsys notification on emulator-5554 during walked tracking (2026-09-27, build 85f053b): NotificationRecord pkg=com.ontheroad.debug id=1001 channel=ontheroad_tracking_channel flags=ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE."
     }
   ],
   "defects": [
@@ -2595,7 +2652,7 @@
     },
     {
       "id": "OBS-09",
-      "description": "OPEN / S-004 retest 2026-09-27 (85f053b): tracking notification is present and ongoing with working tap-to-return, but body text is static `Recording GPS breadcrumbs...` (no live distance). Low."
+      "description": "RESOLVED 2026-09-27 movement probe (85f053b): static `Recording GPS breadcrumbs...` is only the zero-distance state; once actual distance > 0 the body shows live km (`Tracking: 0.16 km`, E-194). Prior OPEN note retained in RUN-LEDGER history."
     },
     {
       "id": "OBS-10",
