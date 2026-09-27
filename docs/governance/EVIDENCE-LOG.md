@@ -439,6 +439,23 @@ never contain credentials, tokens, or private payloads.
 - Rollback/recovery impact: Revert the adoption commit on its branch; remove the 11 manifest rows to restore the prior inventory. No product, data, release, or credential changes.
 - Next gate: PR to `dev`, exact-revision CI green, then explicit merge approval.
 
+### 2026-09-26 — Human-journey QA campaign `otr-qa-2026-09-26` executed (coordinator review VERIFIED)
+
+- Execution: Namespace devbox (M, linux/amd64, /dev/kvm), emulator Pixel 7 Pro / API 35; APK built from `origin/dev` @ `d93388d` (app code identical to prep baseline). Ledger + 129 screenshots on transport branch `origin/qa-ledger` (never to merge): `.claude/PRPs/reports/human-journey-qa-2026-09-26/`.
+- Result: 38 PASS / 6 FAIL / 2 BLOCKED / 1 INCONCLUSIVE / 1 NOT_APPLICABLE / 1 NOT_RUN (T=49, A=48, E/A=44/48). REC-02 no-new-item pass. Ledger checker zero errors; counts reconcile. Two FAIL exhibits spot-checked by coordinator (Shift zeros, empty shade).
+- Defects (all UI-observed): D-004 High — Shift aggregates stay zero after completed trips; D-002 Medium — no foreground-service notification while tracking; D-006 Medium — profile selection doesn't reach booking form; D-007 Medium — quotes use stale rates until restart; D-001 Medium — custom-fare toggle-off keeps stale override; D-005 Low-medium — theme needs force-stop to apply. S-013/S-042 BLOCKED on D-006/D-002; S-043 INCONCLUSIVE (failure not inducible); S-045 justified N/A (portrait-locked); S-046 conditional NOT_RUN.
+- Observations deferred (no fix authorized): OBS-04 currency-symbol inconsistency (design decision), OBS-05 versionName 0.1.0 vs in-app 0.2.0 card, OBS-06 platform modal discards drafts, OBS-07 silent GPS no-op after denial, OBS-08 history residue on test device.
+- Next gate: owner-approved fix batch for all 6 defects, then targeted retest of affected scenarios. No release approval implied.
+
+### 2026-09-26 — QA fix batch CI acceptance (pre-merge)
+
+- Exact PR revision: PR #19 head (branch `rons/qa-defect-batch`, base `dev`; implementation `4b0675c` plus this evidence entry).
+- Fixes: D-004 shift bootstrap in `StartTripUseCase` (explicit shiftId preserved); D-005/D-006/D-007 app-scoped singleton repositories in `OnTheRoadApplication` + `ViewModelFactory`; D-002 POST_NOTIFICATIONS ride-along with location-only gating (also closes a latent any-grant bug); D-001 toggle-off clears the stale fare override. Regression tests: 3 shift-bootstrap cases + 1 TrackerViewModel shift-attachment case; D-001 covered by targeted device retest (no fitting JVM seam in `core:ui`).
+- Acceptance evidence: [Android CI run 36275343717](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/36275343717) (JVM tests, lint, Pixel 7 Pro / API 35 UI acceptance all pass), [governance run 36275343728](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/36275343728), GitLab trusted-ref run 36275341499 pass. CodeRabbit skipped (`dev` base). One compile miss (`StartTripUseCase` call site in factory) failed the first cycle and was corrected without unrelated changes; the green cycle above is the accepted revision.
+- Local verification: `bun run governance:check` pass; `git diff --check` clean; full diff reviewed (production: 5 files; tests: 4 files).
+- Rollback/recovery impact: Revert the PR merge commit on `dev`; no force-push, production data, release, or credential changes. OBS-04..08 remain deferred by explicit scope decision.
+- Next gate: Explicit merge approval, then targeted device retest (S-004/S-013/S-014/S-019/S-022/S-030/S-031/S-036, J-01/J-02) on a fresh build.
+
 ## Current accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |

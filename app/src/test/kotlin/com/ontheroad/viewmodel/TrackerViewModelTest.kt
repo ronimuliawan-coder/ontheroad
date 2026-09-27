@@ -2,6 +2,7 @@ package com.ontheroad.viewmodel
 
 import app.cash.turbine.test
 import com.ontheroad.core.domain.repository.LocationRepository
+import com.ontheroad.core.domain.repository.ShiftRepository
 import com.ontheroad.core.domain.repository.TripRepository
 import com.ontheroad.core.domain.repository.UserPreferencesRepository
 import com.ontheroad.core.domain.usecase.CalculateDirectFareUseCase
@@ -14,7 +15,10 @@ import com.ontheroad.core.model.AddressSuggestion
 import com.ontheroad.core.model.DirectPricingRates
 import com.ontheroad.core.model.DirectPricingProfile
 import com.ontheroad.core.model.DirectPricingProfileSettings
+import com.ontheroad.core.model.Expense
 import com.ontheroad.core.model.RoutePoint
+import com.ontheroad.core.model.Shift
+import com.ontheroad.core.model.ShiftStatus
 import com.ontheroad.core.model.ThemeMode
 import com.ontheroad.core.model.Trip
 import com.ontheroad.core.model.TripStatus
@@ -60,6 +64,29 @@ private class TrackerFakeTripRepository : TripRepository {
     override suspend fun deleteTrip(id: String) {
         tripsFlow.value = tripsFlow.value - id
     }
+}
+
+private class TrackerFakeShiftRepository : ShiftRepository {
+    private val shiftsFlow = MutableStateFlow<Map<String, Shift>>(emptyMap())
+
+    override suspend fun insertShift(shift: Shift) {
+        shiftsFlow.value = shiftsFlow.value + (shift.id to shift)
+    }
+
+    override suspend fun updateShift(shift: Shift) {
+        shiftsFlow.value = shiftsFlow.value + (shift.id to shift)
+    }
+
+    override suspend fun getShiftById(id: String): Shift? = shiftsFlow.value[id]
+
+    override fun getActiveShift(): Flow<Shift?> = shiftsFlow.map { map ->
+        map.values.firstOrNull { it.status == ShiftStatus.ACTIVE }
+    }
+
+    override fun getAllShifts(): Flow<List<Shift>> = shiftsFlow.map { it.values.toList() }
+    override suspend fun insertExpense(expense: Expense) = Unit
+    override fun getExpensesForShift(shiftId: String): Flow<List<Expense>> =
+        MutableStateFlow(emptyList())
 }
 
 private class TrackerFakeUserPreferencesRepository : UserPreferencesRepository {
@@ -141,6 +168,7 @@ class TrackerViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var tripRepository: TrackerFakeTripRepository
+    private lateinit var shiftRepository: TrackerFakeShiftRepository
     private lateinit var preferencesRepository: TrackerFakeUserPreferencesRepository
     private lateinit var locationRepository: TrackerFakeLocationRepository
     private lateinit var startTripUseCase: StartTripUseCase
@@ -153,9 +181,10 @@ class TrackerViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         tripRepository = TrackerFakeTripRepository()
+        shiftRepository = TrackerFakeShiftRepository()
         preferencesRepository = TrackerFakeUserPreferencesRepository()
         locationRepository = TrackerFakeLocationRepository()
-        startTripUseCase = StartTripUseCase(tripRepository)
+        startTripUseCase = StartTripUseCase(tripRepository, shiftRepository)
         completeTripUseCase = CompleteTripUseCase(tripRepository)
         searchAddressUseCase = SearchAddressUseCase(locationRepository)
         getCurrentLocationUseCase = GetCurrentLocationUseCase(locationRepository)
@@ -206,6 +235,22 @@ class TrackerViewModelTest {
 
         assertTrue(viewModel.uiState.value.isTracking)
         assertEquals("gojek", viewModel.uiState.value.selectedPlatformId)
+        viewModel.stopDurationTimer()
+    }
+
+    @Test
+    fun startingTripAttachesShiftForReconciliation() = runTest(testDispatcher) {
+        viewModel.startTrip(
+            startAddress = "Monas",
+            startLatitude = -6.175,
+            startLongitude = 106.827
+        )
+        testDispatcher.scheduler.runCurrent()
+
+        val trip = tripRepository.getActiveTrip().let {
+            tripRepository.tripsFlow.value.values.firstOrNull { it.status == TripStatus.IN_PROGRESS }
+        }
+        assertTrue(trip?.shiftId?.isNotBlank() == true)
         viewModel.stopDurationTimer()
     }
 

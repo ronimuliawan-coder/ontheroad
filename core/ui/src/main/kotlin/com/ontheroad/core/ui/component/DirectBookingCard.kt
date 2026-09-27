@@ -387,6 +387,9 @@ fun DirectBookingCard(
                         )
                         Row(
                             modifier = Modifier.clickable {
+                                // Toggling back to auto must drop the stale override,
+                                // otherwise it keeps driving the quote while hidden.
+                                if (showCustomFareInput) onCustomFareOverrideChange("")
                                 showCustomFareInput = !showCustomFareInput
                             },
                             verticalAlignment = Alignment.CenterVertically
