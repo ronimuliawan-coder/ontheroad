@@ -1217,15 +1217,21 @@
       "evidence_ids": [
         "E-019",
         "E-020",
-        "E-021"
+        "E-021",
+        "E-208",
+        "E-209",
+        "E-210",
+        "E-211",
+        "E-212"
       ],
       "defect_ids": [],
       "expected": "System Allow lets the pending action proceed.",
-      "actual": "Tapping 'While using the app' dismissed the dialog and the pending GPS snap completed (address filled on re-tap).",
+      "actual": "PASS 2026-09-26 (E-019..E-021) retained. Probe 2026-09-27 on a61e870: second location ask Allowed (While using the app); notification prompt Allowed; pending Start Trip proceeded to tracking (Complete Trip, 00:02->00:37) with shade OnTheRoad Active Run now / Recording GPS breadcrumbs....",
       "steps": [
-        "Trigger permission dialog",
-        "Tap 'While using the app'",
-        "Verify GPS action completes"
+        "Start Trip on Grab idle (denied state)",
+        "Allow location (While using the app)",
+        "Allow notification (Allow)",
+        "Verify tracking cockpit + shade notification"
       ]
     },
     {
@@ -1239,15 +1245,21 @@
       ],
       "evidence_ids": [
         "E-112",
-        "E-114"
+        "E-114",
+        "E-202",
+        "E-203",
+        "E-204",
+        "E-205",
+        "E-206"
       ],
       "defect_ids": [],
       "expected": "System Deny shows inline message; no trip starts; manual path works.",
-      "actual": "'Don't allow' produced red inline message with idle Start Trip intact; manual Direct quote computed exactly (see S-021). Tab transitions observed smooth throughout (F-038, no glitches in 129 screenshots).",
+      "actual": "PASS 2026-09-26 (E-112,E-114) retained. Probe 2026-09-27 on a61e870: Don't allow location (+ Don't allow notification) produced red inline Location permission required... with idle Start Trip; History empty (no trip); Direct manual fallback Rp 15,000 usable.",
       "steps": [
-        "Start Trip with revoked permission",
-        "Tap 'Don't allow'",
-        "Observe inline message + idle state"
+        "Start Trip on fresh install",
+        "Tap Don't allow (location)",
+        "Tap Don't allow (notification)",
+        "Observe red message + idle + History empty + Direct manual card"
       ]
     },
     {
@@ -2587,6 +2599,97 @@
       "context_id": "otr-qa-2026-09-26",
       "observation": "FGS notification record while walked trip active (ongoing, FOREGROUND_SERVICE).",
       "reference": "adb shell dumpsys notification on emulator-5554 during walked tracking (2026-09-27, build 85f053b): NotificationRecord pkg=com.ontheroad.debug id=1001 channel=ontheroad_tracking_channel flags=ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE."
+    },
+    {
+      "id": "E-201",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Fresh idle cockpit on a61e870: Grab, 0.00 km, Start Trip.",
+      "path": "evidence/E-201-fresh-idle.png"
+    },
+    {
+      "id": "E-202",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "System location dialog (first ask, deny path): Allow OnTheRoad to access location?",
+      "path": "evidence/E-202-loc-dialog-deny.png"
+    },
+    {
+      "id": "E-203",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "System notification dialog on deny path: Allow OnTheRoad to send notifications? (tapped Don't allow).",
+      "path": "evidence/E-203-notif-dialog-deny.png"
+    },
+    {
+      "id": "E-204",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Red inline message after deny: Location permission required... idle Start Trip intact.",
+      "path": "evidence/E-204-deny-inline-message.png"
+    },
+    {
+      "id": "E-205",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "History empty after deny: No trips logged yet (no trip created).",
+      "path": "evidence/E-205-history-empty.png"
+    },
+    {
+      "id": "E-206",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Direct manual fallback usable after deny: quote card Rp 15,000 + red message.",
+      "path": "evidence/E-206-direct-manual.png"
+    },
+    {
+      "id": "E-207",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Grab idle before allow retry (red message persists until next permission attempt).",
+      "path": "evidence/E-207-grab-idle-retry.png"
+    },
+    {
+      "id": "E-208",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "System location dialog (second ask, allow path): Allow OnTheRoad to access location?",
+      "path": "evidence/E-208-loc-dialog-allow.png"
+    },
+    {
+      "id": "E-209",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "System notification dialog on allow path: Allow notifications? (tapped Allow).",
+      "path": "evidence/E-209-notif-dialog-allow.png"
+    },
+    {
+      "id": "E-210",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Tracking cockpit after allow: Complete Trip, 00:02 counting, GPS active.",
+      "path": "evidence/E-210-tracking-cockpit.png"
+    },
+    {
+      "id": "E-211",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Shade during tracking: OnTheRoad Active Run now, Recording GPS breadcrumbs...",
+      "path": "evidence/E-211-shade-active-run.png"
+    },
+    {
+      "id": "E-212",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Tracking sustained after shade: Complete Trip, 00:37, GPS active.",
+      "path": "evidence/E-212-tracking-sustained.png"
+    },
+    {
+      "id": "E-213",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Settings untouched at probe end: System theme, Default-only, 10000/3500/15000/0.0.",
+      "path": "evidence/E-213-settings-defaults.png"
     }
   ],
   "defects": [
