@@ -382,7 +382,7 @@
     },
     {
       "id": "S-004",
-      "status": "FAIL",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
@@ -390,18 +390,24 @@
       ],
       "evidence_ids": [
         "E-038",
-        "E-039"
+        "E-039",
+        "E-166",
+        "E-168",
+        "E-172",
+        "E-173",
+        "E-189"
       ],
       "defect_ids": [
         "D-002"
       ],
       "expected": "Foreground-service notification present with live distance while tracking.",
-      "actual": "No OnTheRoad notification in shade during active tracking (SystemUI dump: only Android System entries); GPS icon active, timer counts.",
+      "actual": "No OnTheRoad notification in shade during active tracking (SystemUI dump: only Android System entries); GPS icon active, timer counts. 2026-09-27 (85f053b): `OnTheRoad: Active Run / Recording GPS breadcrumbs...` in shade while tracking (dumpsys: FOREGROUND_SERVICE ongoing + contentIntent); tap returns to app. Body text is static (no live km) \u2014 see OBS-09.",
       "steps": [
         "Start direct trip",
         "Open notification shade",
         "Screenshot shade",
-        "Dump SystemUI hierarchy, grep for app notification"
+        "Dump SystemUI hierarchy, grep for app notification",
+        "Start Direct Run (6 km) -> grant location+notifications -> geo drive -> shade screenshot -> tap notification -> verify return [2026-09-27 (85f053b)]"
       ]
     },
     {
@@ -575,21 +581,30 @@
     },
     {
       "id": "S-013",
-      "status": "BLOCKED",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-010"
       ],
-      "evidence_ids": [],
+      "evidence_ids": [
+        "E-137",
+        "E-139",
+        "E-140"
+      ],
       "defect_ids": [
         "D-006"
       ],
-      "reason": "Booking form shows only the Default profile chip (E-067) so on-form profile switching is impossible; Settings-side selection does not propagate (D-006)."
+      "reason": "Booking form shows only the Default profile chip (E-067) so on-form profile switching is impossible; Settings-side selection does not propagate (D-006).",
+      "expected": "Second profile selectable; switching profile in Settings updates the Tracker booking-form chips immediately.",
+      "actual": "2026-09-27 (85f053b): created NightProfile; selecting it in Settings shows it selected in the Direct form immediately, no restart.",
+      "steps": [
+        "Add profile NightProfile -> select it in Settings -> open Tracker Direct form -> verify selected chip [2026-09-27 (85f053b)]"
+      ]
     },
     {
       "id": "S-014",
-      "status": "FAIL",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
@@ -602,19 +617,25 @@
         "E-034",
         "E-035",
         "E-036",
-        "E-037"
+        "E-037",
+        "E-147",
+        "E-150",
+        "E-154",
+        "E-156",
+        "E-153"
       ],
       "defect_ids": [
         "D-001"
       ],
       "expected": "Custom toggle reveals override field; fare follows override; toggling back restores auto fare.",
-      "actual": "Forward direction works (field revealed, fare follows 30000). Toggling back to auto leaves the stale custom value driving the quote (Rp 30,000 vs auto 27,500), persisting across distance edits, until the override field is cleared first.",
+      "actual": "Forward direction works (field revealed, fare follows 30000). Toggling back to auto leaves the stale custom value driving the quote (Rp 30,000 vs auto 27,500), persisting across distance edits, until the override field is cleared first. 2026-09-27 (85f053b): 6 km auto Rp 40,000 -> Custom on + 30000 -> Rp 30,000 -> Use Auto Rate -> Rp 40,000 restored, override cleared; fare follows later distance edits. D-001 fixed.",
       "steps": [
         "Toggle Custom Price on",
         "Enter 30000, verify fare",
         "Toggle back to auto",
         "Wait, re-screenshot; retype distance",
-        "Clear override, toggle off, verify 27,500"
+        "Clear override, toggle off, verify 27,500",
+        "Distance 6 (auto 40k) -> Custom on -> override 30000 (30k) -> back to auto (40k restored) [2026-09-27 (85f053b)]"
       ]
     },
     {
@@ -708,15 +729,23 @@
       ],
       "evidence_ids": [
         "E-050",
-        "E-051"
+        "E-051",
+        "E-163",
+        "E-165",
+        "E-166",
+        "E-175",
+        "E-176",
+        "E-177",
+        "E-179"
       ],
       "defect_ids": [],
       "expected": "Valid completion saves the trip, closes the modal, stops the service.",
-      "actual": "Save & Finish Run closed modal, restored idle quote card, GPS status icon gone; trip present in history.",
+      "actual": "Save & Finish Run closed modal, restored idle quote card, GPS status icon gone; trip present in history. 2026-09-27 (85f053b): direct trip (NightProfile, 6 km, quoted 40000) saved; modal closed; service stopped (notification gone); modal prefilled 40000/6; empty total gates Save (re-confirmed).",
       "steps": [
         "Tap Save & Finish Run",
         "Observe idle tracker",
-        "Verify history card"
+        "Verify history card",
+        "Start -> grants -> geo drive -> Complete Trip -> verify prefill -> clear total (Save gated) -> 40000 -> Save & Finish [2026-09-27 (85f053b)]"
       ]
     },
     {
@@ -766,7 +795,7 @@
     },
     {
       "id": "S-022",
-      "status": "FAIL",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
@@ -775,17 +804,20 @@
       "evidence_ids": [
         "E-052",
         "E-053",
-        "E-098"
+        "E-098",
+        "E-131",
+        "E-180"
       ],
       "defect_ids": [
         "D-004"
       ],
       "expected": "Shift aggregates reflect completed trips.",
-      "actual": "Shift shows all zeros ($0.00 / 0.0 km) with 1 completed direct trip and still zeros after 2 completed trips (direct + platform).",
+      "actual": "Shift shows all zeros ($0.00 / 0.0 km) with 1 completed direct trip and still zeros after 2 completed trips (direct + platform). 2026-09-27 (85f053b): Shift TOTAL GROSS REVENUE $40000.00 (+APP BALANCE $40000.0) after 1 direct trip, no manual shift action. $ = en-US locale (OBS-04).",
       "steps": [
         "Complete direct trip, open Shift",
         "Revisit Shift",
-        "Complete platform trip, open Shift"
+        "Complete platform trip, open Shift",
+        "Complete 1 direct trip from zero state -> open Shift -> verify aggregates without any shift action [2026-09-27 (85f053b)]"
       ]
     },
     {
@@ -929,7 +961,7 @@
     },
     {
       "id": "S-030",
-      "status": "FAIL",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
@@ -940,23 +972,27 @@
         "E-055",
         "E-056",
         "E-057",
-        "E-058"
+        "E-058",
+        "E-134",
+        "E-135",
+        "E-136"
       ],
       "defect_ids": [
         "D-005"
       ],
       "expected": "Each theme applies app-wide immediately.",
-      "actual": "Selection persists (button state) but neither Dark OLED nor Light applied until app force-stop + relaunch; after restart each applies correctly. No restart prompt shown.",
+      "actual": "Selection persists (button state) but neither Dark OLED nor Light applied until app force-stop + relaunch; after restart each applies correctly. No restart prompt shown. 2026-09-27 (85f053b): System->Dark OLED->Light->System each applied immediately, no force-stop.",
       "steps": [
         "Select Dark OLED, visit Settings + Tracker",
         "Force-stop, relaunch, verify dark",
         "Repeat for Light",
-        "Restore System + restart"
+        "Restore System + restart",
+        "Tap Dark OLED (verify) -> Light (verify) -> System (verify/restore) [2026-09-27 (85f053b)]"
       ]
     },
     {
       "id": "S-031",
-      "status": "FAIL",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
@@ -964,18 +1000,23 @@
       ],
       "evidence_ids": [
         "E-066",
-        "E-067"
+        "E-067",
+        "E-137",
+        "E-139",
+        "E-140",
+        "E-162"
       ],
       "defect_ids": [
         "D-006"
       ],
       "expected": "Profile selection persists across Settings revisit and booking form.",
-      "actual": "Night stayed selected across Settings revisit, but the Tracker booking form still showed Default.",
+      "actual": "Night stayed selected across Settings revisit, but the Tracker booking form still showed Default. 2026-09-27 (85f053b): NightProfile selected in Settings persists across tab revisit + cold start and appears selected in booking form immediately.",
       "steps": [
         "Create Night",
         "Select Night",
         "Revisit Settings",
-        "Open Direct form, read profile chip"
+        "Open Direct form, read profile chip",
+        "Create+select NightProfile -> revisit Settings -> open Direct form -> verify; cold-start persistence observed [2026-09-27 (85f053b)]"
       ]
     },
     {
@@ -1069,7 +1110,7 @@
     },
     {
       "id": "S-036",
-      "status": "FAIL",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
@@ -1079,18 +1120,22 @@
         "E-078",
         "E-080",
         "E-081",
-        "E-082"
+        "E-082",
+        "E-141",
+        "E-145",
+        "E-146"
       ],
       "defect_ids": [
         "D-007"
       ],
       "expected": "Saved rates change live quotes (J-01).",
-      "actual": "Base 12000 saved and retained in Settings, but the Tracker quote kept using base 10000 (fare 27,500 for 5 km instead of 29,500) until app restart; after restart the quote used 12000 (29,500).",
+      "actual": "Base 12000 saved and retained in Settings, but the Tracker quote kept using base 10000 (fare 27,500 for 5 km instead of 29,500) until app restart; after restart the quote used 12000 (29,500). 2026-09-27 (85f053b): Rate/Km 3500->5000 saved; quote line shows Rp 5000/km immediately, no restart. Restored to 3500 after.",
       "steps": [
         "Save base 12000",
         "Enter 5 km on Tracker, read fare",
         "Revisit Settings",
-        "Restart app, re-read quote"
+        "Restart app, re-read quote",
+        "Edit Rate/Km to 5000 -> Save rates -> open Direct form -> verify live quote [2026-09-27 (85f053b)]"
       ]
     },
     {
@@ -1201,18 +1246,26 @@
     },
     {
       "id": "S-042",
-      "status": "BLOCKED",
+      "status": "PASS",
       "role": "driver",
       "context_id": "otr-qa-2026-09-26",
       "feature_ids": [
         "F-019",
         "F-041"
       ],
-      "evidence_ids": [],
+      "evidence_ids": [
+        "E-168",
+        "E-173"
+      ],
       "defect_ids": [
         "D-002"
       ],
-      "reason": "No foreground-service notification exists during tracking, so there is nothing to tap."
+      "reason": "No foreground-service notification exists during tracking, so there is nothing to tap.",
+      "expected": "Tapping the tracking notification returns to the app.",
+      "actual": "2026-09-27 (85f053b): tapping `OnTheRoad: Active Run` returns to Tracker with trip active (duration 03:23 counting).",
+      "steps": [
+        "Open shade during tracking -> tap notification body -> verify Tracker resumed [2026-09-27 (85f053b)]"
+      ]
     },
     {
       "id": "S-043",
@@ -2239,6 +2292,244 @@
       "context_id": "otr-qa-2026-09-26",
       "observation": "REC-02: settings restored (System/Default/original rates).",
       "path": "evidence/E-129-rec-settings.png"
+    },
+    {
+      "id": "E-130",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Fresh install launch: Tracker idle, Grab selected, Start Trip visible.",
+      "path": "evidence/E-130-fresh-launch.png"
+    },
+    {
+      "id": "E-131",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Shift zero state on fresh install: $0.00 revenue/balance, read-only aggregates.",
+      "path": "evidence/E-131-shift-zero.png"
+    },
+    {
+      "id": "E-132",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "History empty state: `No trips logged yet. Complete a run...`.",
+      "path": "evidence/E-132-history-empty.png"
+    },
+    {
+      "id": "E-133",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Settings originals recorded: Theme System, Default-only profile, rates 10000/3500/15000/0.0.",
+      "path": "evidence/E-133-settings-top.png"
+    },
+    {
+      "id": "E-134",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-030: Dark OLED applied immediately (dark background, no restart).",
+      "path": "evidence/E-134-theme-dark.png"
+    },
+    {
+      "id": "E-135",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-030: Light applied immediately (light background, no restart).",
+      "path": "evidence/E-135-theme-light.png"
+    },
+    {
+      "id": "E-136",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-030: System restored (green), Default-only, rates 10000/3500/15000/0.0.",
+      "path": "evidence/E-136-theme-system.png"
+    },
+    {
+      "id": "E-137",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "NightProfile created via Add profile; Default still selected.",
+      "path": "evidence/E-137-profile-created.png"
+    },
+    {
+      "id": "E-139",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-031: NightProfile selected in Settings (purple chip).",
+      "path": "evidence/E-139-profile-night-selected.png"
+    },
+    {
+      "id": "E-140",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-013/S-031: Direct booking form shows NightProfile selected immediately, no restart.",
+      "path": "evidence/E-140-form-night.png"
+    },
+    {
+      "id": "E-141",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-036: Rate/Km edited 3500 -> 5000 (numeric keyboard).",
+      "path": "evidence/E-141-rate-5000.png"
+    },
+    {
+      "id": "E-145",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-036: Save rates persisted 5000 (button disabled after save).",
+      "path": "evidence/E-145-rates-saved.png"
+    },
+    {
+      "id": "E-146",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-036/J-01: quote line shows `Base: Rp 10000 + Rp 5000/km` live, no restart.",
+      "path": "evidence/E-146-quote-5000.png"
+    },
+    {
+      "id": "E-147",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-014: distance 6, auto fare Rp 40,000 (10000+5000x6).",
+      "path": "evidence/E-147-dist6-auto.png"
+    },
+    {
+      "id": "E-150",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-014: Custom Price on -> `Use Auto Rate`, override field revealed, fare still auto 40k.",
+      "path": "evidence/E-150-custom-on.png"
+    },
+    {
+      "id": "E-153",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-014: distance restored to 6 after recovery, auto Rp 40,000.",
+      "path": "evidence/E-153-dist6-clean.png"
+    },
+    {
+      "id": "E-154",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-014: override 30000 entered, fare follows custom Rp 30,000.",
+      "path": "evidence/E-154-override-30000.png"
+    },
+    {
+      "id": "E-156",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-014: toggled back to auto -> Rp 40,000 restored, override gone, Custom Price back.",
+      "path": "evidence/E-156-auto-40k.png"
+    },
+    {
+      "id": "E-162",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Direct form after app cold start: NightProfile still selected, distance 6, auto Rp 40,000.",
+      "path": "evidence/E-162-direct6.png"
+    },
+    {
+      "id": "E-163",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-019: location permission dialog on Start Direct Run.",
+      "path": "evidence/E-163-trip-start.png"
+    },
+    {
+      "id": "E-165",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-019: notification permission dialog after location grant.",
+      "path": "evidence/E-165-after-grant.png"
+    },
+    {
+      "id": "E-166",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-019: tracking Direct, duration 00:03 counting, Complete Trip visible.",
+      "path": "evidence/E-166-tracking.png"
+    },
+    {
+      "id": "E-168",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-004: shade shows `OnTheRoad: Active Run / Recording GPS breadcrumbs...`.",
+      "path": "evidence/E-168-shade.png"
+    },
+    {
+      "id": "E-172",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-004: shade 1m later, notification ongoing (`Active Run - 1m`).",
+      "path": "evidence/E-172-return3.png"
+    },
+    {
+      "id": "E-173",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-042: after tapping notification, Tracker resumed, trip active (duration 03:23).",
+      "path": "evidence/E-173-return4.png"
+    },
+    {
+      "id": "E-175",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-019: modal prefill Direct Transfer 40000 (= quote), quoted distance 6, total Rp 40000.",
+      "path": "evidence/E-175-modal.png"
+    },
+    {
+      "id": "E-176",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-019 re-confirm: empty total -> red hint, Save & Finish pale/disabled.",
+      "path": "evidence/E-176-invalid-total.png"
+    },
+    {
+      "id": "E-177",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-019 re-confirm: 40000 re-entered -> total Rp 40000, Save enabled green.",
+      "path": "evidence/E-177-valid-total.png"
+    },
+    {
+      "id": "E-179",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-019: modal closed after save, Direct idle form (NightProfile, 6 km, auto 40k).",
+      "path": "evidence/E-179-trip-saved.png"
+    },
+    {
+      "id": "E-180",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "S-022: Shift TOTAL GROSS REVENUE $40000.00, APP BALANCE $40000.0 after 1 trip, no manual action.",
+      "path": "evidence/E-180-shift-populated.png"
+    },
+    {
+      "id": "E-181",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "J-02: History Direct card $40000.00, Current GPS Location -> Current Destination.",
+      "path": "evidence/E-181-history-1trip.png"
+    },
+    {
+      "id": "E-183",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Cleanup: rates restored 10000/3500/15000/0.0/1.25, Save disabled.",
+      "path": "evidence/E-183-rates-restored-saved.png"
+    },
+    {
+      "id": "E-188",
+      "kind": "FILE",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Cleanup: Default-only (NightProfile deleted), Theme System, rates original.",
+      "path": "evidence/E-188-default-only.png"
+    },
+    {
+      "id": "E-189",
+      "kind": "OBSERVATION",
+      "context_id": "otr-qa-2026-09-26",
+      "observation": "Foreground-service notification record present while tracking (ongoing, tap intent set).",
+      "reference": "adb shell dumpsys notification on emulator-5554 during tracking (2026-09-27, build 85f053b): NotificationRecord pkg=com.ontheroad.debug id=1001 channel=ontheroad_tracking_channel flags=ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE, contentIntent=PendingIntent(startActivity com.ontheroad.debug). Recorded in executor shell transcript; no screenshot text beyond E-168."
     }
   ],
   "defects": [
@@ -2301,17 +2592,25 @@
     {
       "id": "D-007",
       "description": "S-036/J-01: saved rates do not change live quotes; restart required (verified 27,500 stale vs 29,500 after restart)."
+    },
+    {
+      "id": "OBS-09",
+      "description": "OPEN / S-004 retest 2026-09-27 (85f053b): tracking notification is present and ongoing with working tap-to-return, but body text is static `Recording GPS breadcrumbs...` (no live distance). Low."
+    },
+    {
+      "id": "OBS-10",
+      "description": "OPEN / S-014 recovery 2026-09-27 (85f053b): after typing `30000` in Destination and clearing it, the distance field showed auto-computed `3006.0` (`Auto-calculated distance (road detour applied)`, fare Rp 15,039,966); recovered by clearing distance and retyping 6. Low, transient, no data impact. See E-152 (uncited intermediate)."
     }
   ],
   "counts": {
     "NOT_RUN": 1,
-    "PASS": 38,
-    "FAIL": 6,
-    "BLOCKED": 2,
+    "PASS": 46,
+    "FAIL": 0,
+    "BLOCKED": 0,
     "INCONCLUSIVE": 1,
     "NOT_APPLICABLE": 1,
     "applicable": 48,
-    "exercised": 44,
-    "passed": 38
+    "exercised": 46,
+    "passed": 46
   }
 }
