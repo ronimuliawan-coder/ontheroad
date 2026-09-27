@@ -456,13 +456,14 @@ never contain credentials, tokens, or private payloads.
 - Rollback/recovery impact: Revert the PR merge commit on `dev`; no force-push, production data, release, or credential changes. OBS-04..08 remain deferred by explicit scope decision.
 - Next gate: Explicit merge approval, then targeted device retest (S-004/S-013/S-014/S-019/S-022/S-030/S-031/S-036, J-01/J-02) on a fresh build.
 
-### 2026-09-27 — Human-journey QA campaign complete (retest + OBS-09 probe verified)
+### 2026-09-27 — Human-journey QA campaign execution closed with noted exceptions (retest + OBS-09 probe verified)
 
 - Retest (build `85f053b`, fresh install, Pixel 7 Pro / API 35): all 11 targeted items PASS — S-004/S-042 (notification present + tap-to-return), S-013/S-031 (profile propagation, incl. cold start), S-014 (custom-fare round-trip), S-036/J-01 (live rate propagation), S-030 (all themes immediate), S-019/S-022/J-02 (completion, Shift `$40000.00` from zero, History match). Counts: PASS 46 / FAIL 0 / BLOCKED 0 / INCONCLUSIVE 1 (S-043) / N-A 1 (S-045) / NOT_RUN 1 (S-046); E/A 46/48.
+- Qualification: S-040/S-041 permission results are retained from the pre-PR#19 build. PR #19 changed the permission request set and grant evaluation, so these two rows are pending re-verification on `85f053b` (mini-probe proposed), not fresh acceptance. S-043 (INCONCLUSIVE) and S-046 (conditional NOT_RUN) are applicable and explicitly remain open — failure paths not inducible via UI — as is the permanent-denial path. The campaign is therefore closed with noted exceptions, not unconditionally complete.
 - OBS-09 probe (geo-fix walk, 41 positions): shade body shows live `Tracking: 0.16 km`; static text is only the zero-distance state. OBS-09 RESOLVED, no code change. Coordinator spot-checked E-180 (Shift) and E-168/E-194 (shade) directly; ledger checker zero errors; old attempts retained.
-- Residual open (no fix authorized): OBS-10 transient stale distance (self-recovered), S-043 failure path not inducible, S-046 conditional share-failure path, permanent-denial path. Previously deferred OBS-04..08 unchanged.
-- Artifacts: ledger + 188 screenshots on transport branch `origin/qa-ledger` (never to merge); human-readable retest/probe reports under `docs/qa/` on that branch.
-- Campaign `otr-qa-2026-09-26` is COMPLETE as acceptance evidence. No release approval implied; promotion to `main` remains unauthorized.
+- Known issue (no fix authorized): OBS-10 — clearing the destination leaves a stale auto distance (tester-recovered by manually clearing distance; the app does not auto-invalidate). Revisit on the next booking-form pass. Previously deferred OBS-04..08 unchanged.
+- Artifacts: ledger + 198 screenshots pinned at transport-branch revision `b9d5f9388c14b424f3edeaaee637101349565bf5` (`origin/qa-ledger`, never to merge); human-readable retest/probe reports under `docs/qa/` there.
+- No release approval implied; promotion to `main` remains unauthorized.
 
 ## Current accepted exceptions
 
