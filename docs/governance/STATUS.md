@@ -35,7 +35,7 @@ separate explicit approval.
 
 | Risk/blocker | Impact | Evidence | Owner | Resolution trigger |
 |---|---|---|---|---|
-| Scope beyond explicitly approved work | No new feature scope may start | QA campaign closed 48/48; boundary recorded in `EVIDENCE-LOG.md` | `developer-project-owner` | Explicit approval of any further unit |
+| Scope beyond explicitly approved work | No new feature scope may start | QA campaign closed 46/48 (S-043/S-046 open); boundary in `EVIDENCE-LOG.md` | `developer-project-owner` | Explicit approval of any further unit |
 
 ## Intentional-removal delete-zone
 
