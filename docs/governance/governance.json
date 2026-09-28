@@ -2086,6 +2086,14 @@
       "reason": "GitHub-owned GitLab review replica setup, proof, operation, and rollback"
     },
     {
+      "path": "docs/runbooks/ROAD-TEST.md",
+      "kind": "delivery-runbook",
+      "disposition": "active",
+      "ownerPhase": 1,
+      "authority": "project-owned",
+      "reason": "Post-promotion real-device acceptance drive: devbox APK build and road-test checklist"
+    },
+    {
       "path": "gradle/libs.versions.toml",
       "kind": "dependency-catalog",
       "disposition": "active",
