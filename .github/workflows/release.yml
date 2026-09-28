@@ -17,7 +17,12 @@ permissions:
 jobs:
   build-release:
     name: Build & Sign Release Bundle
-    runs-on: ubuntu-latest
+    runs-on:
+      - nscloud-ubuntu-24.04-amd64-8x16-with-cache
+      - nscloud-cache-size-20gb
+      - nscloud-cache-tag-ontheroad-gradle
+      - nscloud-cache-allow-commit-from-main
+      - nscloud-runner-tool-cache-20gb
     timeout-minutes: 25
 
     steps:
@@ -29,11 +34,17 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
+          cache: ''
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          cache-read-only: false
+          cache-disabled: true
+
+      - name: Setup Namespace Gradle cache
+        uses: namespacelabs/nscloud-cache-action@1124a6f3ce44e5cf84cc22111530961f4d2a15f9 # v1
+        with:
+          cache: gradle
 
       - name: Decode Release Keystore
         if: env.KEYSTORE_BASE64 != ''
@@ -44,7 +55,7 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 -d > /tmp/keystore/release.keystore
 
       - name: Run JVM Unit Tests
-        run: ./gradlew test --stacktrace
+        run: ./gradlew test --stacktrace --no-daemon --parallel --build-cache
 
       - name: Build Release APK and AAB
         env:
@@ -52,7 +63,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew assembleRelease bundleRelease --stacktrace
+        run: ./gradlew assembleRelease bundleRelease --stacktrace --no-daemon --parallel --build-cache
 
       - name: Generate Checksums
         run: |
@@ -64,7 +75,7 @@ jobs:
           cat SHA256SUMS.txt
 
       - name: Upload Release Artifacts
-        uses: actions/upload-artifact@v4
+        uses: namespace-actions/upload-artifact@f6ccaacc655aec41b93af180d1d7eef21af862d2 # v1
         with:
           name: ontheroad-release-bundle
           path: release-artifacts/

@@ -1,41 +1,41 @@
 # OnTheRoad Project Status
 
-This is the current health and next-gate record for the existing-project high-assurance
-uplift. Durable evidence and approvals are recorded in
+This is the current health and next-gate record for the Direct / Offline Booking & Fare Estimator
+feature delivery. Durable evidence and approvals are recorded in
 [`EVIDENCE-LOG.md`](EVIDENCE-LOG.md); repository authority and invariants remain in
 [`GOVERNANCE.md`](GOVERNANCE.md).
 
-- Last verified: `2026-08-31T14:11:48+07:00` (Asia/Jakarta)
-- Exact revision/environment: `ab782714dcad3ab0bd8cb77bf6abec705bb3fd07` plus approved Unit 1–3 working-tree changes; Bun `1.4.0`; JDK 21; Gradle `8.11.1`
-- Current phase/gate: Existing-project high-assurance uplift — Phase 4 / Unit 3, stale-document and release-artifact refresh — `COMPLETE`
-- Overall health: `AT RISK`
-- Tracker/project: Local evidence fallback; no matching `OnTheRoad` Linear project or issue was resolved
+- Last verified: `2026-09-23` (Asia/Jakarta; Unit 4 merged to `dev` after exact-revision CI passed)
+- Latest accepted application revision: PR #14 merge `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78`; `main` baseline `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`
+- Repository governance lifecycle: Phase 10 complete; active feature delivery is tracked with implementation units
+- Current work item: QA campaign `otr-qa-2026-09-26` CLOSED 2026-09-28 (46/48 applicable passing; S-040/S-041 re-verified on current build; open: S-043, S-046, OBS-10, permanent-denial path, OBS-04..08). No next implementation unit is authorized
+- Overall health: `UNITS 1–4 ACCEPTED / NEXT UNIT AWAITS EXPLICIT APPROVAL`
+- Tracker/project: Linear Project `OnTheRoad: Direct Booking & Fare Estimator` (`RON-277`, `RON-278`, `RON-279`, `RON-280`, `RON-282`, `RON-385`)
 
 ## Current objective
 
-Raise governance, evidence, and delivery assurance while preserving verified product behavior,
-data, interfaces, and operational invariants. The completed uplift covered bundle adoption,
-status/contract reconciliation, and the distinction between current working-tree artifacts and
-the tagged v0.1.0 release record.
+Deliver the on-the-spot / offline direct booking quoting engine, configurable per-profile rates,
+address estimation, live GPS odometer cockpit integration, and shareable direct receipts while
+preserving verified product behavior, data, pure Kotlin domain architecture (`ARCH-001`), and zero
+secrets in code (`SEC-001`). Units 1–4 are accepted; any next implementation unit requires
+separate explicit approval.
 
 ## Health and thresholds
 
 | Area | Status | Current evidence | Target/threshold | Owner / next action |
 |---|---|---|---|---|
-| Correctness | `PASS` | 43 JVM tests, lint, release APK/AAB, and debug APK passed after Unit 3 | Existing quality gates remain green | `developer-project-owner` / retain the evidence record |
-| Security/privacy | `PASS (scoped)` | No secret values are stored; signing metadata contains names and contracts only; review helper cannot resolve threads | Zero credential-bearing files, URLs, or logs in changed/adopted surfaces | `developer-project-owner` / retain secret-free checks |
-| Reliability/recovery | `PASS` | Unit 2 changes do not alter runtime or persisted data | Revert remains documentation/build-contract-only | `developer-project-owner` / preserve evidence and rollback record |
-| Performance | `BASELINE` | Current APK/AAB measurements are recorded in `EVIDENCE-LOG.md` | No performance target changes in this uplift | `developer-project-owner` / revisit only if scope expands |
-| Delivery | `AT RISK` | GitHub is declared authority, but this checkout has no configured remote | Remote/CI state verified only when canonical access is available | `developer-project-owner` / do not push or merge from this task |
-| Developer experience | `PASS` | Status, repository-native commands, artifact identities, and historical plan states are explicit | Bun and Gradle commands match the project contract | `developer-project-owner` / preserve the contract |
+| Correctness | `UNIT 4 ACCEPTED` | PR #14 exact-revision Governance and Android CI passed; Android CI includes JVM tests, lint, and Pixel 7 Pro/API 35 UI acceptance | Next approved unit's acceptance criteria | `developer-project-owner` / approve the next unit |
+| Security/privacy | `ACCEPTED` | PR #14 uses a local generated image and receipt-only `FileProvider` cache path; no network service | No coordinates, route traces, notes, earnings internals, or external upload in receipts | `developer-project-owner` / retain the receipt allowlist |
+| Reliability/recovery | `ACCEPTED` | Legacy scalar preferences are preserved; additive Room migration and compatibility behavior passed CI | Forward-only database recovery | `developer-project-owner` / retain migration coverage |
+| Performance | `PENDING` | No current cold-start or quote-workflow measurement; Unit 3 added no performance instrumentation | Cold start <800ms; sub-15s driver quoting workflow | `developer-project-owner` / measure only if phase requires |
+| Delivery | `INTEGRATED` | PR #14 merged into `dev` at `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78`; `main` is unchanged | Approved branch, CI, review, and merge flow | `developer-project-owner` / approve the next unit or a separate promotion |
+| Developer experience | `CI ACCEPTANCE` | Governance run `35865267091` and Android CI run `35865267102` passed on PR #14; jobs ran on Namespace | CI provides the authoritative build and governance result | `developer-project-owner` / preserve CI-only verification |
 
 ## Active blockers and risks
 
 | Risk/blocker | Impact | Evidence | Owner | Resolution trigger |
 |---|---|---|---|---|
-| Canonical Linear project and issue are unavailable in the connected workspace | Progress is not mirrored to the declared external tracker | Local fallback and exception record in `EVIDENCE-LOG.md` | `developer-project-owner` | Revisit when the project is available |
-| No Git remote or CI result is available in this checkout | Remote branch protection, review, and workflow execution cannot be verified locally | Git topology inspection and exception record in `EVIDENCE-LOG.md` | `developer-project-owner` | Revisit after canonical remote access is configured |
-| Device/emulator UI validation is deferred | Accessibility and visual runtime behavior remain outside this documentation/build-contract unit | No `androidTest` suite was present in the baseline inventory | `developer-project-owner` | Run a separately approved UI audit |
+| Scope beyond explicitly approved work | No new feature scope may start | QA campaign closed 46/48 (S-043/S-046 open); boundary in `EVIDENCE-LOG.md` | `developer-project-owner` | Explicit approval of any further unit |
 
 ## Intentional-removal delete-zone
 
@@ -47,12 +47,19 @@ the tagged v0.1.0 release record.
 
 | Environment | Revision/artifact | Status | Last acceptance evidence | Owner |
 |---|---|---|---|---|
-| PR #2 source revision | `595489b69040fc20cf3dd807397d9e8c61a90a09` | `VERIFIED` | Android baseline and review-remediation validation are recorded in `EVIDENCE-LOG.md` | `developer-project-owner` |
+| GitHub `main` | `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e` | `CURRENT RELEASE BASELINE` | v0.1.0 baseline; Unit 4 remains on `dev`; promotion has not been authorized | `developer-project-owner` |
+| GitHub `dev` (latest accepted application revision) | `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78` | `UNIT 4 ACCEPTED; CURRENT DEV DESCENDS FROM THIS MERGE` | PR #14 exact-revision Governance and Android CI passed before merge; docs-only PR #15 later refreshed the status/evidence records | `developer-project-owner` |
 | Release candidate `v0.1.0` | Existing tagged product release | Historical/current release reference; no deployment requested | Release measurements and hashes in `EVIDENCE-LOG.md` | `developer-project-owner` |
 
 ## Next gate
 
-- Work completed: Unit 1 bundle adoption, Unit 2 status/contract reconciliation, and Unit 3 stale-document/release-artifact refresh.
-- Work explicitly not started: No further implementation unit in this uplift.
-- Approval needed from: `developer-project-owner` only for any new scope.
-- Required decision/evidence: Human review accepted; explicitly authorize any commit or external delivery action separately.
+- Work completed: PRD approval; Units 1–4 implementation and acceptance; PR #14 merge at
+  `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78`.
+- Current work: No new implementation unit is authorized. Unit 4 is complete; Linear issue `RON-385`
+  is Done. Promotion to `main` remains unauthorized.
+- Acceptance: Governance run `35865267091` and Android CI run `35865267102` passed on PR #14's exact
+  revision; Android CI included JVM tests, lint, and Pixel 7 Pro / API 35 UI acceptance. CodeRabbit
+  skipped review for non-default base `dev`; no review comments were present. No local test/build
+  runs were performed, per the owner's standing direction.
+- Terminology: governance **phases** are project-wide gates; feature **units** are implementation
+  slices. We do not use “stage” as a tracking term.

@@ -1,7 +1,10 @@
 package com.ontheroad.core.domain.usecase
 
+import com.ontheroad.core.domain.repository.ShiftRepository
 import com.ontheroad.core.domain.repository.TripRepository
 import com.ontheroad.core.model.RoutePoint
+import com.ontheroad.core.model.Shift
+import com.ontheroad.core.model.ShiftStatus
 import com.ontheroad.core.model.Trip
 import com.ontheroad.core.model.TripStatus
 import kotlinx.coroutines.flow.firstOrNull
@@ -10,10 +13,13 @@ import java.util.UUID
 /**
  * UseCase to start a new trip.
  * Enforces active trip exclusivity (only 1 active trip at any time).
+ * Ensures an active shift exists so trips contribute to shift reconciliation;
+ * an explicit shiftId is preserved when supplied.
  * Pure Kotlin, zero Android dependencies (ARCH-001).
  */
 class StartTripUseCase(
-    private val tripRepository: TripRepository
+    private val tripRepository: TripRepository,
+    private val shiftRepository: ShiftRepository
 ) {
 
     suspend operator fun invoke(
@@ -23,7 +29,11 @@ class StartTripUseCase(
         platformId: String,
         categoryId: String,
         shiftId: String? = null,
-        startTimeMillis: Long = System.currentTimeMillis()
+        startTimeMillis: Long = System.currentTimeMillis(),
+        quotedDistanceMeters: Double? = null,
+        quotedFareAmountCents: Long? = null,
+        platformFeeAmountCents: Long = 0,
+        endAddress: String? = null
     ): Result<Trip> {
         // Enforce active trip exclusivity
         val activeTrip = tripRepository.getActiveTrip().firstOrNull()
@@ -33,16 +43,22 @@ class StartTripUseCase(
             )
         }
 
+        val resolvedShiftId = shiftId ?: ensureActiveShiftId(startTimeMillis)
+
         val tripId = UUID.randomUUID().toString()
         val trip = Trip(
             id = tripId,
-            shiftId = shiftId,
+            shiftId = resolvedShiftId,
             platformId = platformId,
             categoryId = categoryId,
             startTimeMillis = startTimeMillis,
             startAddress = startAddress,
             startLatitude = startLatitude,
             startLongitude = startLongitude,
+            endAddress = endAddress,
+            quotedDistanceMeters = quotedDistanceMeters,
+            quotedFareAmountCents = quotedFareAmountCents,
+            platformFeeAmountCents = platformFeeAmountCents,
             status = TripStatus.IN_PROGRESS
         )
 
@@ -58,5 +74,16 @@ class StartTripUseCase(
         tripRepository.insertRoutePoint(initialPoint)
 
         return Result.success(trip)
+    }
+
+    private suspend fun ensureActiveShiftId(startTimeMillis: Long): String {
+        shiftRepository.getActiveShift().firstOrNull()?.let { return it.id }
+        val shift = Shift(
+            id = UUID.randomUUID().toString(),
+            startTimeMillis = startTimeMillis,
+            status = ShiftStatus.ACTIVE
+        )
+        shiftRepository.insertShift(shift)
+        return shift.id
     }
 }

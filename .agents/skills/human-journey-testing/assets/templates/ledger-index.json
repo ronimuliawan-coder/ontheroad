@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "context_id": "planning-context",
+  "discovery_reconciled": false,
+  "no_new_items_sweep": false,
+  "features": [],
+  "scenarios": [],
+  "evidence": [],
+  "defects": [],
+  "counts": {
+    "NOT_RUN": 0,
+    "PASS": 0,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "INCONCLUSIVE": 0,
+    "NOT_APPLICABLE": 0,
+    "applicable": 0,
+    "exercised": 0,
+    "passed": 0
+  }
+}

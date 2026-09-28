@@ -15,10 +15,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ontheroad.core.domain.usecase.TripSortOrder
 import com.ontheroad.core.model.Trip
+import com.ontheroad.R
 import com.ontheroad.core.ui.component.DiscrepancyBadge
 import com.ontheroad.core.ui.component.PlatformChip
 import com.ontheroad.core.ui.theme.CockpitDimens
@@ -34,6 +42,8 @@ import com.ontheroad.core.ui.theme.GreenProfit
 import com.ontheroad.core.ui.theme.OnSurfaceSecondary
 import com.ontheroad.viewmodel.HistoryUiState
 import com.ontheroad.viewmodel.HistoryViewModel
+import com.ontheroad.receipt.shareDirectTripReceipt
+import com.ontheroad.receipt.toDirectTripReceiptContent
 
 @Composable
 fun HistoryScreen(
@@ -41,10 +51,12 @@ fun HistoryScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     HistoryScreenContent(
         uiState = uiState,
         onSortChanged = viewModel::setSortOrder,
+        onShareReceipt = { trip -> shareDirectTripReceipt(context, trip) },
         modifier = modifier
     )
 }
@@ -53,6 +65,7 @@ fun HistoryScreen(
 fun HistoryScreenContent(
     uiState: HistoryUiState,
     onSortChanged: (TripSortOrder) -> Unit,
+    onShareReceipt: (Trip) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val sortTabs = listOf(
@@ -102,7 +115,7 @@ fun HistoryScreenContent(
                 verticalArrangement = Arrangement.spacedBy(CockpitDimens.SpacingSmall)
             ) {
                 items(uiState.trips, key = { it.id }) { trip ->
-                    TripHistoryCard(trip)
+                    TripHistoryCard(trip, onShareReceipt)
                 }
             }
         }
@@ -110,7 +123,7 @@ fun HistoryScreenContent(
 }
 
 @Composable
-private fun TripHistoryCard(trip: Trip) {
+private fun TripHistoryCard(trip: Trip, onShareReceipt: (Trip) -> Unit) {
     val ratePerKm = if (trip.actualDistanceKm > 0) {
         String.format("$%.2f/km", (trip.totalEarningsCents / 100.0) / trip.actualDistanceKm)
     } else {
@@ -146,12 +159,25 @@ private fun TripHistoryCard(trip: Trip) {
                     isSelected = true,
                     onClick = {}
                 )
-                Text(
-                    text = String.format("$%.2f", trip.totalEarningsCents / 100.0),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = GreenProfit,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = String.format("$%.2f", trip.totalEarningsCents / 100.0),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = GreenProfit,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if (trip.toDirectTripReceiptContent() != null) {
+                        IconButton(
+                            onClick = { onShareReceipt(trip) },
+                            modifier = Modifier.testTag("share_direct_receipt_${trip.id}")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = stringResource(R.string.share_direct_receipt)
+                            )
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(CockpitDimens.SpacingSmall))

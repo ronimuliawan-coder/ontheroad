@@ -30,7 +30,7 @@ concurrency:
 jobs:
   fast-forward-dev:
     name: Fast-forward dev to main
-    runs-on: ubuntu-latest
+    runs-on: nscloud-ubuntu-24.04-amd64-2x4
 
     steps:
       - name: Check out full history

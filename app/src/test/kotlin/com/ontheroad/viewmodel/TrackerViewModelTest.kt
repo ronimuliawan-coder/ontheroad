@@ -1,10 +1,25 @@
 package com.ontheroad.viewmodel
 
 import app.cash.turbine.test
+import com.ontheroad.core.domain.repository.LocationRepository
+import com.ontheroad.core.domain.repository.ShiftRepository
 import com.ontheroad.core.domain.repository.TripRepository
+import com.ontheroad.core.domain.repository.UserPreferencesRepository
+import com.ontheroad.core.domain.usecase.CalculateDirectFareUseCase
 import com.ontheroad.core.domain.usecase.CompleteTripUseCase
+import com.ontheroad.core.domain.usecase.EstimateDistanceUseCase
+import com.ontheroad.core.domain.usecase.GetCurrentLocationUseCase
+import com.ontheroad.core.domain.usecase.SearchAddressUseCase
 import com.ontheroad.core.domain.usecase.StartTripUseCase
+import com.ontheroad.core.model.AddressSuggestion
+import com.ontheroad.core.model.DirectPricingRates
+import com.ontheroad.core.model.DirectPricingProfile
+import com.ontheroad.core.model.DirectPricingProfileSettings
+import com.ontheroad.core.model.Expense
 import com.ontheroad.core.model.RoutePoint
+import com.ontheroad.core.model.Shift
+import com.ontheroad.core.model.ShiftStatus
+import com.ontheroad.core.model.ThemeMode
 import com.ontheroad.core.model.Trip
 import com.ontheroad.core.model.TripStatus
 import kotlinx.coroutines.Dispatchers
@@ -19,11 +34,12 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-private class TestFakeTripRepository : TripRepository {
+private class TrackerFakeTripRepository : TripRepository {
     val tripsFlow = MutableStateFlow<Map<String, Trip>>(emptyMap())
 
     override suspend fun insertTrip(trip: Trip) {
@@ -51,22 +67,137 @@ private class TestFakeTripRepository : TripRepository {
     }
 }
 
+private class TrackerFakeShiftRepository : ShiftRepository {
+    private val shiftsFlow = MutableStateFlow<Map<String, Shift>>(emptyMap())
+
+    override suspend fun insertShift(shift: Shift) {
+        shiftsFlow.value = shiftsFlow.value + (shift.id to shift)
+    }
+
+    override suspend fun updateShift(shift: Shift) {
+        shiftsFlow.value = shiftsFlow.value + (shift.id to shift)
+    }
+
+    override suspend fun getShiftById(id: String): Shift? = shiftsFlow.value[id]
+
+    override fun getActiveShift(): Flow<Shift?> = shiftsFlow.map { map ->
+        map.values.firstOrNull { it.status == ShiftStatus.ACTIVE }
+    }
+
+    override fun getAllShifts(): Flow<List<Shift>> = shiftsFlow.map { it.values.toList() }
+    override suspend fun insertExpense(expense: Expense) = Unit
+    override fun getExpensesForShift(shiftId: String): Flow<List<Expense>> =
+        MutableStateFlow(emptyList())
+}
+
+private class TrackerFakeUserPreferencesRepository : UserPreferencesRepository {
+    val themeModeFlow = MutableStateFlow(ThemeMode.SYSTEM)
+    val directPricingRatesFlow = MutableStateFlow(DirectPricingRates())
+    val directPricingProfilesFlow = MutableStateFlow(DirectPricingProfileSettings())
+
+    override fun getThemeMode(): Flow<ThemeMode> = themeModeFlow
+    override suspend fun setThemeMode(mode: ThemeMode) { themeModeFlow.value = mode }
+    override fun getDirectPricingRates(): Flow<DirectPricingRates> = directPricingRatesFlow
+    override suspend fun setDirectPricingRates(rates: DirectPricingRates) {
+        directPricingRatesFlow.value = rates
+        val settings = directPricingProfilesFlow.value
+        directPricingProfilesFlow.value = settings.copy(
+            profiles = settings.profiles.map { profile ->
+                if (profile.id == settings.activeProfileId) profile.copy(rates = rates) else profile
+            }
+        )
+    }
+    override fun getDirectPricingProfileSettings(): Flow<DirectPricingProfileSettings> = directPricingProfilesFlow
+    override suspend fun setActiveDirectPricingProfile(profileId: String) {
+        directPricingProfilesFlow.value = directPricingProfilesFlow.value.copy(activeProfileId = profileId)
+        directPricingRatesFlow.value = directPricingProfilesFlow.value.activeProfile.rates
+    }
+    override suspend fun saveDirectPricingProfile(profile: DirectPricingProfile) {
+        val settings = directPricingProfilesFlow.value
+        directPricingProfilesFlow.value = settings.copy(
+            profiles = settings.profiles.filterNot { it.id == profile.id } + profile
+        )
+    }
+    override suspend fun deleteDirectPricingProfile(profileId: String) {
+        val settings = directPricingProfilesFlow.value
+        val profiles = settings.profiles.filterNot { it.id == profileId }
+        directPricingProfilesFlow.value = DirectPricingProfileSettings(profiles, profiles.first().id)
+    }
+}
+
+private class TrackerFakeLocationRepository : LocationRepository {
+    var currentLocation: AddressSuggestion? = AddressSuggestion(
+        title = "Bundaran HI",
+        fullAddress = "Bundaran HI, Menteng, Jakarta Pusat",
+        latitude = -6.195000,
+        longitude = 106.823056
+    )
+
+    var searchResults = listOf(
+        AddressSuggestion(
+            title = "Soekarno-Hatta Airport",
+            fullAddress = "Soekarno-Hatta Airport, Tangerang",
+            latitude = -6.125556,
+            longitude = 106.655833
+        ),
+        AddressSuggestion(
+            title = "Monas",
+            fullAddress = "Monas, Gambir, Jakarta Pusat",
+            latitude = -6.175392,
+            longitude = 106.827153
+        )
+    )
+
+    override suspend fun getCurrentLocation(): AddressSuggestion? = currentLocation
+
+    override suspend fun searchAddresses(
+        query: String,
+        biasLatitude: Double?,
+        biasLongitude: Double?,
+        maxResults: Int
+    ): List<AddressSuggestion> {
+        return searchResults.filter {
+            it.title.contains(query, ignoreCase = true) || it.fullAddress.contains(query, ignoreCase = true)
+        }
+    }
+
+    override suspend fun reverseGeocode(latitude: Double, longitude: Double): String? = "Jakarta, Indonesia"
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class TrackerViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var tripRepository: TestFakeTripRepository
+    private lateinit var tripRepository: TrackerFakeTripRepository
+    private lateinit var shiftRepository: TrackerFakeShiftRepository
+    private lateinit var preferencesRepository: TrackerFakeUserPreferencesRepository
+    private lateinit var locationRepository: TrackerFakeLocationRepository
     private lateinit var startTripUseCase: StartTripUseCase
     private lateinit var completeTripUseCase: CompleteTripUseCase
+    private lateinit var searchAddressUseCase: SearchAddressUseCase
+    private lateinit var getCurrentLocationUseCase: GetCurrentLocationUseCase
     private lateinit var viewModel: TrackerViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        tripRepository = TestFakeTripRepository()
-        startTripUseCase = StartTripUseCase(tripRepository)
+        tripRepository = TrackerFakeTripRepository()
+        shiftRepository = TrackerFakeShiftRepository()
+        preferencesRepository = TrackerFakeUserPreferencesRepository()
+        locationRepository = TrackerFakeLocationRepository()
+        startTripUseCase = StartTripUseCase(tripRepository, shiftRepository)
         completeTripUseCase = CompleteTripUseCase(tripRepository)
-        viewModel = TrackerViewModel(tripRepository, startTripUseCase, completeTripUseCase)
+        searchAddressUseCase = SearchAddressUseCase(locationRepository)
+        getCurrentLocationUseCase = GetCurrentLocationUseCase(locationRepository)
+
+        viewModel = TrackerViewModel(
+            tripRepository = tripRepository,
+            startTripUseCase = startTripUseCase,
+            completeTripUseCase = completeTripUseCase,
+            userPreferencesRepository = preferencesRepository,
+            searchAddressUseCase = searchAddressUseCase,
+            getCurrentLocationUseCase = getCurrentLocationUseCase
+        )
     }
 
     @After
@@ -109,6 +240,45 @@ class TrackerViewModelTest {
     }
 
     @Test
+    fun editingDestinationClearsResolvedCoordinatesButKeepsText() = runTest(testDispatcher) {
+        viewModel.selectDestinationSuggestion(
+            AddressSuggestion(
+                title = "Monas",
+                fullAddress = "Monas, Gambir, Jakarta Pusat",
+                latitude = -6.175392,
+                longitude = 106.827153
+            )
+        )
+        assertTrue(viewModel.uiState.value.isDistanceAutoCalculated)
+
+        // Short query takes the no-search path but must still drop the old resolution.
+        viewModel.updateDirectDestinationAddress("x")
+
+        val state = viewModel.uiState.value
+        assertEquals("x", state.directDestinationAddress)
+        assertNull(state.directDestinationLatitude)
+        assertNull(state.directDestinationLongitude)
+        assertFalse(state.isDistanceAutoCalculated)
+        assertTrue(state.directEstimatedDistanceKmText.isNotBlank())
+    }
+
+    @Test
+    fun startingTripAttachesShiftForReconciliation() = runTest(testDispatcher) {
+        viewModel.startTrip(
+            startAddress = "Monas",
+            startLatitude = -6.175,
+            startLongitude = 106.827
+        )
+        testDispatcher.scheduler.runCurrent()
+
+        val trip = tripRepository.getActiveTrip().let {
+            tripRepository.tripsFlow.value.values.firstOrNull { it.status == TripStatus.IN_PROGRESS }
+        }
+        assertTrue(trip?.shiftId?.isNotBlank() == true)
+        viewModel.stopDurationTimer()
+    }
+
+    @Test
     fun completingTripTransitionsUiStateToIdle() = runTest(testDispatcher) {
         viewModel.startTrip(
             startAddress = "Monas",
@@ -128,5 +298,184 @@ class TrackerViewModelTest {
         testDispatcher.scheduler.runCurrent()
 
         assertFalse(viewModel.uiState.value.isTracking)
+    }
+
+    @Test
+    fun directBookingCalculatesFareAndStartsDirectTripWithQuote() = runTest(testDispatcher) {
+        viewModel.selectPlatform("direct")
+        viewModel.updateDirectPickupAddress("Hotel Indonesia")
+        viewModel.updateDirectDestinationAddress("Soekarno Hatta Airport")
+        viewModel.updateDirectEstimatedDistance("20.0")
+        testDispatcher.scheduler.runCurrent()
+
+        // Rates: Base 10.000 + 20km * 3.500 = 80.000 (80_000_00 cents)
+        val uiState = viewModel.uiState.value
+        assertEquals("Hotel Indonesia", uiState.directPickupAddress)
+        assertEquals("Soekarno Hatta Airport", uiState.directDestinationAddress)
+        assertEquals("20.0", uiState.directEstimatedDistanceKmText)
+        assertEquals(80_000_00L, uiState.directCalculatedFareCents)
+
+        // Start direct run
+        var startedTrip: Trip? = null
+        viewModel.startDirectTrip(
+            startAddress = "Hotel Indonesia",
+            startLatitude = -6.195,
+            startLongitude = 106.823,
+            onSuccess = { startedTrip = it }
+        )
+        testDispatcher.scheduler.runCurrent()
+
+        assertTrue(viewModel.uiState.value.isTracking)
+        assertEquals("direct", viewModel.uiState.value.selectedPlatformId)
+        assertEquals(20_000.0, startedTrip?.quotedDistanceMeters ?: 0.0, 0.1)
+        assertEquals(80_000_00L, startedTrip?.quotedFareAmountCents)
+        assertEquals(0L, startedTrip?.platformFeeAmountCents)
+        assertEquals("Soekarno Hatta Airport", startedTrip?.endAddress)
+
+        viewModel.completeTrip(
+            endAddress = "Soekarno Hatta Airport",
+            endLatitude = -6.125556,
+            endLongitude = 106.655833,
+            platformFeeAmountCents = 0L,
+            cashCollectedAmountCents = 80_000_00L,
+            quotedDistanceMeters = 20_000.0
+        )
+        testDispatcher.scheduler.runCurrent()
+
+        val completedTrip = tripRepository.getTripById(startedTrip!!.id)
+        assertEquals(80_000_00L, completedTrip?.quotedFareAmountCents)
+        assertEquals(80_000_00L, completedTrip?.customerPaidTotalAmountCents)
+        assertEquals(80_000_00L, completedTrip?.cashCollectedAmountCents)
+        assertEquals(80_000_00L, completedTrip?.totalEarningsCents)
+
+        viewModel.stopDurationTimer()
+    }
+
+    @Test
+    fun selectingRateProfileRecalculatesAutoEstimatedRoadDistance() = runTest(testDispatcher) {
+        val rates = DirectPricingRates(roadDetourMultiplier = 1.0)
+        val motorcycleRates = rates.copy(roadDetourMultiplier = 2.0)
+        preferencesRepository.directPricingProfilesFlow.value = DirectPricingProfileSettings(
+            profiles = listOf(
+                DirectPricingProfile("car", "Car / Passenger", rates),
+                DirectPricingProfile("motorcycle", "Motorcycle / Courier", motorcycleRates)
+            ),
+            activeProfileId = "car"
+        )
+        testDispatcher.scheduler.runCurrent()
+
+        viewModel.selectPlatform("direct")
+        viewModel.selectDestinationSuggestion(
+            AddressSuggestion(
+                title = "Airport",
+                fullAddress = "Soekarno-Hatta Airport",
+                latitude = -6.125556,
+                longitude = 106.655833
+            )
+        )
+        val carDistance = viewModel.uiState.value.directEstimatedDistanceKmText.toDouble()
+        assertEquals("car", viewModel.uiState.value.activeDirectPricingProfileId)
+
+        viewModel.selectDirectPricingProfile("motorcycle")
+        testDispatcher.scheduler.runCurrent()
+
+        val motorcycleDistance = viewModel.uiState.value.directEstimatedDistanceKmText.toDouble()
+        assertEquals("motorcycle", viewModel.uiState.value.activeDirectPricingProfileId)
+        assertTrue(motorcycleDistance > carDistance * 1.9)
+    }
+
+    @Test
+    fun destinationSearchAutomaticallyResolvesCoordinatesAndCalculatesDistanceAndFare() = runTest(testDispatcher) {
+        viewModel.selectPlatform("direct")
+        // Type "Airport" to trigger debounced search
+        viewModel.updateDirectDestinationAddress("Airport")
+        testDispatcher.scheduler.advanceTimeBy(400L)
+        testDispatcher.scheduler.runCurrent()
+
+        val uiState = viewModel.uiState.value
+        assertEquals("Airport", uiState.directDestinationAddress)
+        assertTrue(uiState.isDistanceAutoCalculated)
+        assertTrue(uiState.directEstimatedDistanceKmText.isNotBlank())
+        assertTrue((uiState.directEstimatedDistanceKmText.toDoubleOrNull() ?: 0.0) > 10.0)
+        assertTrue(uiState.directCalculatedFareCents > 15_000_00L)
+
+        viewModel.stopDurationTimer()
+    }
+
+    @Test
+    fun selectingDestinationSuggestionCalculatesDistanceAccurately() = runTest(testDispatcher) {
+        viewModel.selectPlatform("direct")
+        val airportSuggestion = AddressSuggestion(
+            title = "Soekarno-Hatta Airport",
+            fullAddress = "Soekarno-Hatta Airport, Tangerang",
+            latitude = -6.125556,
+            longitude = 106.655833
+        )
+        viewModel.selectDestinationSuggestion(airportSuggestion)
+        testDispatcher.scheduler.runCurrent()
+
+        val uiState = viewModel.uiState.value
+        assertEquals("Soekarno-Hatta Airport, Tangerang", uiState.directDestinationAddress)
+        assertTrue(uiState.isDistanceAutoCalculated)
+        assertEquals(-6.125556, uiState.directDestinationLatitude ?: 0.0, 0.0001)
+        assertTrue((uiState.directEstimatedDistanceKmText.toDoubleOrNull() ?: 0.0) > 0.0)
+        assertTrue(uiState.directCalculatedFareCents > 0L)
+
+        viewModel.stopDurationTimer()
+    }
+
+    @Test
+    fun directBookingSupportsCustomFareOverride() = runTest(testDispatcher) {
+        viewModel.updateDirectEstimatedDistance("10.0")
+        viewModel.updateDirectCustomFareOverride("100000") // Rp 100.000 override
+        testDispatcher.scheduler.runCurrent()
+
+        assertEquals(100_000_00L, viewModel.uiState.value.directCalculatedFareCents)
+        viewModel.stopDurationTimer()
+    }
+
+    @Test
+    fun updatedRatesRecalculateCockpitFareAndRetainManualOverride() = runTest(testDispatcher) {
+        viewModel.updateDirectEstimatedDistance("2.0")
+        testDispatcher.scheduler.runCurrent()
+        assertEquals(17_000_00L, viewModel.uiState.value.directCalculatedFareCents)
+
+        preferencesRepository.setDirectPricingRates(
+            DirectPricingRates(
+                baseFareAmountCents = 20_000_00L,
+                ratePerKmAmountCents = 1_000_00L,
+                minimumFareAmountCents = 15_000_00L
+            )
+        )
+        testDispatcher.scheduler.runCurrent()
+        assertEquals(22_000_00L, viewModel.uiState.value.directCalculatedFareCents)
+
+        viewModel.updateDirectCustomFareOverride("50000")
+        testDispatcher.scheduler.runCurrent()
+        preferencesRepository.setDirectPricingRates(
+            DirectPricingRates(
+                baseFareAmountCents = 1_000_00L,
+                ratePerKmAmountCents = 1_000_00L,
+                minimumFareAmountCents = 2_000_00L
+            )
+        )
+        testDispatcher.scheduler.runCurrent()
+
+        assertEquals(50_000_00L, viewModel.uiState.value.directCalculatedFareCents)
+        viewModel.stopDurationTimer()
+    }
+
+    @Test
+    fun emptyAddressSearchKeepsManualDistanceFallbackAvailable() = runTest(testDispatcher) {
+        locationRepository.searchResults = emptyList()
+        viewModel.selectPlatform("direct")
+
+        viewModel.updateDirectDestinationAddress("Unknown destination")
+        testDispatcher.scheduler.advanceTimeBy(400L)
+        testDispatcher.scheduler.runCurrent()
+
+        assertTrue(viewModel.uiState.value.addressLookupUnavailable)
+        assertFalse(viewModel.uiState.value.isDistanceAutoCalculated)
+        viewModel.stopDurationTimer()
     }
 }

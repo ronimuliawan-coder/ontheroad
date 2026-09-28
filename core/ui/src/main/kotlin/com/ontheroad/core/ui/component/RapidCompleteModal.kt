@@ -30,10 +30,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ontheroad.core.ui.theme.CockpitDimens
 import com.ontheroad.core.ui.theme.GreenProfit
 import com.ontheroad.core.ui.theme.OnSurfaceSecondary
+import com.ontheroad.core.ui.R
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 /**
  * Rapid trip completion modal designed for sub-30-second driver interaction (UI-002).
@@ -43,6 +47,10 @@ import com.ontheroad.core.ui.theme.OnSurfaceSecondary
 fun RapidCompleteModal(
     actualDistanceMeters: Double,
     initialEndAddress: String,
+    initialPlatformFeeCents: Long = 0L,
+    initialCashCollectedCents: Long = 0L,
+    initialQuotedDistanceMeters: Double? = null,
+    isDirectTrip: Boolean = false,
     onDismissRequest: () -> Unit,
     onCompleteTrip: (
         endAddress: String,
@@ -54,16 +62,30 @@ fun RapidCompleteModal(
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
-    var endAddress by remember { mutableStateOf(initialEndAddress) }
-    var platformFeeText by remember { mutableStateOf("") }
+    var endAddress by remember(initialEndAddress) { mutableStateOf(initialEndAddress) }
+    var platformFeeText by remember(initialPlatformFeeCents) {
+        mutableStateOf(centsToInputText(initialPlatformFeeCents))
+    }
     var hasCash by remember { mutableStateOf(false) }
-    var cashCollectedText by remember { mutableStateOf("") }
-    var quotedDistanceKmText by remember { mutableStateOf("") }
+    var cashCollectedText by remember(initialCashCollectedCents) {
+        mutableStateOf(centsToInputText(initialCashCollectedCents))
+    }
+    var quotedDistanceKmText by remember(initialQuotedDistanceMeters) {
+        mutableStateOf(metersToInputText(initialQuotedDistanceMeters))
+    }
     var notesText by remember { mutableStateOf("") }
 
     val quotedDistanceMeters by remember {
         derivedStateOf {
             quotedDistanceKmText.toDoubleOrNull()?.let { it * 1000.0 }
+        }
+    }
+
+    val customerPaidTotalCents by remember(platformFeeText, cashCollectedText, hasCash, isDirectTrip) {
+        derivedStateOf {
+            if (isDirectTrip) {
+                directCustomerPaidTotalCents(platformFeeText, cashCollectedText, hasCash)
+            } else null
         }
     }
 
@@ -119,7 +141,7 @@ fun RapidCompleteModal(
             OutlinedTextField(
                 value = platformFeeText,
                 onValueChange = { platformFeeText = it },
-                label = { Text("App Payout / Platform Fee") },
+                label = { Text(if (isDirectTrip) "Direct Transfer Amount" else "App Payout / Platform Fee") },
                 placeholder = { Text("e.g. 25000 or 15.00") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -161,6 +183,27 @@ fun RapidCompleteModal(
                 Spacer(modifier = Modifier.height(CockpitDimens.SpacingSmall))
             }
 
+            if (isDirectTrip) {
+                val paidTotal = customerPaidTotalCents
+                if (paidTotal == null) {
+                    Text(
+                        text = stringResource(R.string.direct_customer_total_invalid),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                } else {
+                    Text(
+                        text = stringResource(
+                            R.string.direct_customer_paid_total,
+                            if (paidTotal == 0L) "0" else centsToInputText(paidTotal)
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                Spacer(modifier = Modifier.height(CockpitDimens.SpacingSmall))
+            }
+
             // 4. Platform Quoted Distance (Comparison input)
             OutlinedTextField(
                 value = quotedDistanceKmText,
@@ -197,8 +240,8 @@ fun RapidCompleteModal(
             CockpitButton(
                 text = "Save & Finish Run",
                 onClick = {
-                    val platformFeeCents = (platformFeeText.toDoubleOrNull() ?: 0.0).toLong()
-                    val cashCents = if (hasCash) (cashCollectedText.toDoubleOrNull() ?: 0.0).toLong() else 0L
+                    val platformFeeCents = parseInputAmountToCents(platformFeeText)
+                    val cashCents = if (hasCash) parseInputAmountToCents(cashCollectedText) else 0L
 
                     onCompleteTrip(
                         endAddress.ifBlank { "Destination" },
@@ -208,8 +251,46 @@ fun RapidCompleteModal(
                         notesText
                     )
                 },
-                containerColor = GreenProfit
+                containerColor = GreenProfit,
+                enabled = !isDirectTrip || customerPaidTotalCents != null
             )
         }
     }
+}
+
+internal fun centsToInputText(cents: Long): String {
+    if (cents <= 0L) return ""
+    return BigDecimal.valueOf(cents, 2).stripTrailingZeros().toPlainString()
+}
+
+internal fun metersToInputText(meters: Double?): String {
+    if (meters == null || meters <= 0.0) return ""
+    return BigDecimal.valueOf(meters / 1000.0).stripTrailingZeros().toPlainString()
+}
+
+internal fun parseInputAmountToCents(text: String): Long {
+    return parseNonNegativeAmountToCents(text) ?: 0L
+}
+
+internal fun directCustomerPaidTotalCents(
+    transferAmountText: String,
+    cashAmountText: String,
+    hasCash: Boolean
+): Long? {
+    if (transferAmountText.isBlank() && !hasCash) return null
+    if (hasCash && cashAmountText.isBlank()) return null
+    val transferCents = parseNonNegativeAmountToCents(transferAmountText) ?: return null
+    val cashCents = if (hasCash) parseNonNegativeAmountToCents(cashAmountText) ?: return null else 0L
+    return runCatching { Math.addExact(transferCents, cashCents) }.getOrNull()
+}
+
+private fun parseNonNegativeAmountToCents(text: String): Long? {
+    if (text.isBlank()) return 0L
+    return runCatching {
+        val amount = text.toBigDecimal()
+        if (amount.signum() < 0) return null
+        amount.movePointRight(2)
+            .setScale(0, RoundingMode.HALF_UP)
+            .longValueExact()
+    }.getOrNull()
 }

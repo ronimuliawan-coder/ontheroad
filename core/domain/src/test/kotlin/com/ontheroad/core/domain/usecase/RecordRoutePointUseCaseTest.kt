@@ -1,6 +1,7 @@
 package com.ontheroad.core.domain.usecase
 
 import com.ontheroad.core.domain.geo.GpsJitterFilter
+import com.ontheroad.core.domain.repository.FakeShiftRepository
 import com.ontheroad.core.domain.repository.FakeTripRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -19,7 +20,7 @@ class RecordRoutePointUseCaseTest {
     @Before
     fun setUp() {
         tripRepository = FakeTripRepository()
-        startTripUseCase = StartTripUseCase(tripRepository)
+        startTripUseCase = StartTripUseCase(tripRepository, FakeShiftRepository())
         recordRoutePointUseCase = RecordRoutePointUseCase(
             tripRepository = tripRepository,
             jitterFilter = GpsJitterFilter()

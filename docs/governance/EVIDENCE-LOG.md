@@ -11,18 +11,43 @@ never contain credentials, tokens, or private payloads.
 - Task mode: `EXISTING_UPLIFT`
 - Local workspace: `/home/ron/Projects/ontheroad`
 - Canonical repository: `https://github.com/ronimuliawan/ontheroad.git`; project governance declares GitHub as the write and merge authority.
-- Tracker: Local fallback; Linear workspace search found no `OnTheRoad` project or issue.
+- Tracker: Linear project `OnTheRoad: Direct Booking & Fare Estimator` (`RON-277`, `RON-278`, `RON-279`, `RON-280`, `RON-282`, `RON-385` — all Done); this log is retained as fallback detail.
 - Approval owner: `developer-project-owner` (user approval in this task)
-- Risk profile: `STANDARD` for documentation, governance, build-contract, and release-contract changes; no production or data changes authorized.
+- Risk profile: `STANDARD`; completed Unit 3 scope covered rate editing/persistence and CI instrumentation. No production data, credential, release, or deployment changes were made.
+
+## Current feature delivery
+
+- Feature: Direct Booking & Fare Estimator, Unit 4 — configurable detour, multi-vehicle rate
+  profiles, and shareable direct receipt.
+- Status: Approved by the project owner on 2026-09-23; implementation active from GitHub `dev` tip
+  `7cbb0d3335e5e3dfaaa708a389687265086b7843` on `rons/unit-4-direct-rate-profiles-receipts`.
+- Approved requirements: `FR-DIR-08`, `FR-DIR-09`, and `FR-DIR-10`; local settings/profile data,
+  completed-trip fare persistence, and native image sharing only. Promotion to `main` is not part
+  of this unit.
+- Receipt choice: The owner selected an explicitly recorded actual customer-paid total rather than
+  showing the original quote as if it were the final payment. It remains distinct from the quote
+  and internal earnings fields.
+
+- Previously accepted feature delivery: Unit 3 — validated rate editing and UI acceptance.
+- Delivery: PR #11 from `rons/validated-rate-editing-ui`, based on GitHub `dev` at
+  `579c14b6ac9b091d3425001aef4eeea7f0f6e724`, head `5533af057e63e97ea8184fc1fa10f3785378647c`,
+  merged into `dev` as `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
+- Acceptance record: documentation-only PR #12 merged at
+  `6d1a93148d28e45a5c28af36143d793b88201e89`; post-merge governance run
+  [35852056160](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35852056160) and GitLab
+  trusted-ref run [35852056085](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35852056085)
+  passed on that exact documentation revision.
+- Status: Unit 3 accepted; exact post-merge GitHub CI passed. No next implementation unit is active.
 
 ## Authority and approval record
 
 | Boundary | State | Evidence |
 |---|---|---|
 | Read-only discovery and baseline | Approved and complete | User-approved Gate 0/1; baseline entries below |
-| Target design and implementation plan | Approved | User-approved Gate 2/3 on 2026-08-31 |
-| Local repository edits | Authorized for approved uplift units | User approval on 2026-08-31 |
-| Branch, commit, push, PR, merge, deploy, or production change | Not authorized | No external write or release approval supplied |
+| Target design and implementation plan | Approved | User-approved feature PRD/plan; Unit 4 scope approved on 2026-09-23 |
+| Local repository edits | Authorized for approved units | User approval for Units 1–4 |
+| Branch, commit, push, PR, and merge | Authorized for non-promotion PRs into GitHub `dev` after CI/review | User authorized continued non-promotion PR delivery; no promotion to `main` |
+| Deploy or production change | Not authorized | No release or deployment approval supplied |
 | Credential or paid-resource changes | Not authorized | No such change is in scope |
 
 ## Evidence entries
@@ -248,16 +273,230 @@ never contain credentials, tokens, or private payloads.
 - Validation: `bun run governance:check` passed; `bun test` passed with 12 tests; the helper suite probe for the exact PR head reported six completed successful monitored results; invalid commit-ref probing rejected traversal input; JavaScript syntax, manifest JSON, and whitespace checks passed.
 - Security/privacy note: No secrets were read or recorded; no review thread was resolved; no external reply or push has been performed in this cycle.
 - Rollback/recovery impact: Revert the single cycle-4 remediation commit to restore the PR #2 source tree; application data, GitHub/GitLab authority, release state, and credentials remain unaffected.
-- Next gate: Complete final local validation and create one atomic remediation commit, then request approval before pushing the fix branch, opening a PR, or posting attributed replies.
+### 2026-09-01 — Direct / Offline Trip Booking & Fare Estimator Delivery
 
-## Accepted exceptions
+- Actor: Human/agent pair under High-Assurance Engineering standard (`/high-assurance-engineering`)
+- Linear Tracker: Project `OnTheRoad: Direct Booking & Fare Estimator` (`RON-277`, `RON-278`, `RON-279`, `RON-280`).
+- Exact base revision: Branch `dev` on Linux, Bun `1.4.0`, JDK 21 at `/home/ron/.jdks/jbr-21.0.11`, Gradle `8.11.1`.
+- PRD: `.claude/PRPs/prds/direct-booking-and-fare-estimator.prd.md` registered and approved under Phase 2.
+- Unit 1 (Domain & Data):
+  - Added pure Kotlin data model `DirectPricingRates` in `core:model` (`ARCH-001`).
+  - Implemented `CalculateDirectFareUseCase` with base fare, included distance, rate/km, min fare, and custom override handling.
+  - Implemented `EstimateDistanceUseCase` with Haversine distance and 1.30x road curvature detour multiplier.
+  - Extended `UserPreferencesRepository` & `UserPreferencesRepositoryImpl` with rates persistence.
+  - Extended `StartTripUseCase` with optional quote distance and fare parameters.
+- Unit 2 (UI & Presentation):
+  - Created `DirectBookingCard` cockpit component with pickup, destination, distance, rates breakdown, and live estimated fare.
+  - Updated `SettingsScreen` and `SettingsViewModel` with driver configurable rate cards.
+  - Integrated Direct Booking card into `TrackerScreen` and `TrackerViewModel` with instant start run cockpit transition.
+- Verification & Quality:
+  - 47/47 JVM unit tests passing in 525ms (`CalculateDirectFareUseCaseTest`, `EstimateDistanceUseCaseTest`, `UserPreferencesRepositoryTest`, `SettingsViewModelTest`, `TrackerViewModelTest`, etc.).
+  - Gradle `assembleDebug` and `assembleRelease` APK builds passing with clean R8 shrinkage.
+  - Bun governance verifier passing (`bun run governance:check`).
+- Security/Privacy: 100% offline, zero network tracking, no secrets committed (`SEC-001`).
+- Rollback impact: Clean revert of feature commits restores repository without state or schema corruption.
+- Next gate: Phase 6 complete; ready for driver staging / release promotion.
+
+### 2026-09-23 — PRD approval and feature-state reconciliation
+
+- Actor: Human/agent pair under the High-Assurance Engineering standard.
+- Approval: The project owner explicitly confirmed the Direct Booking & Fare Estimator PRD.
+- Approved artifact: `.claude/PRPs/prds/direct-booking-and-fare-estimator.prd.md` is now an approved target for the v0.2.0 feature scope.
+- Current repository state: The feature implementation remains uncommitted in the local `dev` working tree; `origin/dev` and `origin/main` remain at `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e` and do not contain the feature files.
+- Evidence correction: The 2026-09-01 delivery entry is retained as historical evidence. Its test/build claims have not been re-established against the current exact dirty tree, so they are not current acceptance evidence.
+- Validation of this reconciliation: `bun run governance:check` passed; `git diff --check` reported two pre-existing blank-line-at-EOF warnings in feature files, which were not changed or normalized.
+- Current gate: Baseline and architecture/implementation-plan reconciliation remain pending. This PRD approval does not authorize a branch, commit, push, pull request, merge, release, or deployment.
+- Rollback/recovery impact: Documentation-only correction; reverting this entry and the matching PRD/status metadata restores the prior local documentation state. No application data or external state is changed.
+
+### 2026-09-23 — Phase 1 baseline and Phase 3 architecture plan
+
+- Actor: Human/agent pair under the High-Assurance Engineering standard; the project owner approved both gates before this inspection.
+- Exact repository state: `origin/dev` and `origin/main` at `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`; direct-booking implementation remains local-only and uncommitted.
+- Architecture result: Pure Kotlin model/domain boundaries remain intact; data owns Android location/geocoding and persistence; app owns ViewModel wiring and foreground-service start; Compose owns rendering.
+- Verified findings: P1 quote/realized-earnings field conflation and empty completion-modal prefill; P1 missing runtime location-permission gate; P2 best-effort Geocoder/`INTERNET` boundary versus strict offline wording; P2 transient invalid rate values being persisted from Settings.
+- Plan artifact: `.claude/PRPs/plans/11-direct-booking-and-fare-estimator.plan.md` records the three ownership choices, recommended boundaries, implementation units, acceptance matrix, source-control policy, and rollback constraints.
+- Validation: `bun test` passed with 12 tests; `bun run governance:check` passed. Gradle validation is blocked because no Java executable exists and `/home/ron/.jdks/jbr-21.0.11` is absent.
+- Next gate: Unit 1 implementation — quote contract and completion handoff. It requires separate explicit user approval; no application edit or external delivery action is authorized by this planning gate.
+
+### 2026-09-23 — Unit 1 implementation: quote contract and completion handoff
+
+- Actor: Agent implementing the user's explicit Unit 1 approval.
+- Scope: Added nullable `quotedFareAmountCents` to the pure trip model and Room entity, added the v1-to-v2 migration, kept realized earnings fields separate, preserved quoted distance on completion when omitted by the UI, and wired the direct completion modal to prefill quote/payment values.
+- Regression coverage added: direct-start quote persistence, repository entity/domain mapping, ViewModel start/complete handoff, and pure UI amount/distance conversion tests.
+- TDD evidence: RED tests were written first; the focused Gradle test command could not start because no Java executable exists and `/home/ron/.jdks/jbr-21.0.11` is absent. No GREEN result is claimed.
+- Review state: Source-level diff review completed; two pre-existing blank-line-at-EOF warnings remain in unrelated-to-this-unit dirty feature files and were not normalized.
+- Current gate: Unit 1 validation is pending a usable JDK. No commit, push, pull request, merge, or release action is authorized by this implementation approval.
+
+### 2026-09-23 — CI-only validation decision
+
+- Decision: The project owner explicitly directed that no local test, build, or verification run
+  be performed; CI is the acceptance authority.
+- The earlier local Bun and governance results remain informational observations only. No further
+  local validation will be run for this unit.
+- The missing local JDK is not a project blocker under this decision. Gradle tests, lint, builds,
+  and repository checks must run on the exact authorized remote revision in GitHub CI.
+- This supersedes the preceding implementation-entry wording that made a usable local JDK the
+  validation gate; the active gate is now exact-revision CI evidence.
+- Next gate: explicit authorization for the branch, commit, push, and/or pull request needed to
+  trigger CI. No commit, push, pull request, merge, or release action was performed by this
+  decision.
+
+### 2026-09-23 — Unit 1 CI acceptance and merge
+
+- Exact revision: PR #8 merged into GitHub `dev` at `93a2b189ec426de018f0d138d9469d1de2e2d01e`.
+- Acceptance evidence: Android JVM unit tests, Android lint, repository governance CI, and
+  CodeRabbit completed successfully on the PR revision.
+- Review-mirror exception: the GitLab replica close-cleanup job returned HTTP 401 because
+  `GITLAB_REPLICA_API_TOKEN` is not currently usable. The project owner explicitly deferred
+  GitLab repair; it is not an application delivery gate.
+- Current gate: Unit 1 is complete. Unit 2 — permission and address fallback — is authorized and
+  in progress on a new branch from the merged `dev` tip. No local test, build, or verification
+  run is being performed.
+
+### 2026-09-23 — Unit 2 CI acceptance and merge
+
+- Exact revision: PR #9 merged into GitHub `dev` at
+  `685c530c090672ec6f55ba5221e6c4f5fd304727`.
+- Acceptance evidence: Android JVM tests, Android lint, and governance CI passed on the PR head
+  and again on the post-merge `dev` revision.
+- Review state: CodeRabbit skipped automated review because `dev` is not the repository default
+  branch; the Codex review bot reported usage limits. The project owner authorized merging the
+  non-promotion PR after CI passed.
+- GitLab review-mirror cleanup remains deferred by the project owner and is not a delivery gate.
+- Current gate: Unit 2 is complete. Unit 3 — validated rate editing and UI acceptance — is
+  planned but not started; it requires separate explicit approval. No local tests/builds ran.
+
+### 2026-09-23 — Unit 3 implementation start
+
+- Actor: Agent implementing the project owner's explicit approval in the active task.
+- Exact base revision: GitHub `origin/dev` `579c14b6ac9b091d3425001aef4eeea7f0f6e724`; branch `rons/validated-rate-editing-ui`.
+- Process note: This local start record was added after the first source edits in the resumed task; the explicit Unit 3 approval and exact base had already been established.
+- Scope: Keep Settings drafts local until valid explicit save, guard rate persistence, cover fare/cockpit state edges, and add the planned Android device-profile CI acceptance.
+- Verification authority: GitHub CI on the exact PR revision. The owner's standing instruction excludes local tests, builds, and verification commands.
+- Rollback/recovery impact: Revert PR #11's merge commit on `dev` to restore prior rate-edit behavior and remove its test/CI additions; never rewrite shared branch history. No release, credentials, or production data are changed.
+- Next gate: Record exact post-merge CI evidence, then await explicit approval for another implementation unit or a separately scoped promotion decision.
+
+### 2026-09-23 — Unit 3 CI acceptance and merge
+
+- Exact revision: PR #11 source head `5533af057e63e97ea8184fc1fa10f3785378647c`, merged into GitHub `dev` at `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
+- PR acceptance: JVM Unit Tests, Android Lint, Android UI Acceptance (Pixel 7 Pro / API 35), governance, and GitLab trusted-ref checks passed on the PR revision.
+- Post-merge acceptance: Android CI run [35851099402](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35851099402), governance run [35851099256](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35851099256), and GitLab trusted-ref run [35851099357](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35851099357) all completed successfully on the exact merge SHA above. Android CI includes JVM tests, lint, and the Pixel 7 Pro / API 35 instrumentation flow on the Namespace runners.
+- Runner deviation: The first instrumentation attempt failed before tests because `/etc/udev/rules.d` is absent on the Namespace runner image. The workflow now grants access to the existing `/dev/kvm` node directly; the PR and post-merge instrumentation runs passed.
+- Review state: CodeRabbit skipped review because reviews are disabled for the non-default `dev` base; the Codex review bot reported a usage limit. No automated review findings were available. The project owner authorized merging the non-promotion PR after required CI passed.
+- Local verification: None; the owner requires verification to run in CI.
+- Rollback/recovery impact: Revert merge commit `a8ba7c87b06f62cb6e3f54525d741c891a65276d` on `dev`; no force-push, production data, release, or credential changes.
+- Next gate: Unit 3 is complete. Await explicit approval before starting another implementation unit; promotion to `main` remains unauthorized.
+
+### 2026-09-23 — Unit 4 approval and implementation start
+
+- Actor: `developer-project-owner` approval / agent implementation.
+- Exact base: GitHub `dev` tip `7cbb0d3335e5e3dfaaa708a389687265086b7843`; latest accepted application-code revision remains PR #11 merge `a8ba7c87b06f62cb6e3f54525d741c891a65276d`.
+- Branch: `rons/unit-4-direct-rate-profiles-receipts`.
+- Linear tracking: [RON-385 — Unit 4](https://linear.app/rons-space/issue/RON-385/phase-4-unit-4-direct-pricing-profiles-and-shareable-receipts), created In Progress with the approved scope and acceptance gate.
+- Approval: User directed “let's go then” and explicitly included `FR-DIR-09/10`; subsequently chose to record the actual customer-paid total for receipts.
+- Scope: Implement `FR-DIR-08` configurable detour, `FR-DIR-09` local multi-vehicle rate profiles, and `FR-DIR-10` a customer-shareable direct-trip receipt image.
+- Contract: Each profile owns all existing `DirectPricingRates` fields, including the detour factor; migrate existing scalar rates to a `Default` profile without resetting them; choose the active profile in the direct-booking form. Receipt is available only for completed direct trips, includes date/time, displayed endpoints, actual distance, and a separately persisted total derived from the completion payment entries; it excludes coordinates, route traces, notes, and internal earnings metrics. Use a local PNG, a receipt-scoped cache URI, and Android Sharesheet; no network service or new dependency.
+- Recovery: Preserve existing scalar keys as the active-profile compatibility mirror. Add the customer-paid value via forward Room migration; never destructively downgrade the resulting database. Promotion and deployment remain unauthorized.
+- Verification policy: No local tests, builds, or verification. Exact-revision GitHub CI is the acceptance authority.
+- Result: `IN PROGRESS`; no implementation acceptance evidence exists yet.
+- Next gate: Complete implementation and code review, then require relevant GitHub CI to pass on the exact PR revision before merge to `dev`.
+
+### 2026-09-23 — Unit 4 CI acceptance and merge
+
+- Exact PR revision: PR #14 head `c4d844f9331da67fe97f384f76fab5208916e944`; merged into GitHub `dev` at `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78`.
+- Acceptance evidence: [Governance run 35865267091](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35865267091) and [Android CI run 35865267102](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35865267102) passed on the exact PR revision. Android CI passed JVM Unit Tests, Android Lint, and Android UI Acceptance (Pixel 7 Pro / API 35) on Namespace runners.
+- Review state: CodeRabbit skipped review because `dev` is not the repository default branch; no review comments were present. Manual source review completed. The owner authorized merging non-promotion PRs after required CI passes; PR #14 was merged with a merge commit.
+- Local verification: None; all build and test acceptance was performed by GitHub CI, per the owner's standing direction.
+- Post-merge observation: No workflow run was returned for merge SHA `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78` when checked. The approved Unit 4 acceptance gate is exact PR-revision CI, which passed before merge.
+- Linear tracking: [RON-385](https://linear.app/rons-space/issue/RON-385/phase-4-unit-4-direct-pricing-profiles-and-shareable-receipts) marked Done with the PR and CI links attached.
+- Governance status/evidence refresh: documentation-only PR #15 merged into `dev` at `8e26aef6590bcd82e64a9739e10f49abeac94094`; its [Governance run 35867231582](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/35867231582) passed on PR head `1477042a90628886c1c4b953027591235e1b1900`.
+- Rollback/recovery impact: Revert merge commit `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78` on `dev`; do not rewrite shared history. No production data, release, or credentials changed. `main` remains unchanged and promotion unauthorized.
+- Next gate: Unit 4 is complete. Await explicit approval for any next implementation unit or separately scoped promotion.
+
+### 2026-09-26 — Verification follow-up batch (F1–F4, F6) implementation start
+
+- Actor: Agent implementing the project owner's explicit 2026-09-26 approval of the resume-audit "not started" items (detour-label correction, PRD/plan/evidence currency, branch hygiene). Next-unit and promotion scope are explicitly excluded; Linear writes and merge remain held for separate confirmation.
+- Exact base: GitHub `origin/dev` `5bd5b031c72de32a6451a1088bf227f7154aa490`; branch `rons/verification-followups`.
+- Scope: F1 replaces the hardcoded "1.30x" detour claim in `DirectBookingCard` with neutral wording (the factor is per-profile configurable, default 1.25); F2–F4 record Unit 4 completion in the PRD, plan 11, and evidence-log header plus the newly authorized batch in `STATUS.md`; F6 fast-forwards stale local `dev` and deletes local branches already merged into `origin/dev`.
+- Verification policy: No local tests/builds; `bun run governance:check` locally plus exact-revision GitHub CI on the PR. The 2026-09-01 log entry citing "1.30x" is retained untouched as historical evidence.
+- Rollback/recovery impact: Revert the PR merge commit on `dev`; no force-push, production data, release, or credential changes. Remote `origin/rons/*` branches are left untouched.
+- Next gate: PR to `dev`, exact-revision CI green, then explicit merge approval.
+
+### 2026-09-26 — Verification follow-up batch (F1–F4, F6) CI acceptance (pre-merge)
+
+- Exact PR revision: PR #17 head (branch `rons/verification-followups`, base `dev`; implementation commit `d52a7d0` plus this evidence entry).
+- Acceptance evidence: Governance, GitLab trusted-ref, JVM Unit Tests, Android Lint, and Android UI Acceptance (Pixel 7 Pro / API 35) all passed on the exact PR revision. CodeRabbit skipped (reviews disabled for non-default base `dev`); no review comments. No local tests/builds ran, per the owner's standing CI-only direction.
+- Local verification: `bun run governance:check` passed; `git diff --check` reports only the two restored Markdown hard-break double-spaces in the PRD/plan headers, matching those files' pre-existing style.
+- Rollback/recovery impact: Revert the PR merge commit on `dev` if merged; no force-push, production data, release, or credential changes. `main` unchanged; promotion unauthorized.
+- Next gate: Explicit merge approval; Linear updates still held for separate confirmation.
+
+### 2026-09-26 — Adopt user-authored human-journey-testing skill
+
+- Actor: Agent implementing the project owner's explicit approval to register the skill and restore a green governance check.
+- Scope: Register 11 user-authored `.md` files (skill, 2 templates, 7 references, 1 workflow) in `governance.json` as `active`, owner phase 1, `project-owned`. Non-governed support files (`agents/openai.yaml`, `scripts/check_ledger.py`, `tests/test_check_ledger.py`, `assets/templates/ledger-index.json`) need no registration per the manifest's extension rules. Skill content itself is the owner's work; it was adopted as-is.
+- Validation: `jq empty docs/governance/governance.json`; `bun run governance:check` → pass (sort order, local links, credential scan, env drift all clean). Skill's own `check_ledger.py` validates the QA prep ledger index (`49 NOT_RUN`, counts reconcile, zero errors).
+- Related prep work (same day, separate approved request): whole-app QA run ledger at `.claude/PRPs/reports/human-journey-qa-2026-09-26/` (governance-excluded path, local only, execution BLOCKED on build + device per B-001).
+- Rollback/recovery impact: Revert the adoption commit on its branch; remove the 11 manifest rows to restore the prior inventory. No product, data, release, or credential changes.
+- Next gate: PR to `dev`, exact-revision CI green, then explicit merge approval.
+
+### 2026-09-26 — Human-journey QA campaign `otr-qa-2026-09-26` executed (coordinator review VERIFIED)
+
+- Execution: Namespace devbox (M, linux/amd64, /dev/kvm), emulator Pixel 7 Pro / API 35; APK built from `origin/dev` @ `d93388d` (app code identical to prep baseline). Ledger + 129 screenshots on transport branch `origin/qa-ledger` (never to merge): `.claude/PRPs/reports/human-journey-qa-2026-09-26/`.
+- Result: 38 PASS / 6 FAIL / 2 BLOCKED / 1 INCONCLUSIVE / 1 NOT_APPLICABLE / 1 NOT_RUN (T=49, A=48, E/A=44/48). REC-02 no-new-item pass. Ledger checker zero errors; counts reconcile. Two FAIL exhibits spot-checked by coordinator (Shift zeros, empty shade).
+- Defects (all UI-observed): D-004 High — Shift aggregates stay zero after completed trips; D-002 Medium — no foreground-service notification while tracking; D-006 Medium — profile selection doesn't reach booking form; D-007 Medium — quotes use stale rates until restart; D-001 Medium — custom-fare toggle-off keeps stale override; D-005 Low-medium — theme needs force-stop to apply. S-013/S-042 BLOCKED on D-006/D-002; S-043 INCONCLUSIVE (failure not inducible); S-045 justified N/A (portrait-locked); S-046 conditional NOT_RUN.
+- Observations deferred (no fix authorized): OBS-04 currency-symbol inconsistency (design decision), OBS-05 versionName 0.1.0 vs in-app 0.2.0 card, OBS-06 platform modal discards drafts, OBS-07 silent GPS no-op after denial, OBS-08 history residue on test device.
+- Next gate: owner-approved fix batch for all 6 defects, then targeted retest of affected scenarios. No release approval implied.
+
+### 2026-09-26 — QA fix batch CI acceptance (pre-merge)
+
+- Exact PR revision: PR #19 head (branch `rons/qa-defect-batch`, base `dev`; implementation `4b0675c` plus this evidence entry).
+- Fixes: D-004 shift bootstrap in `StartTripUseCase` (explicit shiftId preserved); D-005/D-006/D-007 app-scoped singleton repositories in `OnTheRoadApplication` + `ViewModelFactory`; D-002 POST_NOTIFICATIONS ride-along with location-only gating (also closes a latent any-grant bug); D-001 toggle-off clears the stale fare override. Regression tests: 3 shift-bootstrap cases + 1 TrackerViewModel shift-attachment case; D-001 covered by targeted device retest (no fitting JVM seam in `core:ui`).
+- Acceptance evidence: [Android CI run 36275343717](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/36275343717) (JVM tests, lint, Pixel 7 Pro / API 35 UI acceptance all pass), [governance run 36275343728](https://github.com/ronimuliawan-coder/ontheroad/actions/runs/36275343728), GitLab trusted-ref run 36275341499 pass. CodeRabbit skipped (`dev` base). One compile miss (`StartTripUseCase` call site in factory) failed the first cycle and was corrected without unrelated changes; the green cycle above is the accepted revision.
+- Local verification: `bun run governance:check` pass; `git diff --check` clean; full diff reviewed (production: 5 files; tests: 4 files).
+- Rollback/recovery impact: Revert the PR merge commit on `dev`; no force-push, production data, release, or credential changes. OBS-04..08 remain deferred by explicit scope decision.
+- Next gate: Explicit merge approval, then targeted device retest (S-004/S-013/S-014/S-019/S-022/S-030/S-031/S-036, J-01/J-02) on a fresh build.
+
+### 2026-09-27 — Human-journey QA campaign execution closed with noted exceptions (retest + OBS-09 probe verified)
+
+- Retest (build `85f053b`, fresh install, Pixel 7 Pro / API 35): all 11 targeted items PASS — S-004/S-042 (notification present + tap-to-return), S-013/S-031 (profile propagation, incl. cold start), S-014 (custom-fare round-trip), S-036/J-01 (live rate propagation), S-030 (all themes immediate), S-019/S-022/J-02 (completion, Shift `$40000.00` from zero, History match). Counts: PASS 46 / FAIL 0 / BLOCKED 0 / INCONCLUSIVE 1 (S-043) / N-A 1 (S-045) / NOT_RUN 1 (S-046); E/A 46/48.
+- Qualification: S-040/S-041 permission results are retained from the pre-PR#19 build. PR #19 changed the permission request set and grant evaluation, so these two rows are pending re-verification on `85f053b` (mini-probe proposed), not fresh acceptance. S-043 (INCONCLUSIVE) and S-046 (conditional NOT_RUN) are applicable and explicitly remain open — failure paths not inducible via UI — as is the permanent-denial path. The campaign is therefore closed with noted exceptions, not unconditionally complete.
+- OBS-09 probe (geo-fix walk, 41 positions): shade body shows live `Tracking: 0.16 km`; static text is only the zero-distance state. OBS-09 RESOLVED, no code change. Coordinator spot-checked E-180 (Shift) and E-168/E-194 (shade) directly; ledger checker zero errors; old attempts retained.
+- Known issue (no fix authorized): OBS-10 — clearing the destination leaves a stale auto distance (tester-recovered by manually clearing distance; the app does not auto-invalidate). Revisit on the next booking-form pass. Previously deferred OBS-04..08 unchanged.
+- Artifacts: ledger + 198 screenshots pinned at transport-branch revision `b9d5f9388c14b424f3edeaaee637101349565bf5` (`origin/qa-ledger`, never to merge); human-readable retest/probe reports under `docs/qa/` there.
+- No release approval implied; promotion to `main` remains unauthorized.
+
+### 2026-09-28 — S-040/S-041 permission mini-probe verified; campaign closed at 46/48 with S-043/S-046 explicitly open
+
+- Probe (build from `origin/dev@a61e870`, fresh install, Pixel 7 Pro / API 35): S-041 deny-location + deny-notification → red inline message, idle cockpit, no trip, manual quoting usable (E-202..E-206); S-040 allow → trip starts, `OnTheRoad: Active Run · now` notification, sustained tracking (E-208..E-212). Both PASS appended as new attempts; old attempts retained. Ledger checker zero errors.
+- This resolves the review qualification: permission behavior is now fresh-accepted on the current build family. Totals are unchanged by re-verification (re-running a PASS row adds an attempt, not coverage): PASS 46 / FAIL 0 / BLOCKED 0 / INCONCLUSIVE 1 (S-043, failure not inducible) / N-A 1 (S-045) / NOT_RUN 1 (S-046, conditional); E/A 46/48. Explicitly remaining open: S-043, S-046, OBS-10, permanent-denial path, OBS-04..08.
+- Artifacts: probe evidence E-201..E-213 pinned at `origin/qa-ledger` revision `df92245` (never to merge). Coordinator spot-checked E-204 (denial) and E-211 (shade) directly.
+- Campaign `otr-qa-2026-09-26` is CLOSED. No release approval implied; promotion to `main` remains unauthorized.
+
+### 2026-09-28 — Promotion-review remediation (CodeRabbit findings on PR #23)
+
+- Scope: 6 findings triaged independently. Fixed (branch `rons/promotion-review-fixes`, PR into `dev`; promotion PR #23 picks it up automatically): stale destination coordinates persisted into quotes (Major — same class as OBS-10; edit now resets resolved lat/lon + auto flag, keeps distance text); Float→Double binary widening in rate restore (display wart + in-memory inequality; decimal round-trip); custom-fare toggle initial visibility from stored override text (completes the D-001 fix across recomposition).
+- Deferred with rationale (owner, risk, revisit): migration 1→2 test gap (test-only; migration code untouched); receipt PNG accumulation (OS-evicted cache, no correctness impact); BigDecimal fare parsing (sub-display-unit truncation, no crash; revisit on next booking-form validation pass with OBS-10).
+- Regression tests: destination-reset case + float restart-exactness case. D-001 visibility change has no fitting JVM seam; covered by the owner's road test.
+- Verification policy: exact-revision GitHub CI on the fix PR, then promotion CI re-runs. No local builds.
+- Rollback: revert the fix-PR merge commit on `dev`. No release, credential, or production changes.
+
+## Current accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |
 |---|---|---|---|---|---|---|
-| External Linear tracking unavailable | Connected workspace has no matching `OnTheRoad` project or issue | Progress is not mirrored to the declared external tracker | This local evidence log records objective, approvals, exact revisions, evidence, deviations, and rollback impact | `developer-project-owner` | Revisit when the canonical Linear project is available | User approved local fallback on 2026-08-31 |
-| Remote/CI verification unavailable locally | No Git remote is configured in the checkout | Exact remote branch protection, CI, and review state cannot be independently verified here | Preserve the GitHub authority declared by project docs; do not push, merge, or deploy | `developer-project-owner` | Revisit after canonical remote access is configured | User approval required before external actions |
+| Local test/build/verification disabled | Project owner directed that all verification run in CI | No local verification evidence is produced | Require exact-revision GitHub CI, including JVM tests, lint, governance, and applicable UI acceptance for each approved unit; Unit 4 CI acceptance is recorded above | `developer-project-owner` | Revisit only if the owner changes the CI-only direction | Explicit user direction on 2026-09-23 |
 
-## Final evidence matrix
+## Resolved exceptions
+
+| Exception | Original reason | Resolution | Approval |
+|---|---|---|---|
+| External Linear tracking unavailable | At the original governance uplift, no matching `OnTheRoad` project or issue was visible in the connected workspace | Resolved 2026-09-23: created and completed Unit 4 issue [RON-385](https://linear.app/rons-space/issue/RON-385/phase-4-unit-4-direct-pricing-profiles-and-shareable-receipts); future work is tracked in the connected project | User approved the local fallback on 2026-08-31, then explicitly approved Linear tracking for Unit 4 |
+
+## Historical evidence matrix — 2026-08-31 governance uplift
+
+The following matrix and resume packet record the earlier Phase 4 governance uplift closeout.
+They are historical and do not describe the current Direct Booking feature unit; its status and
+evidence are in the dated 2026-09-23 entries above.
 
 | Required gate | Exact revision/environment | Result | Evidence | Accepted exception |
 |---|---|---|---|---|
@@ -270,10 +509,10 @@ never contain credentials, tokens, or private payloads.
 | Build/CI/review | Local exact revision plus approved Unit 3 working tree | Local pass; remote pending | Bun and Gradle Unit 3 completion evidence above | No remote configured |
 | Deployment/acceptance | No deployment authorized | Not run | No deployment environment supplied | External release remains human-only |
 
-## Resume packet
+## Historical resume packet — 2026-08-31 governance uplift
 
-- Current phase: Phase 4 / Unit 3 complete; final review/handoff complete.
-- Approved actions: local changes to the complete bundle's governance registration and approved status/evidence/contract documentation units.
-- Not authorized: push, pull request, merge, deploy, production changes, credential changes, or paid resources.
-- Pre-existing user work: the high-assurance and PR-review bundle was already untracked before this branch was created; preserve it.
-- Next unstarted work: No further implementation unit in this engagement.
+- Phase at that time: Phase 4 / Unit 3 complete; final review/handoff complete.
+- Approved actions at that time: local changes to the complete bundle's governance registration and approved status/evidence/contract documentation units.
+- Not authorized at that time: push, pull request, merge, deploy, production changes, credential changes, or paid resources.
+- Pre-existing user work at that time: the high-assurance and PR-review bundle was already untracked before its branch was created; preserve it.
+- Next unstarted work then: No further implementation unit in that uplift engagement.

@@ -1,15 +1,15 @@
 package com.ontheroad.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ontheroad.OnTheRoadApplication
-import com.ontheroad.core.data.repository.ShiftRepositoryImpl
-import com.ontheroad.core.data.repository.TripRepositoryImpl
-import com.ontheroad.core.data.repository.UserPreferencesRepositoryImpl
+import com.ontheroad.core.domain.usecase.CalculateDirectFareUseCase
 import com.ontheroad.core.domain.usecase.CompleteTripUseCase
+import com.ontheroad.core.domain.usecase.EstimateDistanceUseCase
+import com.ontheroad.core.domain.usecase.GetCurrentLocationUseCase
 import com.ontheroad.core.domain.usecase.GetShiftSummaryUseCase
 import com.ontheroad.core.domain.usecase.GetTripHistoryUseCase
+import com.ontheroad.core.domain.usecase.SearchAddressUseCase
 import com.ontheroad.core.domain.usecase.StartTripUseCase
 
 class ViewModelFactory(
@@ -18,20 +18,30 @@ class ViewModelFactory(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val database = application.database
-        val tripRepository = TripRepositoryImpl(database.tripDao())
-        val shiftRepository = ShiftRepositoryImpl(database.shiftDao())
-        val sharedPreferences = application.getSharedPreferences(
-            UserPreferencesRepositoryImpl.PREFS_NAME,
-            Context.MODE_PRIVATE
-        )
-        val userPreferencesRepository = UserPreferencesRepositoryImpl(sharedPreferences)
+        val tripRepository = application.tripRepository
+        val shiftRepository = application.shiftRepository
+        val userPreferencesRepository = application.userPreferencesRepository
+        val locationRepository = application.locationRepository
 
         return when {
             modelClass.isAssignableFrom(TrackerViewModel::class.java) -> {
-                val startTripUseCase = StartTripUseCase(tripRepository)
+                val startTripUseCase = StartTripUseCase(tripRepository, shiftRepository)
                 val completeTripUseCase = CompleteTripUseCase(tripRepository)
-                TrackerViewModel(tripRepository, startTripUseCase, completeTripUseCase) as T
+                val searchAddressUseCase = SearchAddressUseCase(locationRepository)
+                val getCurrentLocationUseCase = GetCurrentLocationUseCase(locationRepository)
+                val estimateDistanceUseCase = EstimateDistanceUseCase()
+                val calculateDirectFareUseCase = CalculateDirectFareUseCase()
+
+                TrackerViewModel(
+                    tripRepository = tripRepository,
+                    startTripUseCase = startTripUseCase,
+                    completeTripUseCase = completeTripUseCase,
+                    userPreferencesRepository = userPreferencesRepository,
+                    calculateDirectFareUseCase = calculateDirectFareUseCase,
+                    estimateDistanceUseCase = estimateDistanceUseCase,
+                    searchAddressUseCase = searchAddressUseCase,
+                    getCurrentLocationUseCase = getCurrentLocationUseCase
+                ) as T
             }
             modelClass.isAssignableFrom(ShiftViewModel::class.java) -> {
                 val getShiftSummaryUseCase = GetShiftSummaryUseCase(tripRepository, shiftRepository)

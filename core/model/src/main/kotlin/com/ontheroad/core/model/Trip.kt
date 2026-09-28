@@ -19,12 +19,14 @@ data class Trip(
     val endLongitude: Double? = null,
     val actualDistanceMeters: Double = 0.0,
     val quotedDistanceMeters: Double? = null,
+    val quotedFareAmountCents: Long? = null,
     val durationSeconds: Long = 0,
     val platformFeeAmountCents: Long = 0,
     val cashCollectedAmountCents: Long = 0,
     val tipAmountCents: Long = 0,
     val notes: String = "",
-    val status: TripStatus = TripStatus.IN_PROGRESS
+    val status: TripStatus = TripStatus.IN_PROGRESS,
+    val customerPaidTotalAmountCents: Long? = null
 ) {
     val totalEarningsCents: Long
         get() = platformFeeAmountCents + cashCollectedAmountCents + tipAmountCents
