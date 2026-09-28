@@ -268,6 +268,29 @@ class UserPreferencesRepositoryTest {
     }
 
     @Test
+    fun `restored float rates equal saved decimal values after restart`() = runTest {
+        repository = UserPreferencesRepositoryImpl(sharedPreferences)
+        repository.saveDirectPricingProfile(
+            DirectPricingProfile(
+                "car",
+                "Car",
+                DirectPricingRates(
+                    includedBaseDistanceKm = 0.1,
+                    roadDetourMultiplier = 1.3
+                )
+            )
+        )
+
+        // Simulate a process restart: a fresh instance over the same storage.
+        val restarted = UserPreferencesRepositoryImpl(sharedPreferences)
+        val rates = restarted.getDirectPricingProfileSettings().first()
+            .profiles.first { it.id == "car" }.rates
+
+        assertEquals(1.3, rates.roadDetourMultiplier, 0.0)
+        assertEquals(0.1, rates.includedBaseDistanceKm, 0.0)
+    }
+
+    @Test
     fun `deleting active profile selects remaining profile and preserves one profile minimum`() = runTest {
         repository = UserPreferencesRepositoryImpl(sharedPreferences)
         repository.saveDirectPricingProfile(

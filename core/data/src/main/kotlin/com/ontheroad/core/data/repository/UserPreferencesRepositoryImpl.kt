@@ -162,13 +162,18 @@ class UserPreferencesRepositoryImpl(
             ).takeIf { it >= 0L } ?: defaults.minimumFareAmountCents,
             includedBaseDistanceKm = sharedPreferences.getFloat(
                 profileKey(profileId, SUFFIX_INCLUDED_BASE_KM), defaults.includedBaseDistanceKm.toFloat()
-            ).toDouble().takeIf { it.isFinite() && it >= 0.0 } ?: defaults.includedBaseDistanceKm,
+            ).toStoredDouble().takeIf { it.isFinite() && it >= 0.0 } ?: defaults.includedBaseDistanceKm,
             roadDetourMultiplier = sharedPreferences.getFloat(
                 profileKey(profileId, SUFFIX_ROAD_DETOUR_MULTIPLIER), defaults.roadDetourMultiplier.toFloat()
-            ).toDouble().takeIf { it.isFinite() && it >= 0.0 } ?: defaults.roadDetourMultiplier
+            ).toStoredDouble().takeIf { it.isFinite() && it >= 0.0 } ?: defaults.roadDetourMultiplier
         )
         return DirectPricingProfile(profileId, name, rates)
     }
+
+    // Float.toDouble() widens the binary value (1.3f -> 1.2999999523162842), which leaks
+    // into Settings text fields after restart. Rounding through the decimal form preserves
+    // the value the driver actually saved. NaN/Infinity round-trip unchanged.
+    private fun Float.toStoredDouble(): Double = toString().toDouble()
 
     private fun readLegacyDirectPricingRates(): DirectPricingRates {
         val defaults = DirectPricingRates()
@@ -184,10 +189,10 @@ class UserPreferencesRepositoryImpl(
             ).takeIf { it >= 0L } ?: defaults.minimumFareAmountCents,
             includedBaseDistanceKm = sharedPreferences.getFloat(
                 KEY_INCLUDED_BASE_KM, DEFAULT_INCLUDED_BASE_KM.toFloat()
-            ).toDouble().takeIf { it.isFinite() && it >= 0.0 } ?: defaults.includedBaseDistanceKm,
+            ).toStoredDouble().takeIf { it.isFinite() && it >= 0.0 } ?: defaults.includedBaseDistanceKm,
             roadDetourMultiplier = sharedPreferences.getFloat(
                 KEY_ROAD_DETOUR_MULTIPLIER, DEFAULT_ROAD_DETOUR_MULTIPLIER.toFloat()
-            ).toDouble().takeIf { it.isFinite() && it >= 0.0 } ?: defaults.roadDetourMultiplier
+            ).toStoredDouble().takeIf { it.isFinite() && it >= 0.0 } ?: defaults.roadDetourMultiplier
         )
     }
 
@@ -206,11 +211,11 @@ class UserPreferencesRepositoryImpl(
                 baseFareAmountCents = sharedPreferences.getLong(KEY_BASE_FARE_CENTS, -1L),
                 ratePerKmAmountCents = sharedPreferences.getLong(KEY_RATE_PER_KM_CENTS, -1L),
                 minimumFareAmountCents = sharedPreferences.getLong(KEY_MIN_FARE_CENTS, -1L),
-                includedBaseDistanceKm = sharedPreferences.getFloat(KEY_INCLUDED_BASE_KM, Float.NaN).toDouble(),
+                includedBaseDistanceKm = sharedPreferences.getFloat(KEY_INCLUDED_BASE_KM, Float.NaN).toStoredDouble(),
                 roadDetourMultiplier = sharedPreferences.getFloat(
                     KEY_ROAD_DETOUR_MULTIPLIER,
                     Float.NaN
-                ).toDouble()
+                ).toStoredDouble()
             ).takeIf(DirectPricingRates::isPersistable)
         }.getOrNull()
     }

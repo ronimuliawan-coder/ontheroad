@@ -472,6 +472,14 @@ never contain credentials, tokens, or private payloads.
 - Artifacts: probe evidence E-201..E-213 pinned at `origin/qa-ledger` revision `df92245` (never to merge). Coordinator spot-checked E-204 (denial) and E-211 (shade) directly.
 - Campaign `otr-qa-2026-09-26` is CLOSED. No release approval implied; promotion to `main` remains unauthorized.
 
+### 2026-09-28 — Promotion-review remediation (CodeRabbit findings on PR #23)
+
+- Scope: 6 findings triaged independently. Fixed (branch `rons/promotion-review-fixes`, PR into `dev`; promotion PR #23 picks it up automatically): stale destination coordinates persisted into quotes (Major — same class as OBS-10; edit now resets resolved lat/lon + auto flag, keeps distance text); Float→Double binary widening in rate restore (display wart + in-memory inequality; decimal round-trip); custom-fare toggle initial visibility from stored override text (completes the D-001 fix across recomposition).
+- Deferred with rationale (owner, risk, revisit): migration 1→2 test gap (test-only; migration code untouched); receipt PNG accumulation (OS-evicted cache, no correctness impact); BigDecimal fare parsing (sub-display-unit truncation, no crash; revisit on next booking-form validation pass with OBS-10).
+- Regression tests: destination-reset case + float restart-exactness case. D-001 visibility change has no fitting JVM seam; covered by the owner's road test.
+- Verification policy: exact-revision GitHub CI on the fix PR, then promotion CI re-runs. No local builds.
+- Rollback: revert the fix-PR merge commit on `dev`. No release, credential, or production changes.
+
 ## Current accepted exceptions
 
 | Exception | Reason | Risk | Compensating control | Owner | Expiry/revisit trigger | Approval |
