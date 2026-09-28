@@ -8,7 +8,7 @@ feature delivery. Durable evidence and approvals are recorded in
 - Last verified: `2026-09-23` (Asia/Jakarta; Unit 4 merged to `dev` after exact-revision CI passed)
 - Latest accepted application revision: PR #14 merge `26882bbae0fe93b9b6d303d241b8b86dc1ca3c78`; `main` baseline `19ee2e271c9e38b51d09cf9f0aa4246b1acc0b2e`
 - Repository governance lifecycle: Phase 10 complete; active feature delivery is tracked with implementation units
-- Current work item: QA campaign `otr-qa-2026-09-26` CLOSED 2026-09-28 (48/48 applicable passing; open: S-043, S-046, OBS-10, permanent-denial path, OBS-04..08). No next implementation unit is authorized
+- Current work item: QA campaign `otr-qa-2026-09-26` CLOSED 2026-09-28 (46/48 applicable passing; S-040/S-041 re-verified on current build; open: S-043, S-046, OBS-10, permanent-denial path, OBS-04..08). No next implementation unit is authorized
 - Overall health: `UNITS 1–4 ACCEPTED / NEXT UNIT AWAITS EXPLICIT APPROVAL`
 - Tracker/project: Linear Project `OnTheRoad: Direct Booking & Fare Estimator` (`RON-277`, `RON-278`, `RON-279`, `RON-280`, `RON-282`, `RON-385`)
 

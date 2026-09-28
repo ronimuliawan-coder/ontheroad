@@ -468,7 +468,7 @@ never contain credentials, tokens, or private payloads.
 ### 2026-09-28 — S-040/S-041 permission mini-probe verified; campaign closed at 48/48
 
 - Probe (build from `origin/dev@a61e870`, fresh install, Pixel 7 Pro / API 35): S-041 deny-location + deny-notification → red inline message, idle cockpit, no trip, manual quoting usable (E-202..E-206); S-040 allow → trip starts, `OnTheRoad: Active Run · now` notification, sustained tracking (E-208..E-212). Both PASS appended as new attempts; old attempts retained. Ledger checker zero errors.
-- This resolves the review qualification: permission behavior is now fresh-accepted on the current build family. Final campaign standing: PASS 48 / FAIL 0 / BLOCKED 0 / INCONCLUSIVE 1 (S-043, failure not inducible) / N-A 1 (S-045) / NOT_RUN 1 (S-046, conditional); E/A 48/48. Explicitly remaining open: S-043, S-046, OBS-10, permanent-denial path, OBS-04..08.
+- This resolves the review qualification: permission behavior is now fresh-accepted on the current build family. Totals are unchanged by re-verification (re-running a PASS row adds an attempt, not coverage): PASS 46 / FAIL 0 / BLOCKED 0 / INCONCLUSIVE 1 (S-043, failure not inducible) / N-A 1 (S-045) / NOT_RUN 1 (S-046, conditional); E/A 46/48. Explicitly remaining open: S-043, S-046, OBS-10, permanent-denial path, OBS-04..08.
 - Artifacts: probe evidence E-201..E-213 pinned at `origin/qa-ledger` revision `df92245` (never to merge). Coordinator spot-checked E-204 (denial) and E-211 (shade) directly.
 - Campaign `otr-qa-2026-09-26` is CLOSED. No release approval implied; promotion to `main` remains unauthorized.
 
