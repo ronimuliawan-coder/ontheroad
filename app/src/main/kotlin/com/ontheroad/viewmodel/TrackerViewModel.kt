@@ -268,6 +268,12 @@ class TrackerViewModel(
         _uiState.update {
             it.copy(
                 directDestinationAddress = address,
+                // Drop the previous resolution: quoting against stale coordinates
+                // while showing the new address persists a mismatched fare.
+                // Distance text is kept so the driver can correct it manually.
+                directDestinationLatitude = null,
+                directDestinationLongitude = null,
+                isDistanceAutoCalculated = false,
                 addressLookupUnavailable = false
             )
         }

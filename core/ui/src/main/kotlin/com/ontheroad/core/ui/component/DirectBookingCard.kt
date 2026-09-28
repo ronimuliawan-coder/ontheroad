@@ -90,7 +90,9 @@ fun DirectBookingCard(
     onStartDirectRun: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showCustomFareInput by remember { mutableStateOf(false) }
+    // Initial visibility follows the stored override: the card leaves composition on
+    // platform switch/navigation, and a hidden-but-set override must not drive the quote.
+    var showCustomFareInput by remember { mutableStateOf(customFareOverrideText.isNotBlank()) }
 
     Card(
         modifier = modifier.fillMaxWidth(),

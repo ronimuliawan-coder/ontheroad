@@ -34,6 +34,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -236,6 +237,29 @@ class TrackerViewModelTest {
         assertTrue(viewModel.uiState.value.isTracking)
         assertEquals("gojek", viewModel.uiState.value.selectedPlatformId)
         viewModel.stopDurationTimer()
+    }
+
+    @Test
+    fun editingDestinationClearsResolvedCoordinatesButKeepsText() = runTest(testDispatcher) {
+        viewModel.selectDestinationSuggestion(
+            AddressSuggestion(
+                title = "Monas",
+                fullAddress = "Monas, Gambir, Jakarta Pusat",
+                latitude = -6.175392,
+                longitude = 106.827153
+            )
+        )
+        assertTrue(viewModel.uiState.value.isDistanceAutoCalculated)
+
+        // Short query takes the no-search path but must still drop the old resolution.
+        viewModel.updateDirectDestinationAddress("x")
+
+        val state = viewModel.uiState.value
+        assertEquals("x", state.directDestinationAddress)
+        assertNull(state.directDestinationLatitude)
+        assertNull(state.directDestinationLongitude)
+        assertFalse(state.isDistanceAutoCalculated)
+        assertTrue(state.directEstimatedDistanceKmText.isNotBlank())
     }
 
     @Test
